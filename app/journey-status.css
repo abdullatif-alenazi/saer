@@ -160,9 +160,9 @@
 .remaining-hero small { color:#657187;font-size:9px;font-weight:700; }
 .hero-status-static { position:relative;z-index:1;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.72);font-size:10px;color:var(--ink); }
 
-.station-tone-0{--station:#e5b83d;--station-soft:#fff0b9}.station-tone-0:after{background:#fff7d6;opacity:.8}
-.station-tone-1{--station:#df9365;--station-soft:#ffe1cf}.station-tone-1:after{background:#ffd1af;opacity:.5}
-.station-tone-2{--station:#329fc9;--station-soft:#cfeefa}.station-tone-2:after{background:#edfaff;opacity:.72}
+.station-tone-0{--station:#329fc9;--station-soft:#cfeefa}.station-tone-0:after{background:#edfaff;opacity:.72}
+.station-tone-1{--station:#e5b83d;--station-soft:#fff0b9}.station-tone-1:after{background:#fff7d6;opacity:.8}
+.station-tone-2{--station:#df9365;--station-soft:#ffe1cf}.station-tone-2:after{background:#ffd1af;opacity:.5}
 .station-tone-3{--station:#8c70b3;--station-soft:#e7ddf3}.station-tone-3:after{background:#cab9df;opacity:.42}
 .station-hero.station-tone-4.flip-front{--station:#9ab8d5;--station-soft:#263653;background:linear-gradient(145deg,#344763,#202c42 84%);color:#fff;border-color:rgba(255,255,255,.12)}
 .station-hero.station-tone-4.flip-front:after{width:92px;height:92px;left:-22px;top:-25px;background:#fff;opacity:.92;box-shadow:0 0 32px rgba(255,255,255,.28)}
