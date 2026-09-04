@@ -154,7 +154,7 @@
 .hero-top { align-items:flex-end; }
 .remaining-hero { position:absolute;z-index:1;top:0;left:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;width:154px;gap:3px;direction:ltr;text-align:left; }
 .remaining-hero>span { color:#69758a;font-size:10px;font-weight:600; }
-.remaining-hero>b { display:flex;align-items:baseline;justify-content:flex-start;width:100%;height:32px;gap:4px;color:var(--ink);font-weight:700;direction:rtl;white-space:nowrap;font-variant-numeric:tabular-nums; }
+.remaining-hero>b { display:flex;align-items:baseline;justify-content:flex-end;width:100%;height:32px;gap:4px;color:var(--ink);font-weight:700;direction:rtl;white-space:nowrap;font-variant-numeric:tabular-nums; }
 .remaining-hero strong { font-size:30px;line-height:1;letter-spacing:-1px; }
 .remaining-hero .countdown-seconds { min-width:25px;font-size:19px;letter-spacing:0; }
 .remaining-hero small { color:#657187;font-size:9px;font-weight:700; }
