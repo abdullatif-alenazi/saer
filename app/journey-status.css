@@ -49,8 +49,6 @@
 
 .journey-strip.period-tiles .live {
   z-index: 2;
-  min-height: 82px;
-  transform: translateY(-6px);
   border-color: #1d7fa8;
   background: #238ebc;
   color: #fff;
@@ -59,7 +57,14 @@
 }
 
 .journey-strip.period-tiles .live small { color: rgba(255,255,255,.9); font-weight: 750; }
-.journey-strip.period-tiles .selected:not(.live) { border-color: #8fd8f0; box-shadow: 0 0 0 2px rgba(67,191,234,.12); }
+.journey-strip.period-tiles .selected {
+  z-index: 3;
+  min-height: 84px;
+  transform: translateY(-5px) scale(1.07);
+}
+.journey-strip.period-tiles .selected b { font-size: 13px; font-weight: 850; }
+.journey-strip.period-tiles .selected small { font-size: 9px; font-weight: 750; }
+.journey-strip.period-tiles .selected:not(.live) { border-color: #8fd8f0; background:#fffdf8; color:var(--ink); box-shadow: 0 8px 20px rgba(31,41,66,.1),0 0 0 2px rgba(67,191,234,.12); }
 
 @keyframes currentTilePulse { 0%,100%{box-shadow:0 11px 24px rgba(35,142,188,.2),0 0 0 0 rgba(67,191,234,.18)} 50%{box-shadow:0 13px 28px rgba(35,142,188,.28),0 0 0 6px rgba(67,191,234,.05)} }
 
@@ -147,7 +152,7 @@
 .day-screen .flip-scene { height: 330px; }
 
 .hero-top { align-items:flex-end; }
-.remaining-hero { position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;width:154px;flex:0 0 154px;gap:3px;direction:rtl; }
+.remaining-hero { position:absolute;z-index:1;top:0;left:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;width:154px;gap:3px;direction:rtl;text-align:left; }
 .remaining-hero>span { color:#69758a;font-size:10px;font-weight:600; }
 .remaining-hero>b { display:flex;align-items:baseline;justify-content:flex-start;width:100%;height:32px;gap:4px;color:var(--ink);font-weight:700;direction:rtl;white-space:nowrap;font-variant-numeric:tabular-nums; }
 .remaining-hero strong { font-size:30px;line-height:1;letter-spacing:-1px; }
@@ -163,6 +168,14 @@
 .station-hero.station-tone-4.flip-front:after{width:92px;height:92px;left:-22px;top:-25px;background:#fff;opacity:.92;box-shadow:0 0 32px rgba(255,255,255,.28)}
 .station-tone-4.flip-front .hero-top p,.station-tone-4.flip-front .remaining-hero>span,.station-tone-4.flip-front .remaining-hero small,.station-tone-4.flip-front .hero-facts span,.station-tone-4.flip-front .period-times{color:rgba(255,255,255,.72)}
 .station-tone-4.flip-front .remaining-hero>b{color:#fff}.station-tone-4.flip-front .period-rail{background:rgba(255,255,255,.18)}
+
+/* Keep the two card faces completely isolated during the 3D turn. */
+.day-screen .flip-card { isolation:isolate; }
+.day-screen .flip-face { backface-visibility:hidden!important; -webkit-backface-visibility:hidden!important; transition:opacity .12s linear,visibility 0s linear .12s; }
+.day-screen .flip-front { opacity:1;visibility:visible;pointer-events:auto; }
+.day-screen .flip-back { opacity:0;visibility:hidden;pointer-events:none; }
+.day-screen .is-flipped .flip-front { opacity:0;visibility:hidden;pointer-events:none; }
+.day-screen .is-flipped .flip-back { opacity:1;visibility:visible;pointer-events:auto;transition-delay:.12s,0s; }
 
 .current-time-label::after {
   content: "";
