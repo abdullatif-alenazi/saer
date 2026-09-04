@@ -172,10 +172,14 @@
 /* Render one face at a time so text can never bleed through the turn. */
 .day-screen .flip-card,.day-screen .is-flipped .flip-card { transform:none;transform-style:preserve-3d;will-change:transform,filter; }
 .day-screen .flip-face,.day-screen .flip-back { transform:none!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important;opacity:1;visibility:visible;pointer-events:auto; }
-.day-screen .turn-out .flip-card { animation:cardTurnOut .21s cubic-bezier(.55,.05,.67,.19) both; }
-.day-screen .turn-in .flip-card { animation:cardTurnIn .26s cubic-bezier(.2,.72,.2,1) both; }
-@keyframes cardTurnOut { from{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} to{transform:perspective(1100px) rotateY(88deg) scale(.975);filter:brightness(.94)} }
-@keyframes cardTurnIn { from{transform:perspective(1100px) rotateY(-88deg) scale(.975);filter:brightness(.94)} to{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} }
+.day-screen .flip-scene:not(.is-flipped).turn-out .flip-card { animation:cardTurnOutForward .21s cubic-bezier(.55,.05,.67,.19) both; }
+.day-screen .flip-scene.is-flipped.turn-in .flip-card { animation:cardTurnInForward .26s cubic-bezier(.2,.72,.2,1) both; }
+.day-screen .flip-scene.is-flipped.turn-out .flip-card { animation:cardTurnOutReverse .21s cubic-bezier(.55,.05,.67,.19) both; }
+.day-screen .flip-scene:not(.is-flipped).turn-in .flip-card { animation:cardTurnInReverse .26s cubic-bezier(.2,.72,.2,1) both; }
+@keyframes cardTurnOutForward { from{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} to{transform:perspective(1100px) rotateY(88deg) scale(.975);filter:brightness(.94)} }
+@keyframes cardTurnInForward { from{transform:perspective(1100px) rotateY(-88deg) scale(.975);filter:brightness(.94)} to{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} }
+@keyframes cardTurnOutReverse { from{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} to{transform:perspective(1100px) rotateY(-88deg) scale(.975);filter:brightness(.94)} }
+@keyframes cardTurnInReverse { from{transform:perspective(1100px) rotateY(88deg) scale(.975);filter:brightness(.94)} to{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} }
 
 .current-time-label::after {
   content: "";
