@@ -1,0 +1,49 @@
+:root{
+  --ink:#243b64;
+  --muted:#62708a;
+  --line:rgba(36,59,100,.10);
+  --accent:#238ebc;
+  --accent-bright:#43bfea;
+  --accent-soft:#d9f3fc;
+  --paper:#fffdf7;
+  --period:#d3f2fd;
+  --period-strong:#6dcced;
+  --period-ink:#246d8e;
+  --shadow-color:rgba(36,59,100,.08);
+}
+html,body{background:#eef1f3}
+.app-shell{
+  background:
+    radial-gradient(circle at 88% 2%,var(--period) 0,transparent 43%),
+    var(--paper);
+  box-shadow:0 24px 80px var(--shadow-color);
+}
+.tone-0{--period:#fff0bd;--period-strong:#efcd69;--period-ink:#725d1b}
+.tone-1{--period:#ffe5d5;--period-strong:#efb58e;--period-ink:#805037}
+.tone-2{--period:#bfeeff;--period-strong:#43bfea;--period-ink:#146d93}
+.tone-3{--period:#ece5f8;--period-strong:#c4ade1;--period-ink:#65507d}
+.tone-4{--period:#dde8f5;--period-strong:#9fb9d4;--period-ink:#405d7a}
+.brand-mark{border-color:color-mix(in srgb,var(--accent-bright) 55%,transparent);background:var(--accent-soft)}
+.clock-dot{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 11%,transparent)}
+.time-trigger{background:rgba(255,255,255,.58)}
+.time-trigger,.amount,.note{color:#4f607f}
+.quiet-arc:before{border-color:color-mix(in srgb,var(--accent) 16%,transparent)}
+.quiet-arc span{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 10%,transparent)}
+.primary{background:var(--accent-bright);color:var(--ink);box-shadow:0 12px 28px color-mix(in srgb,var(--accent-bright) 34%,transparent)}
+.timer-ring{background:conic-gradient(var(--accent) 84%,color-mix(in srgb,var(--accent) 11%,transparent) 0)}
+.bottom-nav{background:rgba(252,250,244,.91)}
+.bottom-nav .active span{background:var(--accent-bright);color:var(--ink);box-shadow:0 7px 18px color-mix(in srgb,var(--accent-bright) 34%,transparent)}
+.activity-list>button:nth-child(1),.stats article:nth-child(1){background:#f3ecfa}
+.activity-list>button:nth-child(2),.stats article:nth-child(2){background:#e2f4fa}
+.activity-list>button:nth-child(3),.stats article:nth-child(3){background:#e9f0f7}
+.activity-list>button:nth-child(4){background:#fff0dc}
+.activity-list>button:nth-child(1) .activity-icon{background:#e6d8f2;color:#624c78}
+.activity-list>button:nth-child(2) .activity-icon{background:#ccebf5;color:#286d89}
+.activity-list>button:nth-child(3) .activity-icon{background:#d9e6f1;color:#4a6278}
+.activity-list>button:nth-child(4) .activity-icon{background:#f8dfbe;color:#795b36}
+.settings-list>button{background:rgba(255,255,255,.58)}
+.timeline .current{background:color-mix(in srgb,var(--period) 70%,white)}
+.truth{background:#263653}.truth.small{background:#eee6f5}
+.sheet{background:#fcfaf4}.time-options button,.templates button,.prayer-options button,.exercise-list>div{background:#fffdf9}
+.time-options .selected,.templates .selected,.prayer-options .selected{background:var(--accent-soft)}
+@media(prefers-contrast:more){:root{--muted:#545851;--line:rgba(32,35,31,.22)}}

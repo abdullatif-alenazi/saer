@@ -1,0 +1,31 @@
+@font-face {
+  font-family: "Montserrat Arabic";
+  src: url("/fonts/montserrat-arabic-300.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat Arabic";
+  src: url("/fonts/montserrat-arabic-400.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat Arabic";
+  src: url("/fonts/montserrat-arabic-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: "Montserrat Arabic", "SF Arabic", "Geeza Pro", Tahoma, Arial, sans-serif;
+}
