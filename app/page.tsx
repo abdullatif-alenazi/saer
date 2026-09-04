@@ -45,6 +45,7 @@ function TimeSheet({live,clock,slotIndex,prayerClocks,reset,setClock}:{live:bool
 }
 function DayJourney({selected,current,remaining,remainingSeconds,prayerStarts,onSelect,onStart}:{selected:number;current:number;remaining:number;remainingSeconds:number;prayerStarts:number[];onSelect:(index:number)=>void;onStart:()=>void}){
  const [flipped,setFlipped]=useState(false);
+ const [turning,setTurning]=useState<"out"|"in"|null>(null);
  const station=dayJourney[selected];
  const stationTime=minuteClockLabel(prayerStarts[selected]);
  const nextStart=selected===4?prayerStarts[0]+1440:prayerStarts[selected+1];
@@ -57,12 +58,12 @@ function DayJourney({selected,current,remaining,remainingSeconds,prayerStarts,on
  const endTimeLabel=minuteClockLabel(nextStart%1440);
  const countdownHours=Math.floor(remainingSeconds/3600),countdownMinutes=Math.floor((remainingSeconds%3600)/60),countdownSeconds=remainingSeconds%60;
  const focusTask=station.tasks.find(task=>!task.done)??station.tasks[0];
- useEffect(()=>setFlipped(false),[selected]);
- const flip=()=>setFlipped(value=>!value);
+ useEffect(()=>{setFlipped(false);setTurning(null)},[selected]);
+ const flip=()=>{if(turning)return;setTurning("out");window.setTimeout(()=>{setFlipped(value=>!value);setTurning("in");window.setTimeout(()=>setTurning(null),260)},210)};
  return <section className="screen day-screen">
   <div className="journey-title"><h1>رحلة اليوم</h1></div>
   <div className="journey-strip period-tiles">{dayJourney.map((item,i)=><button key={item.period} className={`${i===selected?"selected":""} ${i<current?"passed":""} ${i===current?"live":""}`} onClick={()=>onSelect(i)} aria-label={`${item.period}، يبدأ ${minuteClockLabel(prayerStarts[i])}`}><span className="period-check">{i<current?"✓":""}</span><b>{item.period}</b><small>{minuteClockLabel(prayerStarts[i])}</small></button>)}</div>
-  <div className={`flip-scene ${flipped?"is-flipped":""}`}>
+  <div className={`flip-scene ${flipped?"is-flipped":""} ${turning?`turn-${turning}`:""}`}>
    <div className="flip-card">
     {!flipped?<article className={`station-hero flip-face flip-front station-tone-${selected}`} role="button" tabIndex={0} aria-label="إظهار المهمة الحالية" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
      <div className="hero-top"><div><p>{selected===current?"محطتك الآن":selected<current?"محطة مرّت":"محطة أمامك"}</p><h2>{station.period}</h2></div>{selected===current?<div className="remaining-hero"><span>تنتهي بعد</span><b>{countdownHours>0?<><strong>{arNumber(countdownMinutes)}</strong><small>د</small><strong>{arNumber(countdownHours)}</strong><small>س</small></>:<><strong className="countdown-seconds">{arNumber(countdownSeconds,2)}</strong><small>ث</small><strong>{arNumber(countdownMinutes)}</strong><small>د</small></>}</b></div>:<strong className="hero-status-static">{selected<current?"انتهت":`تبدأ ${stationTime}`}</strong>}</div>

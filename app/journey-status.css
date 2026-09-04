@@ -170,9 +170,12 @@
 .station-tone-4.flip-front .remaining-hero>b{color:#fff}.station-tone-4.flip-front .period-rail{background:rgba(255,255,255,.18)}
 
 /* Render one face at a time so text can never bleed through the turn. */
-.day-screen .flip-card,.day-screen .is-flipped .flip-card { transform:none!important;transform-style:flat; }
-.day-screen .flip-face,.day-screen .flip-back { transform:none!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important;opacity:1;visibility:visible;pointer-events:auto;animation:cardFaceIn .38s cubic-bezier(.2,.72,.2,1); }
-@keyframes cardFaceIn { from{opacity:.25;transform:perspective(900px) rotateY(-18deg) scale(.985)} to{opacity:1;transform:perspective(900px) rotateY(0) scale(1)} }
+.day-screen .flip-card,.day-screen .is-flipped .flip-card { transform:none;transform-style:preserve-3d;will-change:transform,filter; }
+.day-screen .flip-face,.day-screen .flip-back { transform:none!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important;opacity:1;visibility:visible;pointer-events:auto; }
+.day-screen .turn-out .flip-card { animation:cardTurnOut .21s cubic-bezier(.55,.05,.67,.19) both; }
+.day-screen .turn-in .flip-card { animation:cardTurnIn .26s cubic-bezier(.2,.72,.2,1) both; }
+@keyframes cardTurnOut { from{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} to{transform:perspective(1100px) rotateY(88deg) scale(.975);filter:brightness(.94)} }
+@keyframes cardTurnIn { from{transform:perspective(1100px) rotateY(-88deg) scale(.975);filter:brightness(.94)} to{transform:perspective(1100px) rotateY(0) scale(1);filter:brightness(1)} }
 
 .current-time-label::after {
   content: "";
