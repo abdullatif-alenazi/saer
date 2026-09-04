@@ -64,7 +64,7 @@ function DayJourney({selected,current,remaining,remainingSeconds,prayerStarts,on
   <div className="journey-strip period-tiles">{dayJourney.map((item,i)=><button key={item.period} className={`${i===selected?"selected":""} ${i<current?"passed":""} ${i===current?"live":""}`} onClick={()=>onSelect(i)} aria-label={`${item.period}، يبدأ ${minuteClockLabel(prayerStarts[i])}`}><span className="period-check">{i<current?"✓":""}</span><b>{item.period}</b><small>{minuteClockLabel(prayerStarts[i])}</small></button>)}</div>
   <div className={`flip-scene ${flipped?"is-flipped":""}`}>
    <div className="flip-card">
-    <article className={`station-hero flip-face flip-front station-tone-${selected}`} role="button" tabIndex={0} aria-label="إظهار المهمة الحالية" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
+    {!flipped?<article className={`station-hero flip-face flip-front station-tone-${selected}`} role="button" tabIndex={0} aria-label="إظهار المهمة الحالية" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
      <div className="hero-top"><div><p>{selected===current?"محطتك الآن":selected<current?"محطة مرّت":"محطة أمامك"}</p><h2>{station.period}</h2></div>{selected===current?<div className="remaining-hero"><span>تنتهي بعد</span><b>{countdownHours>0?<><strong>{arNumber(countdownMinutes)}</strong><small>د</small><strong>{arNumber(countdownHours)}</strong><small>س</small></>:<><strong className="countdown-seconds">{arNumber(countdownSeconds,2)}</strong><small>ث</small><strong>{arNumber(countdownMinutes)}</strong><small>د</small></>}</b></div>:<strong className="hero-status-static">{selected<current?"انتهت":`تبدأ ${stationTime}`}</strong>}</div>
      <div className={`period-progress ${selected===current?"is-live":selected<current?"is-past":"is-next"}`} aria-label={`من ${stationTime} إلى ${endTimeLabel}`}>
       <div className="period-rail"><span className="elapsed-rail" style={{width:`${elapsedPercent}%`}}/>{selected===current&&<span className="live-time-marker" style={{right:`clamp(8px, ${elapsedPercent}%, calc(100% - 8px))`}}><i/></span>}</div>
@@ -73,15 +73,14 @@ function DayJourney({selected,current,remaining,remainingSeconds,prayerStarts,on
      </div>
      <div className="hero-facts"><p><b>{station.tasks.length}</b><span>نشاطان</span></p><p><b>{durationLabel(station.totalMinutes)}</b><span>تحتاج فقط</span></p><p><b>{durationLabel(free)}</b><span>{selected===current?"يبقى لك":"وقت متسع"}</span></p></div>
      <span className="flip-hint">اضغط لترى مهمتك <b>↻</b></span>
-    </article>
-    <article className={`station-hero flip-face flip-back station-tone-${selected}`} role="button" tabIndex={flipped?0:-1} aria-label="العودة إلى ملخص المحطة" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
+    </article>:<article className={`station-hero flip-face flip-back station-tone-${selected}`} role="button" tabIndex={0} aria-label="العودة إلى ملخص المحطة" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
      <div className="back-kicker"><span>الآن وقت</span><b>↻</b></div>
      <h2>{focusTask.name}</h2>
      <p className="back-duration">{focusTask.meta}</p>
      <p className="back-message">{selected===current?"أنجزها الآن، والباقي لك.":selected<current?"كانت هذه مهمتك هنا. انتهى وقتها بهدوء.":"ليست عليك الآن. حين تصلها ستجدها هنا."}</p>
      {selected===current&&!focusTask.done&&<button className="back-start" onClick={event=>{event.stopPropagation();onStart()}}>ابدأ الآن <span>←</span></button>}
      <span className="flip-hint">اضغط للعودة إلى الوقت <b>↻</b></span>
-    </article>
+    </article>}
    </div>
   </div>
   <section className="period-task-section"><h3>ماذا تستطيع أن تنجز في {station.period}؟</h3><div className="period-task-card">{station.tasks.map(task=><div key={task.name} className={`period-task-row ${task.done?"task-done":""}`}><h4>{task.name}</h4><b>{task.meta}</b>{task.done?<span className="task-complete">تم</span>:<button onClick={onStart}>ابدأ</button>}</div>)}</div></section>

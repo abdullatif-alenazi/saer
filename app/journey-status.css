@@ -169,13 +169,10 @@
 .station-tone-4.flip-front .hero-top p,.station-tone-4.flip-front .remaining-hero>span,.station-tone-4.flip-front .remaining-hero small,.station-tone-4.flip-front .hero-facts span,.station-tone-4.flip-front .period-times{color:rgba(255,255,255,.72)}
 .station-tone-4.flip-front .remaining-hero>b{color:#fff}.station-tone-4.flip-front .period-rail{background:rgba(255,255,255,.18)}
 
-/* Keep the two card faces completely isolated during the 3D turn. */
-.day-screen .flip-card { isolation:isolate; }
-.day-screen .flip-face { backface-visibility:hidden!important; -webkit-backface-visibility:hidden!important; transition:opacity .12s linear,visibility 0s linear .12s; }
-.day-screen .flip-front { opacity:1;visibility:visible;pointer-events:auto; }
-.day-screen .flip-back { opacity:0;visibility:hidden;pointer-events:none; }
-.day-screen .is-flipped .flip-front { opacity:0;visibility:hidden;pointer-events:none; }
-.day-screen .is-flipped .flip-back { opacity:1;visibility:visible;pointer-events:auto;transition-delay:.12s,0s; }
+/* Render one face at a time so text can never bleed through the turn. */
+.day-screen .flip-card,.day-screen .is-flipped .flip-card { transform:none;transform-style:flat; }
+.day-screen .flip-face,.day-screen .flip-back { transform:none;opacity:1;visibility:visible;pointer-events:auto;animation:cardFaceIn .38s cubic-bezier(.2,.72,.2,1); }
+@keyframes cardFaceIn { from{opacity:.25;transform:perspective(900px) rotateY(-18deg) scale(.985)} to{opacity:1;transform:perspective(900px) rotateY(0) scale(1)} }
 
 .current-time-label::after {
   content: "";
