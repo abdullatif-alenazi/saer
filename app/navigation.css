@@ -24,3 +24,9 @@
 .week-strip b{font-size:10px}.week-strip span{font-size:11px;font-weight:750}.week-strip .selected{background:#fff;color:var(--ink);box-shadow:0 5px 15px rgba(31,41,66,.08);transform:translateY(-2px)}
 .week-strip .today{color:#177ca6}.week-strip .today.selected{background:#238ebc;color:#fff;box-shadow:0 8px 18px rgba(35,142,188,.2)}
 .week-strip i{position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:currentColor}
+
+.calendar-setting{margin:0 0 10px;padding:15px;border:1px solid rgba(36,59,100,.1);border-radius:17px;background:rgba(255,255,255,.66)}
+.calendar-setting>div:first-child{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}.calendar-setting h3{margin:0;color:var(--ink);font-size:16px}.calendar-setting p{margin:0;color:var(--muted);font-size:10px}
+.calendar-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:12px;background:#e9ecee}
+.calendar-switch button{height:36px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:11px;font-weight:750;cursor:pointer;transition:background .2s ease,color .2s ease,box-shadow .2s ease}
+.calendar-switch button.selected{background:#fff;color:var(--ink);box-shadow:0 3px 10px rgba(31,41,66,.08)}
