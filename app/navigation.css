@@ -15,3 +15,12 @@
 .drawer-head small{color:var(--muted);font-size:10px}
 .drawer-head>button{width:36px;height:36px;border:0;border-radius:50%;background:#ecece7;color:var(--ink);font-size:23px;cursor:pointer}
 @media(max-width:520px){.you-drawer{right:0}}
+
+.day-screen .journey-title{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}
+.day-screen .journey-title>div{min-width:0}.day-screen .journey-title h1{font-size:34px;white-space:nowrap}.day-screen .journey-title p{margin:3px 1px 0;color:var(--muted);font-size:10px}
+.day-screen .journey-title>button{border:1px solid rgba(36,59,100,.12);border-radius:999px;background:rgba(255,255,255,.72);color:var(--ink);padding:8px 13px;font-size:10px;font-weight:750;cursor:pointer}
+.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:0 0 16px;padding:3px;border-radius:18px;background:rgba(255,255,255,.34)}
+.week-strip button{position:relative;min-width:0;height:52px;border:0;border-radius:14px;background:transparent;color:#7b8494;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:background .24s ease,color .24s ease,transform .24s ease,box-shadow .24s ease}
+.week-strip b{font-size:10px}.week-strip span{font-size:11px;font-weight:750}.week-strip .selected{background:#fff;color:var(--ink);box-shadow:0 5px 15px rgba(31,41,66,.08);transform:translateY(-2px)}
+.week-strip .today{color:#177ca6}.week-strip .today.selected{background:#238ebc;color:#fff;box-shadow:0 8px 18px rgba(35,142,188,.2)}
+.week-strip i{position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:currentColor}

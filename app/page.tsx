@@ -29,7 +29,7 @@ export default function Home(){
  return <main className={`app-shell tone-${slotIndex}`} dir="rtl">
   <header className="topbar"><button className="menu-trigger" aria-label="فتح قائمة أنت" aria-expanded={drawerOpen} onClick={()=>setDrawerOpen(true)}><i/><i/><i/></button>{tab==="day"&&phase==="idle"?<button className="time-trigger" onClick={()=>$("time-sheet")?.showModal()}><i/>{live?(clock?clockLabel(clock):"الوقت الفعلي"):slot.time}<span>⌄</span></button>:<p className="top-date">{clock?new Intl.DateTimeFormat("ar-SA",{weekday:"long",day:"numeric",month:"long"}).format(clock):"اليوم في الرياض"}</p>}</header>
   {tab==="day"&&phase!=="idle"&&<Now slot={slot} phase={phase} seconds={seconds} pages={pages} elapsed={elapsed} fits={fitsWindow(slot.minutes,windowNow.remainingMinutes)} live={live} setPhase={setPhase} setPages={setPages} finish={finish} start={startCurrent}/>} 
-  {tab==="day"&&phase==="idle"&&<DayJourney journey={plannedJourney} selected={selectedDay} current={slotIndex} remaining={windowNow.remainingMinutes} remainingSeconds={Math.max(0,windowNow.remainingMinutes*60-(clock?.getSeconds()??0))} prayerStarts={prayerStarts} onSelect={setDayPeriod} onStart={startCurrent}/>} 
+  {tab==="day"&&phase==="idle"&&<DayJourney journey={plannedJourney} selected={selectedDay} current={slotIndex} today={clock??fallbackClock} remaining={windowNow.remainingMinutes} remainingSeconds={Math.max(0,windowNow.remainingMinutes*60-(clock?.getSeconds()??0))} prayerStarts={prayerStarts} onSelect={setDayPeriod} onStart={startCurrent}/>} 
   {tab==="plan"&&<section className="screen"><Head kicker="ما اخترته لحياتك" title="الخطة" text="ليست قائمة واجبات. هذه الأشياء التي قررت أن تجد لها مكانًا."/><button className="primary add" onClick={()=>$("add-sheet")?.showModal()}>+ إضافة إلى خطتي</button>{plan.length?<div className="activity-list">{plan.map(a=><button key={a.id}><span className="activity-icon">{a.template[0]}</span><div><h3>{a.name}</h3><p>{a.period} · {a.schedule.value}</p></div><span>‹</span></button>)}</div>:<div className="empty-plan"><span>○</span><h3>خطتك خفيفة الآن.</h3><p>أضف أول شيء تريد أن تجعل له مكانًا في حياتك.</p></div>}<p className="principle">سائر لا يدير العادات؛ بل الأشياء التي تريد أن تجعل لها مكانًا في حياتك.</p></section>}
   {tab==="done"&&<section className="screen"><Head kicker="حقيقة وقتك" title="الإنجاز" text="هذا ما فعلته فعلًا، وهذا كل ما أخذه منك."/>{savedCount>0&&<p className="local-log">حُفظت {arNumber(savedCount)} جلسات تنفيذ على هذا الجهاز.</p>}<div className="segmented"><button className={range==="week"?"on":""} onClick={()=>setRange("week")}>هذا الأسبوع</button><button className={range==="month"?"on":""} onClick={()=>setRange("month")}>هذا الشهر</button></div>{range==="week"?<Weekly/>:<PrayerStats/>}</section>}
   <nav className="bottom-nav bottom-nav-three">{nav.map(n=><button key={n.id} className={tab===n.id?"active":""} onClick={()=>{setTab(n.id);if(n.id!=="day")setPhase("idle")}}><span>{n.icon}</span>{n.label}</button>)}</nav>
@@ -68,16 +68,26 @@ function AddActivitySheet({onSave}:{onSave:(activity:PlannedActivity)=>void}){
  </dialog>
 }
 type JourneyStation={period:string;totalMinutes:number;tasks:{name:string;meta:string;done:boolean}[]};
-function DayJourney({journey,selected,current,remaining,remainingSeconds,prayerStarts,onSelect,onStart}:{journey:JourneyStation[];selected:number;current:number;remaining:number;remainingSeconds:number;prayerStarts:number[];onSelect:(index:number)=>void;onStart:()=>void}){
+function DayJourney({journey,selected,current,today,remaining,remainingSeconds,prayerStarts,onSelect,onStart}:{journey:JourneyStation[];selected:number;current:number;today:Date;remaining:number;remainingSeconds:number;prayerStarts:number[];onSelect:(index:number)=>void;onStart:()=>void}){
  const [flipped,setFlipped]=useState(false);
  const [turning,setTurning]=useState<"out"|"in"|null>(null);
+ const [selectedDateKey,setSelectedDateKey]=useState("");
+ const dateKey=(date:Date)=>`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+ const todayKey=dateKey(today);
+ const weekStart=new Date(today.getFullYear(),today.getMonth(),today.getDate()-((today.getDay()+1)%7));
+ const weekDates=Array.from({length:7},(_,index)=>new Date(weekStart.getFullYear(),weekStart.getMonth(),weekStart.getDate()+index));
+ const activeDate=weekDates.find(date=>dateKey(date)===(selectedDateKey||todayKey))??today;
+ const activeKey=dateKey(activeDate),isViewingToday=activeKey===todayKey;
+ const dayDistance=Math.round((new Date(activeDate.getFullYear(),activeDate.getMonth(),activeDate.getDate()).getTime()-new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime())/86400000);
+ const effectiveCurrent=isViewingToday?current:dayDistance<0?5:-1;
+ const journeyTitle=isViewingToday?"رحلة اليوم":dayDistance===1?"رحلة الغد":`رحلة ${new Intl.DateTimeFormat("ar-SA",{weekday:"long"}).format(activeDate)}`;
  const station=journey[selected];
  const stationTime=minuteClockLabel(prayerStarts[selected]);
  const nextStart=selected===4?prayerStarts[0]+1440:prayerStarts[selected+1];
  const windowMinutes=nextStart-prayerStarts[selected];
- const available=selected===current?remaining:windowMinutes;
+ const available=selected===effectiveCurrent?remaining:windowMinutes;
  const free=Math.max(0,available-station.totalMinutes);
- const elapsedPercent=selected<current?100:selected>current?0:Math.max(0,Math.min(100,((windowMinutes-remaining)/windowMinutes)*100));
+ const elapsedPercent=selected<effectiveCurrent?100:selected>effectiveCurrent?0:Math.max(0,Math.min(100,((windowMinutes-remaining)/windowMinutes)*100));
  const currentMinute=nextStart-remaining;
  const currentTimeLabel=minuteClockLabel((currentMinute+1440)%1440);
  const endTimeLabel=minuteClockLabel(nextStart%1440);
@@ -86,25 +96,26 @@ function DayJourney({journey,selected,current,remaining,remainingSeconds,prayerS
  useEffect(()=>{setFlipped(false);setTurning(null)},[selected]);
  const flip=()=>{if(turning)return;setTurning("out");window.setTimeout(()=>{setFlipped(value=>!value);setTurning("in");window.setTimeout(()=>setTurning(null),260)},210)};
  return <section className="screen day-screen">
-  <div className="journey-title"><h1>رحلة اليوم</h1></div>
-  <div className="journey-strip period-tiles">{journey.map((item,i)=><button key={item.period} className={`${i===selected?"selected":""} ${i<current?"passed":""} ${i===current?"live":""}`} onClick={()=>onSelect(i)} aria-label={`${item.period}، يبدأ ${minuteClockLabel(prayerStarts[i])}`}><span className="period-check">{i<current?"✓":""}</span><b>{item.period}</b><small>{minuteClockLabel(prayerStarts[i])}</small></button>)}</div>
+  <div className="journey-title"><div><h1>{journeyTitle}</h1><p>{new Intl.DateTimeFormat("ar-SA",{day:"numeric",month:"long"}).format(activeDate)}</p></div>{!isViewingToday&&<button onClick={()=>{setSelectedDateKey(todayKey);onSelect(current)}}>اليوم</button>}</div>
+  <div className="week-strip" aria-label="أيام الأسبوع">{weekDates.map(date=>{const key=dateKey(date),isToday=key===todayKey,isActive=key===activeKey;return <button key={key} className={`${isToday?"today":""} ${isActive?"selected":""}`} onClick={()=>{setSelectedDateKey(key);onSelect(key===todayKey?current:0)}}><b>{["ح","ن","ث","ر","خ","ج","س"][date.getDay()]}</b><span>{arNumber(date.getDate())}</span>{isToday&&<i/>}</button>})}</div>
+  <div className="journey-strip period-tiles">{journey.map((item,i)=><button key={item.period} className={`${i===selected?"selected":""} ${i<effectiveCurrent?"passed":""} ${i===effectiveCurrent?"live":""}`} onClick={()=>onSelect(i)} aria-label={`${item.period}، يبدأ ${minuteClockLabel(prayerStarts[i])}`}><span className="period-check">{i<effectiveCurrent?"✓":""}</span><b>{item.period}</b><small>{minuteClockLabel(prayerStarts[i])}</small></button>)}</div>
   <div className={`flip-scene ${flipped?"is-flipped":""} ${turning?`turn-${turning}`:""}`}>
    <div className="flip-card">
     {!flipped?<article className={`station-hero flip-face flip-front station-tone-${selected}`} role={station.tasks.length?"button":undefined} tabIndex={station.tasks.length?0:-1} aria-label={station.tasks.length?"إظهار المهمة الحالية":undefined} onClick={()=>station.tasks.length&&flip()} onKeyDown={event=>{if(station.tasks.length&&(event.key==="Enter"||event.key===" ")){event.preventDefault();flip()}}}>
-     <div className="hero-top"><div><p>{selected===current?"محطتك الآن":selected<current?"محطة مرّت":"محطة أمامك"}</p><h2>{station.period}</h2></div>{selected===current?<div className="remaining-hero"><span>تنتهي بعد</span><b>{countdownHours>0?<><strong>{arNumber(countdownMinutes)}</strong><small>د</small><strong>{arNumber(countdownHours)}</strong><small>س</small></>:<><strong className="countdown-seconds">{arNumber(countdownSeconds,2)}</strong><small>ث</small><strong>{arNumber(countdownMinutes)}</strong><small>د</small></>}</b></div>:<strong className="hero-status-static">{selected<current?"انتهت":`تبدأ ${stationTime}`}</strong>}</div>
-     <div className={`period-progress ${selected===current?"is-live":selected<current?"is-past":"is-next"}`} aria-label={`من ${stationTime} إلى ${endTimeLabel}`}>
-      <div className="period-rail"><span className="elapsed-rail" style={{width:`${elapsedPercent}%`}}/>{selected===current&&<span className="live-time-marker" style={{right:`clamp(8px, ${elapsedPercent}%, calc(100% - 8px))`}}><i/></span>}</div>
-      {selected===current&&<span className="current-time-label" style={{right:`clamp(38px, ${elapsedPercent}%, calc(100% - 38px))`}}>الآن {currentTimeLabel}</span>}
+     <div className="hero-top"><div><p>{selected===effectiveCurrent?"محطتك الآن":selected<effectiveCurrent?"محطة مرّت":"محطة أمامك"}</p><h2>{station.period}</h2></div>{selected===effectiveCurrent?<div className="remaining-hero"><span>تنتهي بعد</span><b>{countdownHours>0?<><strong>{arNumber(countdownMinutes)}</strong><small>د</small><strong>{arNumber(countdownHours)}</strong><small>س</small></>:<><strong className="countdown-seconds">{arNumber(countdownSeconds,2)}</strong><small>ث</small><strong>{arNumber(countdownMinutes)}</strong><small>د</small></>}</b></div>:<strong className="hero-status-static">{selected<effectiveCurrent?"انتهت":`تبدأ ${stationTime}`}</strong>}</div>
+     <div className={`period-progress ${selected===effectiveCurrent?"is-live":selected<effectiveCurrent?"is-past":"is-next"}`} aria-label={`من ${stationTime} إلى ${endTimeLabel}`}>
+      <div className="period-rail"><span className="elapsed-rail" style={{width:`${elapsedPercent}%`}}/>{selected===effectiveCurrent&&<span className="live-time-marker" style={{right:`clamp(8px, ${elapsedPercent}%, calc(100% - 8px))`}}><i/></span>}</div>
+      {selected===effectiveCurrent&&<span className="current-time-label" style={{right:`clamp(38px, ${elapsedPercent}%, calc(100% - 38px))`}}>الآن {currentTimeLabel}</span>}
       <div className="period-times"><span>{stationTime}</span><span>{endTimeLabel}</span></div>
      </div>
-     <div className="hero-facts"><p><b>{arNumber(station.tasks.length)}</b><span>أنشطة</span></p><p><b>{durationLabel(station.totalMinutes)}</b><span>تحتاج فقط</span></p><p><b>{durationLabel(free)}</b><span>{selected===current?"يبقى لك":"وقت متسع"}</span></p></div>
+     <div className="hero-facts"><p><b>{arNumber(station.tasks.length)}</b><span>أنشطة</span></p><p><b>{durationLabel(station.totalMinutes)}</b><span>تحتاج فقط</span></p><p><b>{durationLabel(free)}</b><span>{selected===effectiveCurrent?"يبقى لك":"وقت متسع"}</span></p></div>
      {station.tasks.length?<span className="flip-hint">اضغط لترى مهمتك <b>↻</b></span>:<span className="flip-hint empty">لا شيء في هذه المحطة بعد</span>}
     </article>:<article className={`station-hero flip-face flip-back station-tone-${selected}`} role="button" tabIndex={0} aria-label="العودة إلى ملخص المحطة" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
      <div className="back-kicker"><span>الآن وقت</span><b>↻</b></div>
      <h2>{focusTask.name}</h2>
      <p className="back-duration">{focusTask.meta}</p>
-     <p className="back-message">{selected===current?"أنجزها الآن، والباقي لك.":selected<current?"كانت هذه مهمتك هنا. انتهى وقتها بهدوء.":"ليست عليك الآن. حين تصلها ستجدها هنا."}</p>
-     {selected===current&&!focusTask.done&&<button className="back-start" onClick={event=>{event.stopPropagation();onStart()}}>ابدأ الآن <span>←</span></button>}
+     <p className="back-message">{selected===effectiveCurrent?"أنجزها الآن، والباقي لك.":selected<effectiveCurrent?"كانت هذه مهمتك هنا. انتهى وقتها بهدوء.":"ليست عليك الآن. حين تصلها ستجدها هنا."}</p>
+     {selected===effectiveCurrent&&!focusTask.done&&<button className="back-start" onClick={event=>{event.stopPropagation();onStart()}}>ابدأ الآن <span>←</span></button>}
      <span className="flip-hint">اضغط للعودة إلى الوقت <b>↻</b></span>
     </article>}
    </div>
