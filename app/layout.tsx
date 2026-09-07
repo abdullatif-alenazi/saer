@@ -6,6 +6,7 @@ import "./palette.css";
 import "./flip.css";
 import "./journey-status.css";
 import "./navigation.css";
+import "./workout.css";
 
 export const metadata: Metadata = {
   title: "سائر — ماذا تفعل الآن؟",
