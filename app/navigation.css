@@ -32,3 +32,4 @@
 .calendar-switch button.selected{background:#fff;color:var(--ink);box-shadow:0 3px 10px rgba(31,41,66,.08)}
 
 .empty-achievements{margin-top:10px;padding:46px 22px;border:1px dashed rgba(36,59,100,.16);border-radius:20px;background:rgba(255,255,255,.44);text-align:center}.empty-achievements>span{display:grid;place-items:center;width:48px;height:48px;margin:0 auto 16px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:22px}.empty-achievements h3{margin:0 0 8px;color:var(--ink);font-size:19px}.empty-achievements p{max-width:280px;margin:0 auto;color:var(--muted);font-size:12px;line-height:1.8}.actual-stats article>p{font-size:12px;color:var(--muted)}
+.delete-activity{width:100%;margin-top:10px;padding:13px;border:0;background:transparent;color:#8a6670;font-size:12px;font-weight:700;cursor:pointer}.delete-activity:hover{color:#714751}

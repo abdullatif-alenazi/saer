@@ -13,3 +13,5 @@ export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"�
 const planKey="sair.plan.v1";
 export function readPlan():PlannedActivity[]{try{return JSON.parse(localStorage.getItem(planKey)||"[]")}catch{return[]}}
 export function savePlan(activity:PlannedActivity){const plan=readPlan();const next=[...plan,activity];localStorage.setItem(planKey,JSON.stringify(next));return next}
+export function updatePlan(activity:PlannedActivity){const next=readPlan().map(item=>item.id===activity.id?activity:item);localStorage.setItem(planKey,JSON.stringify(next));return next}
+export function deletePlan(id:string){const next=readPlan().filter(item=>item.id!==id);localStorage.setItem(planKey,JSON.stringify(next));return next}
