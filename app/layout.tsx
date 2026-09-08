@@ -7,6 +7,8 @@ import "./flip.css";
 import "./journey-status.css";
 import "./navigation.css";
 import "./workout.css";
+import "./progress.css";
+import "./progress-overrides.css";
 
 export const metadata: Metadata = {
   title: "سائر — ماذا تفعل الآن؟",

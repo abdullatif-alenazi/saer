@@ -1,0 +1,5 @@
+.table-row .status-positive{background:#dff2ec;color:#32725c}
+.table-row .status-track{background:#d9f3fc;color:#176c90}
+.table-row .status-close{background:#fff1c9;color:#85691d}
+.distribution-chart.distribution-4{grid-template-columns:repeat(4,1fr)}
+.distribution-chart.distribution-7{grid-template-columns:repeat(7,1fr)}
