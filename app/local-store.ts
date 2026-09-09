@@ -13,7 +13,9 @@ export type PlannedActivity={
  nature?:TrackingNature;schedule:Schedule;
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
  exercises?:WorkoutExercise[];goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
+ parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;
 };
+export type Reminder={mode:"none"|"time"|"station"|"before";value?:string|number};
 export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;durationSeconds?:number;restSeconds:number};
 const planKey="sair.plan.v1";
 const normalize=(item:PlannedActivity):PlannedActivity=>({...item,nature:item.nature??"commitment",schedule:{...item.schedule,days:item.schedule.days??[]}});
@@ -28,3 +30,10 @@ export function readAppointments():Appointment[]{try{return JSON.parse(localStor
 export function saveAppointment(item:Appointment){const next=[...readAppointments(),item];localStorage.setItem(appointmentKey,JSON.stringify(next));return next}
 export function updateAppointment(item:Appointment){const next=readAppointments().map(value=>value.id===item.id?item:value);localStorage.setItem(appointmentKey,JSON.stringify(next));return next}
 export function deleteAppointment(id:string){const next=readAppointments().filter(item=>item.id!==id);localStorage.setItem(appointmentKey,JSON.stringify(next));return next}
+
+export type TaskItem={id:string;title:string;date?:string;time?:string;urgent?:boolean;completedAt?:string;reminder?:Reminder};
+const taskKey="sair.tasks.v1";
+export function readTasks():TaskItem[]{try{return JSON.parse(localStorage.getItem(taskKey)||"[]")}catch{return[]}}
+export function saveTask(item:TaskItem){const next=[...readTasks(),item];localStorage.setItem(taskKey,JSON.stringify(next));return next}
+export function updateTask(item:TaskItem){const next=readTasks().map(value=>value.id===item.id?item:value);localStorage.setItem(taskKey,JSON.stringify(next));return next}
+export function deleteTask(id:string){const next=readTasks().filter(item=>item.id!==id);localStorage.setItem(taskKey,JSON.stringify(next));return next}

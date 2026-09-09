@@ -1,4 +1,4 @@
-export type Tab = "plan" | "day" | "now" | "done" | "you";
+export type Tab = "goals" | "commitments" | "now" | "tasks" | "appointments";
 export type Activity = {
   id: string; name: string; type: string; period: string; schedule: { mode: "fixed" | "flexible"; value: string };
   goal: string; quantity?: number; unit?: string; expectedMinutes?: number; measurements: string[]; frequency: string;
