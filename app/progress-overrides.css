@@ -17,3 +17,73 @@
 .after-now{margin:28px 0 8px;padding-top:22px;border-top:1px solid var(--line)}.after-now>header{display:flex;justify-content:space-between;align-items:end;margin-bottom:11px}.after-now h2{margin:0;font-size:22px}.after-now header span{color:var(--muted);font-size:10px}.after-now>div{display:grid;gap:7px}.after-now article{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.62);border:1px solid var(--line)}.after-now article>i{width:25px;height:25px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-style:normal;font-size:10px}.after-now article section{display:flex;flex-direction:column;gap:3px}.after-now article b{font-size:13px}.after-now article span{color:var(--muted);font-size:9px}.after-now>p{color:var(--muted);font-size:12px}
 .distribution-chart.distribution-4{grid-template-columns:repeat(4,1fr)}
 .distribution-chart.distribution-7{grid-template-columns:repeat(7,1fr)}
+
+/* دخول هادئ ومتدرج: يتحرك المحتوى مرة واحدة عند ظهوره، لا مع تحديث الساعة. */
+@keyframes saer-enter{
+ from{opacity:0;transform:translate3d(0,16px,0) scale(.985)}
+ to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@keyframes saer-enter-soft{
+ from{opacity:0;transform:translate3d(0,9px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes saer-menu-enter{
+ from{opacity:0;transform:translate3d(0,-8px,0) scale(.98)}
+ to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+
+.topbar{animation:saer-enter-soft .34s cubic-bezier(.22,1,.36,1) both}
+.section-screen .section-head{animation:saer-enter .38s cubic-bezier(.22,1,.36,1) both}
+.section-screen .result-range,
+.section-screen .section-empty,
+.section-screen .output-board>h2,
+.section-screen .output-hero,
+.section-screen .trend-chart,
+.section-screen .due-grid,
+.section-screen .done-task-output,
+.section-screen .output-empty{animation:saer-enter .42s cubic-bezier(.22,1,.36,1) .07s both}
+.section-screen .section-cards>button,
+.section-screen .task-list>article,
+.section-screen .appointment-list>button,
+.section-screen .output-board>article,
+.section-screen .done-task-output>p{animation:saer-enter .44s cubic-bezier(.22,1,.36,1) both}
+.section-screen :is(.section-cards>button,.task-list>article,.appointment-list>button,.output-board>article,.done-task-output>p):nth-child(1){animation-delay:.08s}
+.section-screen :is(.section-cards>button,.task-list>article,.appointment-list>button,.output-board>article,.done-task-output>p):nth-child(2){animation-delay:.13s}
+.section-screen :is(.section-cards>button,.task-list>article,.appointment-list>button,.output-board>article,.done-task-output>p):nth-child(3){animation-delay:.18s}
+.section-screen :is(.section-cards>button,.task-list>article,.appointment-list>button,.output-board>article,.done-task-output>p):nth-child(4){animation-delay:.23s}
+.section-screen :is(.section-cards>button,.task-list>article,.appointment-list>button,.output-board>article,.done-task-output>p):nth-child(n+5){animation-delay:.28s}
+
+.now-view>.period-block{animation:saer-enter-soft .34s cubic-bezier(.22,1,.36,1) both}
+.now-view>.quiet-arc{animation:saer-enter-soft .4s cubic-bezier(.22,1,.36,1) .06s both}
+.now-view>.now-copy{animation:saer-enter .44s cubic-bezier(.22,1,.36,1) .12s both}
+.now-view>.primary{animation:saer-enter .44s cubic-bezier(.22,1,.36,1) .2s both}
+.now-view>.focus-mode,.now-view>.done-state{animation:saer-enter .4s cubic-bezier(.22,1,.36,1) both}
+.after-now>header{animation:saer-enter-soft .36s cubic-bezier(.22,1,.36,1) .25s both}
+.after-now>div>article,.after-now>p{animation:saer-enter .42s cubic-bezier(.22,1,.36,1) both}
+.after-now>div>article:nth-child(1),.after-now>p{animation-delay:.3s}
+.after-now>div>article:nth-child(2){animation-delay:.35s}
+.after-now>div>article:nth-child(3){animation-delay:.4s}
+.after-now>div>article:nth-child(4){animation-delay:.45s}
+.after-now>div>article:nth-child(n+5){animation-delay:.5s}
+
+.section-menu{transform-origin:top left;animation:saer-menu-enter .26s cubic-bezier(.22,1,.36,1) both}
+.you-drawer.open .drawer-head,
+.you-drawer.open .calendar-setting,
+.you-drawer.open .settings-list>button{animation:saer-enter-soft .34s cubic-bezier(.22,1,.36,1) both}
+.you-drawer.open .calendar-setting{animation-delay:.05s}
+.you-drawer.open .settings-list>button:nth-child(1){animation-delay:.09s}
+.you-drawer.open .settings-list>button:nth-child(2){animation-delay:.13s}
+.you-drawer.open .settings-list>button:nth-child(3){animation-delay:.17s}
+.you-drawer.open .settings-list>button:nth-child(n+4){animation-delay:.21s}
+
+@media(prefers-reduced-motion:reduce){
+ .topbar,.section-screen .section-head,.section-screen .result-range,.section-screen .section-empty,
+ .section-screen .output-board>h2,.section-screen .output-hero,.section-screen .trend-chart,
+ .section-screen .due-grid,.section-screen .done-task-output,.section-screen .output-empty,
+ .section-screen .section-cards>button,.section-screen .task-list>article,
+ .section-screen .appointment-list>button,.section-screen .output-board>article,
+ .section-screen .done-task-output>p,.now-view>*:not(.focus-mode):not(.done-state),
+ .now-view>.focus-mode,.now-view>.done-state,.after-now>header,.after-now>div>article,
+ .after-now>p,.section-menu,.you-drawer.open .drawer-head,.you-drawer.open .calendar-setting,
+ .you-drawer.open .settings-list>button{animation:none!important}
+}
