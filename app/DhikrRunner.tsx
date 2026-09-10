@@ -23,7 +23,15 @@ export default function DhikrRunner({activity,date,initial,onExit,onEdit,onChang
   <header><button onClick={onExit} aria-label="العودة">→</button><div><small>ورد اليوم</small><h1>{activity.name}</h1></div><div className="dhikr-head-actions"><span>{ar(totalDone)} / {ar(totalTarget)}</span><button onClick={onEdit}>تعديل</button></div></header>
   {periods.length>1&&<nav className="dhikr-periods" aria-label="فترات الورد">{periods.map(period=>{const done=Math.min(period.target,doneFor(period));return <button key={period.id} className={`${selected===period.id?"selected":""} ${done>=period.target?"done":""}`} onClick={()=>setSelected(period.id)}><b>{period.label}</b><span>{ar(done)} / {ar(period.target)}</span></button>})}</nav>}
   <div className="dhikr-method"><button className={method==="counter"?"selected":""} onClick={()=>setMethod("counter")}>العداد</button><button className={method==="units"?"selected":""} onClick={()=>setMethod("units")}>الوحدات</button></div>
-  <div className="dhikr-summary"><span>{active.label}</span><strong>{ar(activeDone)}</strong><p>من {ar(active.target)} · بقي {ar(remaining)}</p><i><b style={{width:`${percent}%`}}/></i></div>
+  <article className="dhikr-summary dhikr-path-card">
+   <div className="dhikr-path-head"><span>{active.label}</span><small>{ar(percent)}٪</small></div>
+   <div className="dhikr-path-count"><strong>{ar(activeDone)}</strong><span>من {ar(active.target)}</span></div>
+   <div className="dhikr-path" role="progressbar" aria-label={`أنجزت ${ar(activeDone)} من ${ar(active.target)}`} aria-valuemin={0} aria-valuemax={active.target} aria-valuenow={activeDone}>
+    <div className="dhikr-path-rail"><b style={{width:`${percent}%`}}/><i style={{right:`clamp(12px, ${percent}%, calc(100% - 12px))`}}><span>{ar(activeDone)}</span></i></div>
+    <div className="dhikr-path-ends"><span>٠</span><span>{ar(active.target)}</span></div>
+   </div>
+   <div className="dhikr-path-facts"><p><small>المتبقي</small><b>{ar(remaining)}</b></p><p><small>الوحدات</small><b>{ar(Math.min(active.unitCount,Math.floor(activeDone/Math.max(1,active.unitValue))))} من {ar(active.unitCount)}</b></p></div>
+  </article>
   {method==="counter"?<div className="dhikr-counter"><button onClick={add} disabled={remaining===0}><small>كل ضغطة</small><b>+{ar(config.pressValue)}</b></button><button className="dhikr-undo" onClick={undo} disabled={activeDone===0}>↶ تراجع عن آخر زيادة</button></div>:<><div className="dhikr-units" style={{gridTemplateColumns:`repeat(${Math.min(10,Math.max(4,Math.ceil(Math.sqrt(active.unitCount))))},1fr)`}}>{Array.from({length:active.unitCount},(_,index)=><button key={index} className={completedUnits.includes(index)?"done":""} onClick={()=>toggleUnit(index)} aria-label={`الوحدة ${index+1}، قيمتها ${active.unitValue}`}><span>✓</span><small>{ar(active.unitValue)}</small></button>)}</div><p className="dhikr-unit-note">{ar(active.unitCount)} وحدات × {ar(active.unitValue)} = {ar(active.target)}</p></>}
   {totalDone>=totalTarget&&<div className="dhikr-complete"><b>تم ورد اليوم.</b><span>انتهيت. أكمل يومك بهدوء.</span></div>}
  </section>
