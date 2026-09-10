@@ -1,3 +1,33 @@
+.journey-filters {
+  display: flex;
+  gap: 7px;
+  margin: 0 -2px 18px;
+  padding: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.journey-filters::-webkit-scrollbar { display: none; }
+.journey-filters button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid rgba(32,57,86,.1);
+  border-radius: 999px;
+  background: rgba(255,255,255,.62);
+  color: #58677a;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color .22s ease, background .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.journey-filters button.selected {
+  border-color: #243b64;
+  background: #243b64;
+  color: #fff;
+  box-shadow: 0 7px 17px rgba(36,59,100,.17);
+  transform: translateY(-1px);
+}
+
 .journey-strip.period-tiles {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
