@@ -18,7 +18,7 @@ export const dayJourney = [
   {period:"المغرب",time:"—",totalMinutes:30,tasks:[{name:"المهارة",meta:"جلسة واحدة · ٢٠ د",done:false},{name:"قراءة خفيفة",meta:"١٠ د",done:false}]},
   {period:"الليل",time:"—",totalMinutes:435,tasks:[{name:"استعداد للنوم",meta:"١٥ د",done:false},{name:"النوم",meta:"٧ ساعات",done:false}]},
 ];
-export const templates = ["رياضة","قراءة","نوم","صيام","عادة","مهارة","شيء آخر"];
+export const templates = ["رياضة","قراءة","ذكر واستغفار","نوم","صيام","عادة","مهارة","شيء آخر"];
 export const settings = [
   {title:"يومي",note:"بداية يومك ونهايته"},{title:"أوقات النوم والاستيقاظ",note:"٢٣:٣٠ — ٠٦:٣٠"},{title:"فترات اليوم",note:"خمس فترات مرنة"},{title:"القياس والمؤقت",note:"مؤقت هادئ، دون ضغط"},{title:"أسلوب التذكير",note:"مختصر، عند الحاجة"},{title:"شخصية سائر",note:"ذكي وساخر بخفة"},{title:"الإعدادات",note:"اللغة والمظهر"},{title:"الحساب",note:"غير مفعّل في النموذج"},
 ];

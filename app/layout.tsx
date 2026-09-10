@@ -7,6 +7,7 @@ import "./flip.css";
 import "./journey-status.css";
 import "./navigation.css";
 import "./workout.css";
+import "./dhikr.css";
 import "./progress.css";
 import "./progress-overrides.css";
 
