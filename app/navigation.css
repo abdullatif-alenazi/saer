@@ -19,11 +19,18 @@
 .day-screen .journey-title{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}
 .day-screen .journey-title>div{min-width:0}.day-screen .journey-title h1{font-size:34px;white-space:nowrap}.day-screen .journey-title p{margin:3px 1px 0;color:var(--muted);font-size:10px}
 .day-screen .journey-title>button{border:1px solid rgba(36,59,100,.12);border-radius:999px;background:rgba(255,255,255,.72);color:var(--ink);padding:8px 13px;font-size:10px;font-weight:750;cursor:pointer}
-.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:0 0 16px;padding:3px;border-radius:18px;background:rgba(255,255,255,.34)}
+.week-browser{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:8px;margin:0 1px 8px}
+.week-browser button{width:38px;height:34px;border:1px solid rgba(36,59,100,.1);border-radius:12px;background:rgba(255,255,255,.62);color:var(--ink);font-size:18px;cursor:pointer;transition:transform .2s ease,background .2s ease}
+.week-browser button:active{transform:scale(.92);background:#fff}.week-browser b{text-align:center;color:var(--ink);font-size:12px;font-weight:760}
+.week-days-window{overflow:hidden;touch-action:pan-y}.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:0 0 16px;padding:3px;border-radius:18px;background:rgba(255,255,255,.34)}
 .week-strip button{position:relative;min-width:0;height:52px;border:0;border-radius:14px;background:transparent;color:#7b8494;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:background .24s ease,color .24s ease,transform .24s ease,box-shadow .24s ease}
 .week-strip b{font-size:10px}.week-strip span{font-size:11px;font-weight:750}.week-strip .selected{background:#fff;color:var(--ink);box-shadow:0 5px 15px rgba(31,41,66,.08);transform:translateY(-2px)}
 .week-strip .today{color:#177ca6}.week-strip .today.selected{background:#238ebc;color:#fff;box-shadow:0 8px 18px rgba(35,142,188,.2)}
-.week-strip i{position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:currentColor}
+.week-strip i{position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:#238ebc}.week-strip .selected i{background:currentColor}
+.week-strip .day-indicator.done{display:grid;place-items:center;width:12px;height:12px;bottom:2px;background:#dff1ea;color:#26745c;font-style:normal;font-size:8px;font-weight:900}.week-strip .today.selected .day-indicator.done{background:#fff;color:#238ebc}
+.week-previous .week-strip{animation:weekFromRight .32s cubic-bezier(.2,.72,.2,1)}.week-next .week-strip{animation:weekFromLeft .32s cubic-bezier(.2,.72,.2,1)}
+@keyframes weekFromRight{from{opacity:.35;transform:translateX(34px)}to{opacity:1;transform:translateX(0)}}@keyframes weekFromLeft{from{opacity:.35;transform:translateX(-34px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.week-previous .week-strip,.week-next .week-strip{animation:none}}
 
 .calendar-setting{margin:0 0 10px;padding:15px;border:1px solid rgba(36,59,100,.1);border-radius:17px;background:rgba(255,255,255,.66)}
 .calendar-setting>div:first-child{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}.calendar-setting h3{margin:0;color:var(--ink);font-size:16px}.calendar-setting p{margin:0;color:var(--muted);font-size:10px}
