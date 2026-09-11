@@ -230,7 +230,12 @@
 .period-task-card { overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: rgba(255,255,255,.78); box-shadow: 0 8px 24px rgba(31,41,66,.045); }
 .period-task-row { min-height: 67px; padding: 13px 15px; display: grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap: 10px; }
 .period-task-row + .period-task-row { border-top: 1px solid var(--line); }
+.period-task-main { min-width:0; }
 .period-task-row h4 { min-width: 0; margin: 0; color: var(--ink); font-size: 14px; line-height: 1.45; }
+.task-unit-progress { display:grid;grid-template-columns:minmax(54px,1fr) auto;align-items:center;gap:7px;margin-top:6px; }
+.task-unit-progress>i { display:block;height:4px;overflow:hidden;border-radius:99px;background:#e3e8ec; }
+.task-unit-progress>i b { display:block;height:100%;border-radius:inherit;background:#43bfea;transition:width .3s ease; }
+.task-unit-progress>small { color:#69758a;font-size:8px;white-space:nowrap; }
 .period-task-row b { color: #687388; font-size: 11px; font-weight: 500; white-space: nowrap; }
 .period-task-row button { min-width: 51px; border: 0; border-radius: 10px; padding: 9px 11px; background: #43bfea; color: #17324b; font-size: 11px; font-weight: 800; cursor: pointer; }
 .period-task-row.task-done { opacity: .62; }

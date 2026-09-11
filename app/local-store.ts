@@ -26,7 +26,7 @@ export function savePlan(activity:PlannedActivity){const plan=readPlan();const n
 export function updatePlan(activity:PlannedActivity){const next=readPlan().map(item=>item.id===activity.id?normalize(activity):item);localStorage.setItem(planKey,JSON.stringify(next));return next}
 export function deletePlan(id:string){const next=readPlan().filter(item=>item.id!==id);localStorage.setItem(planKey,JSON.stringify(next));return next}
 
-export type UnitProgress={activityId:string;date:string;counterByPeriod:Record<string,number>;completedUnitsByPeriod:Record<string,number[]>;updatedAt:string;completedAt?:string};
+export type UnitProgress={activityId:string;date:string;counterByPeriod:Record<string,number>;completedUnitsByPeriod:Record<string,number[]>;targetByPeriod?:Record<string,number>;updatedAt:string;completedAt?:string};
 const unitProgressKey="sair.unitProgress.v1";
 export function readUnitProgress():UnitProgress[]{try{return JSON.parse(localStorage.getItem(unitProgressKey)||"[]")}catch{return[]}}
 export function saveUnitProgress(progress:UnitProgress){const all=readUnitProgress(),next=[progress,...all.filter(item=>!(item.activityId===progress.activityId&&item.date===progress.date))].slice(0,400);localStorage.setItem(unitProgressKey,JSON.stringify(next));return next}
