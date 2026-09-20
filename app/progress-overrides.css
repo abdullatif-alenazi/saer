@@ -22,6 +22,16 @@
 .distribution-chart.distribution-4{grid-template-columns:repeat(4,1fr)}
 .distribution-chart.distribution-7{grid-template-columns:repeat(7,1fr)}
 
+/* فلتر رحلة اليوم يعيش في زر الوقت العلوي؛ لا شريط إضافي فوق الرحلة. */
+.now-filter-trigger{min-width:96px;justify-content:center;color:var(--ink);gap:6px}
+.now-filter-trigger>span{font-size:17px;line-height:1;color:var(--accent)}
+.now-filter-trigger>b{font-size:12px;font-weight:800}
+.now-filter-trigger>i{font-style:normal;color:var(--muted);font-size:11px}
+.now-filter-sheet .time-options button>span{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:right}
+.now-filter-sheet .time-options button>span>b{font-size:14px;font-weight:800;direction:rtl}
+.now-filter-sheet .time-options button>span>small{color:var(--muted);font-size:10px;font-weight:500}
+.now-filter-sheet .time-options button>i{font-style:normal;color:var(--muted)}
+
 /* دخول هادئ ومتدرج: يتحرك المحتوى مرة واحدة عند ظهوره، لا مع تحديث الساعة. */
 @keyframes saer-enter{
  from{opacity:0;transform:translate3d(0,16px,0) scale(.985)}
