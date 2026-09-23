@@ -172,6 +172,7 @@
   border-radius: 8px;
   background: #243b64;
   color: #fff;
+  white-space: nowrap;
   box-shadow: 0 5px 14px rgba(31,41,66,.18);
   font-size: 9px;
   font-weight: 700;
