@@ -30,7 +30,8 @@
 .now-filter-anchor{position:relative}
 .now-filter-trigger{min-width:96px;justify-content:center;color:var(--ink);gap:6px}
 .now-filter-trigger>span{font-size:17px;line-height:1;color:var(--accent)}
-.now-filter-trigger>b{font-size:12px;font-weight:800}
+.now-filter-trigger>b{display:flex;align-items:baseline;gap:3px;font-size:12px;font-weight:800;white-space:nowrap}
+.now-filter-trigger>b small{color:var(--muted);font-size:9px;font-weight:650}
 .now-filter-trigger>i{font-style:normal;color:var(--muted);font-size:11px}
 .now-filter-menu{position:absolute;z-index:40;top:calc(100% + 8px);left:0;width:126px;padding:5px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.98);box-shadow:0 14px 32px rgba(31,41,66,.14);display:grid;gap:2px;animation:saer-menu-enter .18s cubic-bezier(.22,1,.36,1) both}
 .now-filter-menu button{display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:7px 9px;border:0;border-radius:9px;background:transparent;color:var(--ink);font-size:11px;font-weight:720;text-align:right;cursor:pointer}
