@@ -156,6 +156,7 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
  const [turning,setTurning]=useState<"out"|"in"|null>(null);
  const [weekOffset,setWeekOffset]=useState(0);
  const [weekMotion,setWeekMotion]=useState<"previous"|"next"|null>(null);
+ const [dateCalendar,setDateCalendar]=useState<"islamic"|"gregory">("islamic");
  const touchStart=useRef<number|null>(null);
  const dateKey=(date:Date)=>`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
  const todayKey=dateKey(today);
@@ -167,6 +168,7 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
  const effectiveCurrent=isViewingToday?current:dayDistance<0?5:-1;
  const journeyTitle=isViewingToday?"رحلة اليوم":dayDistance===1?"رحلة الغد":`رحلة ${new Intl.DateTimeFormat("ar-SA",{weekday:"long"}).format(activeDate)}`;
  const calendarLocale=calendarMode==="islamic"?"ar-SA-u-ca-islamic-umalqura":"ar-SA-u-ca-gregory";
+ const cyclingDateLocale=dateCalendar==="islamic"?"ar-SA-u-ca-islamic-umalqura":"ar-SA-u-ca-gregory";
  const weekEnd=weekDates[6],sameMonth=new Intl.DateTimeFormat(calendarLocale,{month:"long",year:"numeric"}).format(weekStart)===new Intl.DateTimeFormat(calendarLocale,{month:"long",year:"numeric"}).format(weekEnd);
  const weekLabel=sameMonth?`${new Intl.DateTimeFormat(calendarLocale,{day:"numeric"}).format(weekStart)}–${new Intl.DateTimeFormat(calendarLocale,{day:"numeric",month:"long"}).format(weekEnd)}`:`${new Intl.DateTimeFormat(calendarLocale,{day:"numeric",month:"short"}).format(weekStart)} – ${new Intl.DateTimeFormat(calendarLocale,{day:"numeric",month:"short"}).format(weekEnd)}`;
  const station=journey[selected];
@@ -182,11 +184,12 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
  const countdownHours=Math.floor(remainingSeconds/3600),countdownMinutes=Math.floor((remainingSeconds%3600)/60),countdownSeconds=remainingSeconds%60;
  const focusTask=station.tasks.find(task=>!task.done)??station.tasks[0]??{name:"لا يوجد نشاط",meta:"لا شيء من هذا النوع في هذه المحطة",done:false,kind:"tasks" as const};
  useEffect(()=>{setFlipped(false);setTurning(null)},[selected]);
+ useEffect(()=>{const timer=window.setInterval(()=>setDateCalendar(value=>value==="islamic"?"gregory":"islamic"),3000);return()=>window.clearInterval(timer)},[]);
  const moveWeek=(delta:number)=>{const nextOffset=weekOffset+delta,dayIndex=(activeDate.getDay()+1)%7,nextStart=new Date(currentWeekStart.getFullYear(),currentWeekStart.getMonth(),currentWeekStart.getDate()+nextOffset*7),nextDate=new Date(nextStart.getFullYear(),nextStart.getMonth(),nextStart.getDate()+dayIndex);setWeekMotion(delta<0?"previous":"next");setWeekOffset(nextOffset);onDateChange(nextDate);window.setTimeout(()=>setWeekMotion(null),320)};
  const returnToday=()=>{setWeekMotion(weekOffset<0?"next":"previous");setWeekOffset(0);onDateChange(today);window.setTimeout(()=>setWeekMotion(null),320)};
  const flip=()=>{if(turning)return;setTurning("out");window.setTimeout(()=>{setFlipped(value=>!value);setTurning("in");window.setTimeout(()=>setTurning(null),260)},210)};
  return <section className="screen day-screen">
-  <div className="journey-title"><div><h1>{journeyTitle}</h1><p>{dateLabel(activeDate,calendarLocale)}</p></div>{!isViewingToday&&<button onClick={returnToday}>اليوم</button>}</div>
+  <div className="journey-title"><div><h1>{journeyTitle}</h1><p key={dateCalendar} className="cycling-date">{dateLabel(activeDate,cyclingDateLocale)}</p></div>{!isViewingToday&&<button onClick={returnToday}>اليوم</button>}</div>
   <div className="week-browser"><button onClick={()=>moveWeek(-1)} aria-label="الأسبوع السابق">→</button><b>{weekLabel}</b><button onClick={()=>moveWeek(1)} aria-label="الأسبوع القادم">←</button></div>
   <div className={`week-days-window ${weekMotion?`week-${weekMotion}`:""}`} onTouchStart={event=>{touchStart.current=event.changedTouches[0].clientX}} onTouchEnd={event=>{if(touchStart.current===null)return;const distance=event.changedTouches[0].clientX-touchStart.current;touchStart.current=null;if(Math.abs(distance)>48)moveWeek(distance>0?-1:1)}}><div className="week-strip" aria-label="أيام الأسبوع">{weekDates.map(date=>{const key=dateKey(date),isToday=key===todayKey,isActive=key===activeKey,status=dayStatus(date);const dateNumber=new Intl.DateTimeFormat(calendarLocale,{day:"numeric"}).format(date);return <button key={key} className={`${isToday?"today":""} ${isActive?"selected":""}`} onClick={()=>onDateChange(date)}><b>{["ح","ن","ث","ر","خ","ج","س"][date.getDay()]}</b><span>{dateNumber}</span>{status!=="empty"&&<i className={`day-indicator ${status}`}>{status==="done"?"✓":""}</i>}</button>})}</div></div>
   <div className="journey-strip period-tiles">{journey.map((item,i)=><button key={item.period} className={`${i===selected?"selected":""} ${i<effectiveCurrent?"passed":""} ${i===effectiveCurrent?"live":""}`} onClick={()=>onSelect(i)} aria-label={`${item.period}، يبدأ ${minuteClockLabel(prayerStarts[i])}`}><span className="period-check">{i<effectiveCurrent?"✓":""}</span><b>{item.period}</b><small>{minuteClockLabel(prayerStarts[i])}</small></button>)}</div>
