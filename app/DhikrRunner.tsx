@@ -4,7 +4,7 @@ import type {PlannedActivity,UnitPeriod,UnitProgress} from "./local-store";
 
 const ar=(value:number)=>value.toLocaleString("ar-SA",{useGrouping:true});
 
-export default function DhikrRunner({activity,date,today,currentPeriodIndex,initialPeriod,initial,onExit,onEdit,onChange,onFinish,onDateChange}:{activity:PlannedActivity;date:string;today:string;currentPeriodIndex:number;initialPeriod?:string;initial?:UnitProgress;onExit:()=>void;onEdit:()=>void;onChange:(progress:UnitProgress)=>void;onFinish:(total:number)=>void;onDateChange:(offset:number)=>void}){
+export default function DhikrRunner({activity,date,today,currentPeriodIndex,calendarMode,initialPeriod,initial,onExit,onEdit,onChange,onFinish,onDateChange}:{activity:PlannedActivity;date:string;today:string;currentPeriodIndex:number;calendarMode:"islamic"|"gregory";initialPeriod?:string;initial?:UnitProgress;onExit:()=>void;onEdit:()=>void;onChange:(progress:UnitProgress)=>void;onFinish:(total:number)=>void;onDateChange:(offset:number)=>void}){
  const config=activity.unitTracking!;
  const configuredPeriods=config.periods.length?config.periods:[{id:"daily",label:activity.period,period:activity.period,target:config.target,unitCount:Math.max(1,Math.ceil(config.target/Math.max(1,config.pressValue))),unitValue:config.pressValue}];
  const basePeriods=configuredPeriods.filter((period,index,all)=>all.findIndex(item=>item.period===period.period)===index);
@@ -23,7 +23,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,init
  const toggleUnit=(index:number)=>{const current=progress.completedUnitsByPeriod[active.id]??[],next=current.includes(index)?current.filter(item=>item!==index):[...current,index];persist({...progress,completedAt:undefined,completedUnitsByPeriod:{...progress.completedUnitsByPeriod,[active.id]:next}})};
  const adjustActiveUnits=(change:number)=>{const target=Math.max(active.unitValue,active.target+(change*active.unitValue));persist({...progress,completedAt:undefined,targetByPeriod:{...(progress.targetByPeriod??{}),[active.id]:target}})};
   const completedUnits=progress.completedUnitsByPeriod[active.id]??[];
-  const displayDate=new Intl.DateTimeFormat("ar-SA-u-ca-gregory",{day:"numeric",month:"short",year:"numeric"}).format(new Date(`${date}T12:00:00`));
+ const displayDate=new Intl.DateTimeFormat(calendarMode==="islamic"?"ar-SA-u-ca-islamic-umalqura":"ar-SA-u-ca-gregory",{day:"numeric",month:"short",year:"numeric"}).format(new Date(`${date}T12:00:00`));
  const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
  const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  return <section className="dhikr-runner">
