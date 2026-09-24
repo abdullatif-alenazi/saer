@@ -195,11 +195,12 @@
 .station-tone-0{--station:#329fc9;--station-soft:#cfeefa}.station-tone-0:after{background:#edfaff;opacity:.72}
 .station-tone-1{--station:#e5b83d;--station-soft:#fff0b9}.station-tone-1:after{background:#fff7d6;opacity:.8}
 .station-tone-2{--station:#df9365;--station-soft:#ffe1cf}.station-tone-2:after{background:#ffd1af;opacity:.5}
-.station-tone-3{--station:#8c70b3;--station-soft:#e7ddf3}.station-tone-3:after{background:#cab9df;opacity:.42}
+.station-tone-3{--station:#53647d;--station-soft:#e5ebf2}
 .station-hero.station-tone-4.flip-front{--station:#9ab8d5;--station-soft:#263653;background:linear-gradient(145deg,#344763,#202c42 84%);color:#fff;border-color:rgba(255,255,255,.12)}
 .station-hero.station-tone-4.flip-front:after{width:92px;height:92px;left:-22px;top:-25px;background:#fff;opacity:.92;box-shadow:0 0 32px rgba(255,255,255,.28)}
 .station-tone-4.flip-front .hero-top p,.station-tone-4.flip-front .remaining-hero>span,.station-tone-4.flip-front .remaining-hero small,.station-tone-4.flip-front .hero-facts span,.station-tone-4.flip-front .period-times{color:rgba(255,255,255,.72)}
 .station-tone-4.flip-front .remaining-hero>b{color:#fff}.station-tone-4.flip-front .period-rail{background:rgba(255,255,255,.18)}
+.station-hero:after{display:none}
 
 /* Render one face at a time so text can never bleed through the turn. */
 .day-screen .flip-card,.day-screen .is-flipped .flip-card { transform:none;transform-style:preserve-3d;will-change:transform,filter; }
