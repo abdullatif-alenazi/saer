@@ -254,7 +254,7 @@
   50% { box-shadow: 0 0 0 9px rgba(67,191,234,.03); }
 }
 
-.activity-page,.journey-page{will-change:transform,opacity}.slide-in-left{animation:pageSlideInLeft .38s cubic-bezier(.22,.78,.22,1) both}.slide-out-right{animation:pageSlideOutRight .24s cubic-bezier(.55,.06,.68,.19) both}.slide-in-right{animation:pageSlideInRight .38s cubic-bezier(.22,.78,.22,1) both}@keyframes pageSlideInLeft{from{transform:translateX(26px);opacity:.3}to{transform:translateX(0);opacity:1}}@keyframes pageSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(28px);opacity:0}}@keyframes pageSlideInRight{from{transform:translateX(-28px);opacity:.35}to{transform:translateX(0);opacity:1}}
+.activity-page,.journey-page{will-change:transform,opacity}.slide-in-left{animation:pageSlideInLeft .38s cubic-bezier(.22,.78,.22,1) both}.slide-out-right{animation:pageSlideOutRight .24s cubic-bezier(.55,.06,.68,.19) both}.slide-in-right{animation:pageSlideInRight .38s cubic-bezier(.22,.78,.22,1) both}@keyframes pageSlideInLeft{from{transform:translateX(26px);opacity:.3}to{transform:translateX(0);opacity:1}}@keyframes pageSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(28px);opacity:0}}@keyframes pageSlideInRight{from{transform:translateX(28px);opacity:.35}to{transform:translateX(0);opacity:1}}
 
 @media (prefers-reduced-motion: reduce) {
   .live-time-marker i { animation: none; }
