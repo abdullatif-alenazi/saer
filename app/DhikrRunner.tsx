@@ -1,10 +1,11 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
 import type {PlannedActivity,UnitPeriod,UnitProgress} from "./local-store";
+import WeekStrip from "./WeekStrip";
 
 const ar=(value:number)=>value.toLocaleString("ar-SA",{useGrouping:true});
 
-export default function DhikrRunner({activity,date,today,currentPeriodIndex,calendarMode,initialPeriod,initial,onExit,onEdit,onChange,onFinish,onDateChange,onToday}:{activity:PlannedActivity;date:string;today:string;currentPeriodIndex:number;calendarMode:"islamic"|"gregory";initialPeriod?:string;initial?:UnitProgress;onExit:()=>void;onEdit:()=>void;onChange:(progress:UnitProgress)=>void;onFinish:(total:number)=>void;onDateChange:(offset:number)=>void;onToday:()=>void}){
+export default function DhikrRunner({activity,date,today,currentPeriodIndex,calendarMode,initialPeriod,initial,onExit,onEdit,onChange,onFinish,onDateChange}:{activity:PlannedActivity;date:string;today:string;currentPeriodIndex:number;calendarMode:"islamic"|"gregory";initialPeriod?:string;initial?:UnitProgress;onExit:()=>void;onEdit:()=>void;onChange:(progress:UnitProgress)=>void;onFinish:(total:number)=>void;onDateChange:(offset:number)=>void}){
  const config=activity.unitTracking!;
  const configuredPeriods=config.periods.length?config.periods:[{id:"daily",label:activity.period,period:activity.period,target:config.target,unitCount:Math.max(1,Math.ceil(config.target/Math.max(1,config.pressValue))),unitValue:config.pressValue}];
  const basePeriods=configuredPeriods.filter((period,index,all)=>all.findIndex(item=>item.period===period.period)===index);
@@ -23,12 +24,11 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const toggleUnit=(index:number)=>{const current=progress.completedUnitsByPeriod[active.id]??[],next=current.includes(index)?current.filter(item=>item!==index):[...current,index];persist({...progress,completedAt:undefined,completedUnitsByPeriod:{...progress.completedUnitsByPeriod,[active.id]:next}})};
  const adjustActiveUnits=(change:number)=>{const target=Math.max(active.unitValue,active.target+(change*active.unitValue));persist({...progress,completedAt:undefined,targetByPeriod:{...(progress.targetByPeriod??{}),[active.id]:target}})};
   const completedUnits=progress.completedUnitsByPeriod[active.id]??[];
- const displayDate=new Intl.DateTimeFormat(calendarMode==="islamic"?"ar-SA-u-ca-islamic-umalqura":"ar-SA-u-ca-gregory",{day:"numeric",month:"short",year:"numeric"}).format(new Date(`${date}T12:00:00`));
  const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
  const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  return <section className="dhikr-runner">
   <header><button onClick={onExit} aria-label="العودة">→</button><div><small>ورد اليوم</small><h1>{activity.name}</h1></div><div className="dhikr-head-actions"><span>{ar(totalDone)} / {ar(totalTarget)}</span><button onClick={onEdit}>تعديل</button></div></header>
-  <div className={`dhikr-date-switch ${date!==today?"has-today":""}`}><button onClick={()=>onDateChange(-1)} aria-label="اليوم السابق">→</button><b>{displayDate}</b>{date!==today&&<button className="dhikr-return-today" onClick={onToday}>اليوم</button>}<button onClick={()=>onDateChange(1)} aria-label="اليوم التالي">←</button></div>
+  <WeekStrip date={date} today={today} calendarMode={calendarMode} onChange={next=>{const current=new Date(`${date}T12:00:00`),target=new Date(`${next}T12:00:00`);onDateChange(Math.round((target.getTime()-current.getTime())/86400000))}}/>
   <article className="dhikr-overview-card">
    <div className="dhikr-overview-head"><span>خريطة ورد اليوم</span><b>{ar(totalDone)} / {ar(totalTarget)}</b></div>
    <nav className="dhikr-periods" aria-label="فترات الورد">{periods.map(period=>{const done=doneFor(period),complete=done>=period.target;return <button key={period.id} className={`${selected===period.id?"selected":""} ${complete?"complete":""} ${!complete&&isMissed(period)?"missed":""}`} onClick={()=>setSelected(period.id)}><b>{period.label.replace(/^بعد\s+/,"")}</b><span>{ar(done)} / {ar(period.target)}</span></button>})}</nav>
