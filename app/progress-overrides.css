@@ -26,6 +26,9 @@
 .distribution-chart.distribution-4{grid-template-columns:repeat(4,1fr)}
 .distribution-chart.distribution-7{grid-template-columns:repeat(7,1fr)}
 
+/* التقويم مساحة زمنية واحدة: الموعد والمهمة المؤرخة متجاوران بلا خلط بينهما. */
+.appointment-list>button.task{border-right:3px solid #69b9d5;background:#fafdff}.appointment-list h3 small{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:650}.undated-tasks{display:grid;gap:7px;margin-top:16px;padding:14px;border:1px dashed rgba(35,142,188,.28);border-radius:17px;background:#fbfeff}.undated-tasks h3{margin:0 0 2px;font-size:14px}.undated-tasks button{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--ink);padding:7px 0;text-align:right;font:inherit;font-size:12px;cursor:pointer}.undated-tasks button span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent)}
+
 /* فلتر رحلة اليوم يعيش في زر الوقت العلوي؛ لا شريط إضافي فوق الرحلة. */
 .now-filter-anchor{position:relative}
 .now-filter-trigger{min-width:96px;justify-content:center;color:var(--ink);gap:6px}
