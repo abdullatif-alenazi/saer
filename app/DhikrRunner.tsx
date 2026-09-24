@@ -23,21 +23,12 @@ export default function DhikrRunner({activity,date,initialPeriod,initial,onExit,
  const completedUnits=progress.completedUnitsByPeriod[active.id]??[];
  return <section className="dhikr-runner">
   <header><button onClick={onExit} aria-label="العودة">→</button><div><small>ورد اليوم</small><h1>{activity.name}</h1></div><div className="dhikr-head-actions"><span>{ar(totalDone)} / {ar(totalTarget)}</span><button onClick={onEdit}>تعديل</button></div></header>
-  {periods.length>1&&<nav className="dhikr-periods" aria-label="فترات الورد">{periods.map(period=>{const done=doneFor(period);return <button key={period.id} className={`${selected===period.id?"selected":""} ${done>=period.target?"done":""}`} onClick={()=>setSelected(period.id)}><b>{period.label.replace(/^بعد\s+/,"")}</b><span>{ar(done)} / {ar(period.target)}</span></button>})}</nav>}
-  <article className="dhikr-summary dhikr-path-card">
-   <div className="dhikr-path-head"><span>مسار محطة {active.label.replace(/^بعد\s+/,"")}</span><small>{ar(percent)}٪</small></div>
-   <div className="dhikr-path-count"><strong>{ar(activeDone)}</strong><span>من {ar(active.target)}</span></div>
-   <div className="dhikr-path" role="progressbar" aria-label={`أنجزت ${ar(activeDone)} من ${ar(active.target)}`} aria-valuemin={0} aria-valuemax={active.target} aria-valuenow={activeDone}>
-    <div className="dhikr-path-rail"><b style={{width:`${percent}%`}}/><i style={{right:`clamp(12px, ${percent}%, calc(100% - 12px))`}}><span>{ar(activeDone)}</span></i></div>
-    <div className="dhikr-path-ends"><span>٠</span><span>{ar(active.target)}</span></div>
-   </div>
-  <div className="dhikr-path-facts"><p><small>المتبقي</small><b>{ar(remaining)}</b></p><p><small>الوحدات</small><b>{ar(Math.floor(activeDone/Math.max(1,active.unitValue)))} من {ar(active.unitCount)}</b></p></div>
-  <div className="dhikr-target-adjust"><span>هدف هذه المحطة اليوم</span><div><button onClick={()=>adjustActiveUnits(-1)} disabled={active.target<=active.unitValue} aria-label="إنقاص وحدة من المحطة">−</button><b>{ar(active.unitCount)} وحدات</b><button onClick={()=>adjustActiveUnits(1)} aria-label="إضافة وحدة إلى المحطة">+</button></div></div>
-  </article>
-  <article className="dhikr-daily-path">
-   <div><span>مسار ورد اليوم</span><b>{ar(totalDone)} / {ar(totalTarget)}</b></div>
-   <div className="dhikr-path dhikr-daily-rail" role="progressbar" aria-label={`أنجزت ${ar(totalDone)} من ورد اليوم ${ar(totalTarget)}`} aria-valuemin={0} aria-valuemax={totalTarget} aria-valuenow={totalDone}><div className="dhikr-path-rail"><b style={{width:`${dailyPercent}%`}}/><i style={{right:`clamp(12px, ${dailyPercent}%, calc(100% - 12px))`}}><span>{ar(totalDone)}</span></i></div></div>
-   <p><span>{ar(dailyPercent)}٪ من وردك</span><b>بقي {ar(dailyRemaining)}</b></p>
+  <article className="dhikr-overview-card">
+   <div className="dhikr-overview-head"><span>خريطة ورد اليوم</span><b>{ar(totalDone)} / {ar(totalTarget)}</b></div>
+   <nav className="dhikr-periods" aria-label="فترات الورد">{periods.map(period=>{const done=doneFor(period);return <button key={period.id} className={`${selected===period.id?"selected":""} ${done>=period.target?"done":""}`} onClick={()=>setSelected(period.id)}><b>{period.label.replace(/^بعد\s+/,"")}</b><span>{ar(done)} / {ar(period.target)}</span></button>})}</nav>
+   <div className="dhikr-station-tracks">{periods.map(period=>{const done=doneFor(period),progress=Math.min(100,period.target?Math.round(done/period.target*100):0);return <button key={period.id} className={selected===period.id?"selected":""} onClick={()=>setSelected(period.id)} aria-label={`${period.label}: ${ar(done)} من ${ar(period.target)}`}><span>{period.label.replace(/^بعد\s+/,"")}</span><i><b style={{width:`${progress}%`}}/></i><strong>{ar(done)} / {ar(period.target)}</strong></button>})}</div>
+   <div className="dhikr-active-summary"><span>محطة {active.label.replace(/^بعد\s+/,"")}</span><b>{ar(activeDone)} / {ar(active.target)}</b><small>تبقّى {ar(remaining)}</small></div>
+   <div className="dhikr-target-adjust"><span>هدف هذه المحطة اليوم</span><div><button onClick={()=>adjustActiveUnits(-1)} disabled={active.target<=active.unitValue} aria-label="إنقاص وحدة من المحطة">−</button><b>{ar(active.unitCount)} وحدات</b><button onClick={()=>adjustActiveUnits(1)} aria-label="إضافة وحدة إلى المحطة">+</button></div></div>
   </article>
   <div className="dhikr-method"><button className={method==="counter"?"selected":""} onClick={()=>setMethod("counter")}>العداد</button><button className={method==="units"?"selected":""} onClick={()=>setMethod("units")}>الوحدات</button></div>
   {method==="counter"?<div className="dhikr-counter"><div className="dhikr-counter-choices">{[1,10,100].map(amount=><button key={amount} onClick={()=>add(amount)}><small>كل ضغطة</small><b>+{ar(amount)}</b></button>)}</div><button className="dhikr-undo" onClick={undo} disabled={activeDone===0}>↶ تراجع عن آخر زيادة</button></div>:<><div className="dhikr-units" style={{gridTemplateColumns:`repeat(${Math.min(10,Math.max(4,Math.ceil(Math.sqrt(active.unitCount))))},1fr)`}}>{Array.from({length:active.unitCount},(_,index)=><button key={index} className={completedUnits.includes(index)?"done":""} onClick={()=>toggleUnit(index)} aria-label={`الوحدة ${index+1}، قيمتها ${active.unitValue}`}><span>✓</span><small>{ar(active.unitValue)}</small></button>)}</div><p className="dhikr-unit-note">{ar(active.unitCount)} وحدات × {ar(active.unitValue)} = {ar(active.target)}</p></>}
