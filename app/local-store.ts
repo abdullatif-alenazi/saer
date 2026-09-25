@@ -4,7 +4,7 @@ export type Schedule={mode:"daily"|"fixed"|"flexible";value:string;days?:string[
 export type GoalDefinition={kind:GoalMetricKind;currentValue?:number;targetValue?:number;unit?:string;currentLevel?:string;targetLevel?:string;milestoneLabel?:string;currentMilestone?:number;targetMilestone?:number};
 export type SupportingPlan={enabled:boolean;actionName:string;expectedMinutes:number;schedule:Schedule;period:string};
 export type UnitPeriod={id:string;label:string;period:string;target:number;unitCount:number;unitValue:number};
-export type UnitTracking={method:"counter"|"units";target:number;pressValue:number;periods:UnitPeriod[]};
+export type UnitTracking={method:"counter"|"units";target:number;pressValue:number;periods:UnitPeriod[];timing?:{count:number;seconds:number}};
 export type ExecutionRecord={activityId?:string;activity:string;minutes:number;quantity?:number;quantityUnit?:string;completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number};
 const key="sair.executionLog.v1";
 export function readExecutionLog():ExecutionRecord[]{try{return JSON.parse(localStorage.getItem(key)||"[]")}catch{return[]}}
