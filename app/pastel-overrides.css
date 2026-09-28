@@ -1,0 +1,11 @@
+/* Final pastel layer: kept last so legacy component colors cannot overpower it. */
+:root{--ink:#263b56;--muted:#718095;--line:rgba(38,59,86,.12);--accent:#5f8197;--accent-bright:#a8d1df;--accent-soft:#edf7fa;--paper:#fffdfa}
+.app-shell{background:radial-gradient(circle at 88% 2%,#edf5f8 0,transparent 43%),var(--paper)}
+.journey-strip.period-tiles .live{border-color:#a9ccd6;background:#d8edf2;color:#2f5269;box-shadow:0 10px 22px rgba(77,112,132,.14)}
+.journey-strip.period-tiles .live small{color:#5a7586}.journey-strip.period-tiles .selected:not(.live){border-color:#b7dce6;background:#fbfeff;box-shadow:0 8px 19px rgba(77,112,132,.1),0 0 0 2px rgba(184,220,231,.35)}
+.station-tone-0{--station:#a4c8d3;--station-soft:#e5f4f7}.station-tone-1{--station:#d7be86;--station-soft:#fff4d8}.station-tone-2{--station:#d5a890;--station-soft:#fce9df}.station-tone-3{--station:#b6a9cd;--station-soft:#f0ebf8}.station-tone-4{--station:#aebdce;--station-soft:#e8edf3}
+.station-hero.station-tone-4.flip-front{background:linear-gradient(145deg,#64758a,#506176 84%)}
+.task-unit-progress>i b,.section-cards>button>i span,.goal-progress-list article>i span{background:#a9d4e2}.task-open-arrow{background:#eff8fb;color:#597e93}.period-task-row.tappable:focus-visible{box-shadow:inset 0 0 0 2px #b7dce6}
+.dhikr-overview-card,.dhikr-path-card{background:rgba(255,255,255,.82);box-shadow:0 9px 24px rgba(69,95,118,.06)}.dhikr-station-row.selected{background:linear-gradient(90deg,transparent,#edf8fb);box-shadow:inset -2px 0 0 #a8d1df}.dhikr-station-main>i>b,.dhikr-total-path>i>b{background:#a6cedb}.dhikr-station-main>i>em,.dhikr-total-path>i>em{background:#6c94a8}.dhikr-station-row.complete .dhikr-station-main>i>b,.dhikr-station-row.complete .dhikr-station-main>i>em{background:#a8cdb7}.dhikr-station-row.missed .dhikr-station-main>i>b,.dhikr-station-row.missed .dhikr-station-main>i>em{background:#dfb7b5}
+.dhikr-counter-choices button{border-color:#bfdde6;background:#edf8fb;box-shadow:0 7px 15px rgba(69,95,118,.05)}.dhikr-counter-choices b,.dhikr-unit-step{color:#5f8197!important}.dhikr-undo{border-color:#bfdde6!important;background:#f7fcfd!important;color:#5f8197!important}
+.bottom-nav .active span,.primary,.section-head .section-add{background:#6f91a5;color:#fff;box-shadow:0 7px 17px rgba(77,112,132,.18)}

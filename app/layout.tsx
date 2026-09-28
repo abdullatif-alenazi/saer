@@ -10,6 +10,7 @@ import "./workout.css";
 import "./dhikr.css";
 import "./progress.css";
 import "./progress-overrides.css";
+import "./pastel-overrides.css";
 
 export const metadata: Metadata = {
   title: "سائر — ماذا تفعل الآن؟",
