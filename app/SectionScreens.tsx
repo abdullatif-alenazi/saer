@@ -10,6 +10,7 @@ const days=["السبت","الأحد","الاثنين","الثلاثاء","ال�
 const riyadhKey=(date:Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh",year:"numeric",month:"2-digit",day:"2-digit"}).format(date);
 const dayName=(date:Date)=>new Intl.DateTimeFormat("ar-SA",{timeZone:"Asia/Riyadh",weekday:"long"}).format(date);
 const isScheduled=(activity:PlannedActivity,date:Date)=>activity.schedule.mode==="daily"||Boolean(activity.schedule.days?.includes(dayName(date))||activity.schedule.value.includes(dayName(date)));
+const isGoalDisplay=(activity:PlannedActivity)=>activity.nature==="goal"||(["قراءة","مهارة"].includes(activity.template)&&!activity.parentGoalId);
 export type SectionKind="goals"|"commitments"|"tasks"|"appointments";
 type Mode="current"|"results"|"archive";
 
@@ -18,7 +19,7 @@ export function SectionScreen({kind,plan,tasks,appointments,records,unitProgress
  const title={goals:"الأهداف",commitments:"الالتزامات",tasks:"المهام",appointments:"المواعيد"}[kind];
  const addLabel={goals:"إضافة هدف",commitments:"إضافة التزام",tasks:"إضافة مهمة",appointments:"إضافة موعد"}[kind];
  const add=()=>kind==="goals"||kind==="commitments"?onEditActivity(null):kind==="tasks"?onEditTask(null):onEditAppointment(null);
- const items=kind==="goals"?plan.filter(x=>x.nature==="goal"):kind==="commitments"?plan.filter(x=>x.nature!=="goal"):[];
+ const items=kind==="goals"?plan.filter(isGoalDisplay):kind==="commitments"?plan.filter(x=>!isGoalDisplay(x)):[];
  const menuItems=kind==="goals"?["الأهداف الحالية","النتائج والإنجازات","الأهداف المحققة"]:kind==="commitments"?["الالتزامات الحالية","المرتبطة بأهداف","المستقلة","النتائج والإنجازات"]:kind==="tasks"?["المهام الحالية","النتائج والمنجز","المؤرشفة"]:["القادمة","اليوم","السابقة","الملغاة"];
  if(kind==="goals"&&goalDetail)return <GoalDashboard goal={goalDetail} plan={plan} records={records} onBack={()=>setGoalDetail(null)} onEdit={()=>onEditActivity(goalDetail)}/>;
  return <section className="screen section-screen">
