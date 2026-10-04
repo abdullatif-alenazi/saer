@@ -27,7 +27,9 @@ const dhikrTimeLabel=(seconds:number)=>{const safe=Math.max(0,Math.round(seconds
 const dhikrTimingSeconds=(activity:PlannedActivity,count:number)=>{const timing=activity.unitTracking?.timing;if(timing?.count&&timing.seconds)return count/timing.count*timing.seconds;return activity.quantity?count/activity.quantity*activity.expectedMinutes*60:0};
 const riyadhCalendarKey=(value:Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh",year:"numeric",month:"2-digit",day:"2-digit"}).format(value);
 const sairDayDate=(value:Date)=>{const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh",hour:"numeric",minute:"numeric",hourCycle:"h23"}).formatToParts(value),read=(type:string)=>Number(parts.find(part=>part.type===type)?.value??0),minute=read("hour")*60+read("minute");return minute<getRiyadhPrayerTimes(value).fajr?new Date(value.getTime()-86400000):value};
-const riyadhDay=(value:Date|string)=>riyadhCalendarKey(sairDayDate(new Date(value)));
+// نص تاريخ YYYY-MM-DD يُفسَّر كـ UTC عند تمريره مباشرة إلى Date، فينقلب إلى اليوم السابق
+// بعد قاعدة «اليوم يبدأ بالفجر». نثبته عند الظهر المحلي حتى يظل اليوم الذي اختاره المستخدم نفسه.
+const riyadhDay=(value:Date|string)=>riyadhCalendarKey(sairDayDate(value instanceof Date?value:new Date(`${value}T12:00:00`)));
 const appointmentPeriod=(time:string,starts:number[])=>{const minute=timeToMinutes(time);for(let i=starts.length-1;i>=0;i--)if(minute>=starts[i])return i;return 4};
 const unitPeriodFor=(activity:PlannedActivity,period:string)=>activity.unitTracking?.periods.find(item=>item.period===period);
 const unitDone=(progress:UnitProgress|undefined,period:UnitPeriod|undefined)=>!progress||!period?0:Math.min(period.target,Math.max(progress.counterByPeriod[period.id]??0,(progress.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue));
