@@ -31,6 +31,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
+        env:
+          # هذه بيانات عامة مطلوبة داخل متصفح المستخدم؛ حماية البيانات تأتي من RLS وتسجيل الدخول.
+          NEXT_PUBLIC_SUPABASE_URL: https://nuchemqcatmsxntngnkk.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_t02Fb-IqZci0j3GCEtatjA_4mpOYUU1
       - uses: actions/configure-pages@v5
         with:
           enablement: true
