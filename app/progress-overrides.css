@@ -120,3 +120,4 @@
  .after-now>p,.section-menu,.you-drawer.open .drawer-head,.you-drawer.open .calendar-setting,
  .you-drawer.open .settings-list>button{animation:none!important}
 }
+.sync-setting{margin:14px 0;padding:16px;border:1px solid #d7e4e8;border-radius:20px;background:#f7fbfc}.sync-setting h3{margin:0;color:#233b61;font-size:16px}.sync-setting p{margin:5px 0 12px;color:#6b7c91;font-size:13px;overflow-wrap:anywhere}.sync-setting form{display:grid;gap:8px}.sync-setting input{width:100%;box-sizing:border-box;border:1px solid #d6e1e6;border-radius:12px;padding:11px;background:white;font:inherit;direction:ltr;text-align:right}.sync-setting button{border:0;border-radius:12px;padding:11px 13px;background:#83b8c5;color:#173654;font:inherit;font-weight:700}.sync-setting small{color:#61738a}.sync-actions{display:flex;gap:8px}.sync-actions button{flex:1}.sync-actions .sync-signout{background:#f4e6e4;color:#9a625d}
