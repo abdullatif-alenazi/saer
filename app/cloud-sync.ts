@@ -36,9 +36,10 @@ export function startCloudSync(onChange:Listener){
  if(!supabase){onChange(null,"offline");return()=>{listener=undefined}}
  const onLocal=()=>scheduleCloudSave();
  window.addEventListener("sair-local-change",onLocal);
+ const authTimeout=window.setTimeout(()=>{if(!currentUser)report("offline")},1200);
  void supabase.auth.getUser().then(({data})=>{currentUser=data.user;report(data.user?"syncing":"offline");if(data.user)void pullOrCreate()}).catch(()=>{currentUser=null;report("offline")});
  const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user??null;report(currentUser?"syncing":"offline");if(currentUser)window.setTimeout(()=>void pullOrCreate(),0)});
- return()=>{window.removeEventListener("sair-local-change",onLocal);subscription.unsubscribe();listener=undefined}
+ return()=>{window.clearTimeout(authTimeout);window.removeEventListener("sair-local-change",onLocal);subscription.unsubscribe();listener=undefined}
 }
 export async function signInWithPassword(email:string,password:string){
  if(!supabase)return{error:"إعدادات Supabase غير مكتملة."};
