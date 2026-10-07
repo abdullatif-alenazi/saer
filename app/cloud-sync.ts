@@ -9,6 +9,7 @@ let timer:number|undefined;
 let currentUser:User|null=null;
 let listener:Listener|undefined;
 const report=(status:SyncStatus)=>listener?.(currentUser,status);
+const hasContent=(snapshot:LocalSnapshot)=>Boolean(snapshot.plan.length||snapshot.tasks.length||snapshot.appointments.length||snapshot.executionLog.length||snapshot.unitProgress.length);
 
 async function push(){
  if(!supabase||!currentUser)return;
@@ -21,8 +22,9 @@ async function pullOrCreate(){
  report("syncing");
  const {data,error}=await supabase.from("saer_state").select("payload").eq("user_id",currentUser.id).maybeSingle();
  if(error){report("error");return}
- if(data?.payload){replaceLocalSnapshot(data.payload as LocalSnapshot);report("ready");return}
- await push();
+ const local=readLocalSnapshot(),remote=data?.payload as LocalSnapshot|undefined;
+ if(remote&&hasContent(remote)){replaceLocalSnapshot(remote);report("ready");return}
+ if(hasContent(local))await push();else report("ready");
 }
 export function scheduleCloudSave(){
  if(!currentUser)return;
@@ -38,10 +40,16 @@ export function startCloudSync(onChange:Listener){
  const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user??null;report(currentUser?"syncing":"offline");if(currentUser)window.setTimeout(()=>void pullOrCreate(),0)});
  return()=>{window.removeEventListener("sair-local-change",onLocal);subscription.unsubscribe();listener=undefined}
 }
-export async function sendLoginLink(email:string){
+export async function signInWithPassword(email:string,password:string){
  if(!supabase)return{error:"إعدادات Supabase غير مكتملة."};
- const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+ const {error}=await supabase.auth.signInWithPassword({email,password});
  return{error:error?.message};
+}
+export async function signUpWithPassword(email:string,password:string){
+ if(!supabase)return{error:"إعدادات Supabase غير مكتملة."};
+ const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin}});
+ if(error)return{error:error.message};
+ return{message:data.session?"تم إنشاء حسابك وتسجيل دخولك.":"تحقق من بريدك لتأكيد الحساب، ثم سجّل دخولك."};
 }
 export async function signOut(){if(supabase)await supabase.auth.signOut()}
 export async function syncNow(){await push()}
