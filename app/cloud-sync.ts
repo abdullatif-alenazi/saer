@@ -31,14 +31,14 @@ export function scheduleCloudSave(){
  window.clearTimeout(timer);
  timer=window.setTimeout(()=>void push(),700);
 }
-export function startCloudSync(onChange:Listener){
+export function startCloudSync(onChange:Listener,onPasswordRecovery?:()=>void){
  listener=onChange;
  if(!supabase){onChange(null,"offline");return()=>{listener=undefined}}
  const onLocal=()=>scheduleCloudSave();
  window.addEventListener("sair-local-change",onLocal);
  const authTimeout=window.setTimeout(()=>{if(!currentUser)report("offline")},1200);
  void supabase.auth.getUser().then(({data})=>{currentUser=data.user;report(data.user?"syncing":"offline");if(data.user)void pullOrCreate()}).catch(()=>{currentUser=null;report("offline")});
- const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user??null;report(currentUser?"syncing":"offline");if(currentUser)window.setTimeout(()=>void pullOrCreate(),0)});
+ const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{currentUser=session?.user??null;if(event==="PASSWORD_RECOVERY")onPasswordRecovery?.();report(currentUser?"syncing":"offline");if(currentUser)window.setTimeout(()=>void pullOrCreate(),0)});
  return()=>{window.clearTimeout(authTimeout);window.removeEventListener("sair-local-change",onLocal);subscription.unsubscribe();listener=undefined}
 }
 export async function signInWithPassword(email:string,password:string){
@@ -51,6 +51,16 @@ export async function signUpWithPassword(email:string,password:string){
  const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin}});
  if(error)return{error:error.message};
  return{message:data.session?"تم إنشاء حسابك وتسجيل دخولك.":"تحقق من بريدك لتأكيد الحساب، ثم سجّل دخولك."};
+}
+export async function requestPasswordReset(email:string){
+ if(!supabase)return{error:"إعدادات Supabase غير مكتملة."};
+ const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:`${window.location.origin}?recovery=1`});
+ return{error:error?.message};
+}
+export async function updatePassword(password:string){
+ if(!supabase)return{error:"إعدادات Supabase غير مكتملة."};
+ const {error}=await supabase.auth.updateUser({password});
+ return{error:error?.message};
 }
 export async function signOut(){if(supabase)await supabase.auth.signOut()}
 export async function syncNow(){await push()}
