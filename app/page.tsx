@@ -1,5 +1,6 @@
 "use client";
 import "./auth.css";
+import "./auth-tabs.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { activities, settings, templates, type Tab } from "./data";
 import { clockLabel, durationLabel, fitsWindow, getRiyadhPrayerTimes, minuteClockLabel, resolveTimeWindow } from "./time-engine";
