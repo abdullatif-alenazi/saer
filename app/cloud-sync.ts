@@ -8,37 +8,52 @@ type Listener=(user:User|null,status:SyncStatus)=>void;
 let timer:number|undefined;
 let currentUser:User|null=null;
 let listener:Listener|undefined;
+let loadingAccount:Promise<void>|undefined;
 const report=(status:SyncStatus)=>listener?.(currentUser,status);
 const hasContent=(snapshot:LocalSnapshot)=>Boolean(snapshot.plan.length||snapshot.tasks.length||snapshot.appointments.length||snapshot.executionLog.length||snapshot.unitProgress.length);
 
-async function push(){
+async function saveAccountState(snapshot=readLocalSnapshot()){
  if(!supabase||!currentUser)return;
+ const userId=currentUser.id;
  report("syncing");
- const {error}=await supabase.from("saer_state").upsert({user_id:currentUser.id,payload:readLocalSnapshot(),updated_at:new Date().toISOString()});
+ const {error}=await supabase.from("saer_state").upsert({user_id:userId,payload:snapshot,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+ if(currentUser?.id!==userId)return;
  report(error?"error":"ready");
 }
-async function pullOrCreate(){
+async function openAccount(){
  if(!supabase||!currentUser)return;
+ const userId=currentUser.id;
  report("syncing");
- const {data,error}=await supabase.from("saer_state").select("payload").eq("user_id",currentUser.id).maybeSingle();
+ const {data,error}=await supabase.from("saer_state").select("payload").eq("user_id",userId).maybeSingle();
+ if(currentUser?.id!==userId)return;
  if(error){report("error");return}
  const local=readLocalSnapshot(),remote=data?.payload as LocalSnapshot|undefined;
  if(remote&&hasContent(remote)){replaceLocalSnapshot(remote);report("ready");return}
- if(hasContent(local))await push();else report("ready");
+ // أول جهاز يفتح الحساب ينشئ النسخة المرتبطة به تلقائيًا.
+ // بيانات الحساب الموجودة تبقى هي المرجع، ولا تستبدلها بيانات جهاز فارغ.
+ await saveAccountState(local);
 }
 export function scheduleCloudSave(){
  if(!currentUser)return;
  window.clearTimeout(timer);
- timer=window.setTimeout(()=>void push(),700);
+ timer=window.setTimeout(()=>void saveAccountState(),500);
 }
 export function startCloudSync(onChange:Listener,onPasswordRecovery?:()=>void){
  listener=onChange;
  if(!supabase){onChange(null,"offline");return()=>{listener=undefined}}
+ currentUser=null;
+ loadingAccount=undefined;
+ const activate=(user:User|null)=>{
+  const changed=user?.id!==currentUser?.id;
+  currentUser=user;
+  if(!user){loadingAccount=undefined;report("offline");return}
+  if(changed||!loadingAccount)loadingAccount=openAccount();
+ };
  const onLocal=()=>scheduleCloudSave();
  window.addEventListener("sair-local-change",onLocal);
  const authTimeout=window.setTimeout(()=>{if(!currentUser)report("offline")},1200);
- void supabase.auth.getUser().then(({data})=>{currentUser=data.user;report(data.user?"syncing":"offline");if(data.user)void pullOrCreate()}).catch(()=>{currentUser=null;report("offline")});
- const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{currentUser=session?.user??null;if(event==="PASSWORD_RECOVERY")onPasswordRecovery?.();report(currentUser?"syncing":"offline");if(currentUser)window.setTimeout(()=>void pullOrCreate(),0)});
+ void supabase.auth.getUser().then(({data})=>activate(data.user)).catch(()=>activate(null));
+ const {data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY")onPasswordRecovery?.();activate(session?.user??null)});
  return()=>{window.clearTimeout(authTimeout);window.removeEventListener("sair-local-change",onLocal);subscription.unsubscribe();listener=undefined}
 }
 export async function signInWithPassword(email:string,password:string){
@@ -63,4 +78,3 @@ export async function updatePassword(password:string){
  return{error:error?.message};
 }
 export async function signOut(){if(supabase)await supabase.auth.signOut()}
-export async function syncNow(){await push()}
