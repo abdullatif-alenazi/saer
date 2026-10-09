@@ -113,3 +113,4 @@
 .day-screen .journey-title.journey-date-only{align-items:center!important;justify-content:center!important;min-height:20px!important;margin-bottom:10px!important;position:relative!important}
 .journey-date-only .cycling-date{margin:0!important;color:#7890a5!important;font-size:.78rem!important;font-weight:700!important}
 .journey-date-only>button{position:absolute!important;left:0!important;top:50%!important;transform:translateY(-50%)!important}
+.week-browser>b .cycling-date{display:block!important;color:#7890a5!important;font-size:.78rem!important;font-weight:700!important;animation:calendar-face .38s ease both!important}
