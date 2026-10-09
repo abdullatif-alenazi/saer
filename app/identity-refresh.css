@@ -101,6 +101,16 @@
 .hero-action button i{font-style:normal;font-size:1rem}.hero-action.empty{display:flex;flex-direction:column;align-items:flex-start}.hero-action.empty>b{font-size:1rem}.hero-action.empty>span{font-size:.78rem}
 .period-task-section{margin-top:2px!important}.period-task-section>h3{font-size:1rem!important;color:#58738b!important;margin:0 2px 9px!important}.period-task-card{display:grid!important;gap:8px!important}.period-task-row{min-height:68px!important;border-radius:16px!important;background:rgba(255,255,255,.72)!important;border-color:#e0eaf0!important}.period-task-row>b{font-size:.72rem!important;color:#8094a5!important}
 
+/* أشرطة المهام: نظرة واحدة تكفي للاسم، القياس، والحالة. */
+.period-task-card{overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.period-task-row{grid-template-columns:30px minmax(0,1fr) auto auto!important;gap:9px!important;padding:11px 12px!important;border:1px solid transparent!important;box-shadow:0 6px 16px rgba(71,99,124,.055)!important}
+.task-row-orb{width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#e4f4ee;border:1px solid #b8dfca;color:#4e9270;font-size:.72rem;font-weight:900}
+.period-task-row.task-kind-goals{background:linear-gradient(90deg,#f3ebff,#fbf9ff)!important;border-color:#e3d4fb!important}.task-kind-goals .task-row-orb{background:#eee2ff;border-color:#d8c3fb;color:#8061aa}
+.period-task-row.task-kind-commitments{background:linear-gradient(90deg,#eaf8f0,#fbfffc)!important;border-color:#c8e8d5!important}.task-kind-commitments .task-row-orb{background:#dff4e8;border-color:#b6dfc7;color:#4e9270}
+.period-task-row.task-kind-tasks{background:linear-gradient(90deg,#e9f7fc,#fbfdff)!important;border-color:#c7e5ef!important}.task-kind-tasks .task-row-orb{background:#dff2f9;border-color:#b7dce8;color:#4d88a0}
+.period-task-row.task-kind-appointments{background:linear-gradient(90deg,#fff4e9,#fffdfa)!important;border-color:#f0d9bd!important}.task-kind-appointments .task-row-orb{background:#ffecd7;border-color:#f0cfaa;color:#b77c45}
+.period-task-row h4{font-size:.92rem!important;color:#3f5c74!important}.period-task-row>b{max-width:88px;overflow:hidden;text-overflow:ellipsis}.task-open-arrow{width:27px!important;height:27px!important;border-radius:50%!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(116,143,163,.16)!important;color:#708a9d!important;font-size:.88rem!important}
+
 /* يوم الأسبوع المختار: نفس باستيل بطاقات الورد، لا أزرق مشبع. */
 .week-strip .today{color:#6b91a8!important}
 .week-strip .today.selected{
