@@ -128,3 +128,16 @@
 .week-browser.has-return{grid-template-columns:38px 30px 1fr 38px!important}
 .week-browser .week-return-today{width:27px!important;height:27px!important;border-radius:10px!important;border-color:#c9e2d4!important;background:#edf9f2!important;color:#57906f!important;display:grid!important;place-items:center!important}
 .week-return-today svg{width:15px!important;height:15px!important;stroke:currentColor!important;stroke-width:1.9!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+
+/* عداد اليوم العام: قراءة واحدة فوق خريطة الفترات، دون لمس أشرطة الفترات. */
+.dhikr-gauge-summary{display:block!important;margin:0 0 13px!important;padding:2px 0 13px!important;border:0!important;border-bottom:1px solid #e4edf0!important;background:transparent!important}
+.dhikr-gauge{position:relative!important;width:min(100%,250px)!important;height:136px!important;margin:0 auto!important}
+.dhikr-gauge svg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;overflow:visible!important}
+.dhikr-gauge path{fill:none!important;stroke-width:12!important;stroke-linecap:round!important}
+.dhikr-gauge .gauge-track{stroke:#dceee4!important}.dhikr-gauge .gauge-fill{stroke:#63b288!important;transition:stroke-dasharray .55s cubic-bezier(.22,1,.36,1)!important}
+.gauge-marker{fill:#419c71!important;stroke:#fff!important;stroke-width:4!important;filter:drop-shadow(0 3px 5px rgba(57,137,98,.22))}
+.gauge-marker.pulse{animation:gauge-pulse .68s cubic-bezier(.2,.9,.25,1.45)!important;transform-origin:center!important}
+.gauge-copy{position:absolute!important;right:0!important;left:0!important;bottom:2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important}
+.gauge-copy span{font-size:.75rem!important;color:#668874!important;font-weight:750!important}.gauge-copy b{font-size:1.55rem!important;color:#3e946b!important;line-height:1!important;font-variant-numeric:tabular-nums!important}.gauge-copy em{margin-top:4px!important;color:#7f9a8b!important;font-size:.72rem!important;font-style:normal!important}
+.dhikr-gauge-summary .dhikr-goal-remaining{margin-top:0!important}
+@keyframes gauge-pulse{50%{r:10;filter:drop-shadow(0 0 8px rgba(57,137,98,.44))}100%{r:7}}
