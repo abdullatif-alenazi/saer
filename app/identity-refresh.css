@@ -11,6 +11,13 @@
   border:1px solid #d9e6eb!important;
   box-shadow:0 6px 16px rgba(104,130,152,.11)!important;
 }
+.dhikr-topbar{display:grid!important;grid-template-columns:44px 1fr 44px!important;gap:10px!important;direction:rtl!important}
+.dhikr-top-title{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:0!important}
+.dhikr-top-title small{font-size:.68rem!important;color:#7897ad!important;font-weight:750!important;line-height:1.15!important}
+.dhikr-top-title b{font-size:1.22rem!important;color:#3d5f7a!important;line-height:1.25!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+.saer-back,.dhikr-top-edit{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;border:1px solid #d9e6eb!important;border-radius:15px!important;background:rgba(255,255,255,.86)!important;color:#597b96!important;box-shadow:0 5px 14px rgba(104,130,152,.10)!important}
+.saer-back svg,.dhikr-top-edit svg{width:20px!important;height:20px!important;stroke:currentColor!important;stroke-width:2.1!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.dhikr-active .dhikr-runner>header{display:none!important}
 
 .calendar-switch{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .calendar-switch button{font-size:.82rem!important;padding:8px 4px!important}
@@ -23,21 +30,20 @@
 @keyframes calendar-face{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
 /* المنجز هو البطل؛ الواجب امتداد طبيعي لأرقام الفترات، والمتبقي جملة هادئة. */
-.dhikr-required-total{
-  display:flex!important;align-items:baseline!important;justify-content:space-between!important;
-  margin-top:9px!important;padding:8px 4px 0!important;border-top:1px solid #e4edf0!important;
-}
-.dhikr-required-total span{font-size:.78rem!important;color:#8494a5!important}
-.dhikr-required-total b{font-size:1.1rem!important;color:#718eaf!important;font-variant-numeric:tabular-nums!important}
 .dhikr-day-total{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;align-items:center!important;margin-top:11px!important;padding-top:0!important;border:0!important}
 .dhikr-total-hero{padding:13px 14px 11px!important;background:linear-gradient(135deg,#e9f8ef,#f8fffb)!important;border:1px solid #c4e7d1!important;border-radius:18px!important}
-.dhikr-total-heading{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:10px!important}
+.dhikr-total-heading{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important}
 .dhikr-total-heading span{font-size:.91rem!important;color:#57846d!important;font-weight:750!important}
-.dhikr-total-heading b{font-size:2rem!important;color:#35936a!important;font-variant-numeric:tabular-nums!important;line-height:1!important}
+.dhikr-total-heading b{font-size:1.5rem!important;color:#35936a!important;font-variant-numeric:tabular-nums!important;line-height:1!important}
 .dhikr-total-path{padding:22px 3px 2px!important;min-width:0!important;direction:rtl!important}
 .dhikr-total-path>i{height:9px!important;background:#d9ece1!important}
 .dhikr-total-path>i>b{background:#57ad7f!important}
 .dhikr-total-path>i>em{bottom:18px!important;min-width:38px!important;height:28px!important;padding:0 8px!important;font-size:12px!important;background:#35936a!important;box-shadow:0 5px 13px rgba(53,147,106,.24)!important}
+.dhikr-station-main>i>b{transition:width .55s cubic-bezier(.22,1,.36,1)!important}
+.dhikr-station-row.selected .dhikr-station-main>i>b{background:linear-gradient(90deg,#9fd8ec,#51b5dc,#a9e3f2)!important;background-size:200% 100%!important;animation:living-progress 2.8s linear infinite!important}
+.dhikr-station-main>i>em.pulse,.dhikr-total-path>i>em.pulse{animation:progress-pulse .68s cubic-bezier(.2,.9,.25,1.45)!important}
+@keyframes living-progress{to{background-position:-200% 0}}
+@keyframes progress-pulse{50%{transform:translateX(50%) scale(1.22)}100%{transform:translateX(50%) scale(1)}}
 .dhikr-goal-remaining{margin:0!important;text-align:center!important;color:#7b8b98!important;font-size:.83rem!important}
 .dhikr-goal-remaining b{color:#ce9556!important;font-size:.94rem!important}
 .dhikr-goal-remaining.late b{color:#ce7c7c!important}
@@ -63,9 +69,9 @@
 .bottom-nav button{min-height:55px!important;color:#9aa3ad!important;border-radius:22px!important;gap:3px!important}
 .bottom-nav button svg{color:currentColor!important}
 .bottom-nav button span{font-size:.72rem!important;font-weight:650!important}
-.bottom-nav button.active,.bottom-nav button.nav-now{color:#665b99!important;background:transparent!important;box-shadow:none!important;font-weight:750!important}
-.bottom-nav button.active span,.bottom-nav button.nav-now span{
-  width:45px!important;height:34px!important;display:grid!important;place-items:center!important;
+.bottom-nav button.active{color:#665b99!important;background:transparent!important;box-shadow:none!important;font-weight:750!important}
+.bottom-nav button.active span{
+  width:58px!important;height:37px!important;display:grid!important;place-items:center!important;
   background:linear-gradient(135deg,#dcd4ff 0%,#b9c9ff 52%,#dacdff 100%)!important;
   color:#fff!important;
   border:1px solid rgba(255,255,255,.85)!important;
@@ -75,5 +81,5 @@
 @media(max-width:520px){
  .bottom-nav{width:calc(100% - 20px)!important;bottom:calc(9px + env(safe-area-inset-bottom))!important}
  .bottom-nav button span{font-size:.67rem!important}
- .dhikr-total-heading b{font-size:1.7rem!important}
+ .dhikr-total-heading b{font-size:1.35rem!important}
 }
