@@ -7,7 +7,7 @@ const ar=(value:number,pad=1)=>value.toLocaleString("ar-SA",{minimumIntegerDigit
 const clock=(seconds:number)=>`${ar(Math.floor(seconds/60),2)}:${ar(seconds%60,2)}`;
 type Mode="ready"|"prepare"|"work"|"rest"|"exerciseDone"|"sessionDone";
 
-export default function WorkoutRunner({activity,date,today,calendarMode,onDateChange,onExit,onFinish}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number)=>void}){
+export default function WorkoutRunner({activity,date,today,calendarMode,onDateChange,onExit,onFinish}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number)=>void}){
  const exercises=activity.exercises??[];
  const [exerciseIndex,setExerciseIndex]=useState(0),[setIndex,setSetIndex]=useState(1),[mode,setMode]=useState<Mode>("ready"),[seconds,setSeconds]=useState(0),[workTotal,setWorkTotal]=useState(0),[restTotal,setRestTotal]=useState(0),[repetitions,setRepetitions]=useState(0);
  const exercise=exercises[exerciseIndex];
