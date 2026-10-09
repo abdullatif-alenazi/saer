@@ -45,10 +45,17 @@
 .dhikr-total-path>i{height:9px!important;background:#d9ece1!important}
 .dhikr-total-path>i>b{background:#57ad7f!important}
 .dhikr-total-path>i>em{bottom:18px!important;min-width:38px!important;height:28px!important;padding:0 8px!important;font-size:12px!important;background:#35936a!important;box-shadow:0 5px 13px rgba(53,147,106,.24)!important}
-.dhikr-station-main>i>b{transition:width .55s cubic-bezier(.22,1,.36,1)!important}
-.dhikr-station-row.selected .dhikr-station-main>i>b{background:linear-gradient(90deg,#9fd8ec,#51b5dc,#a9e3f2)!important;background-size:200% 100%!important;animation:living-progress 2.8s linear infinite!important}
+.dhikr-station-main>i{height:11px!important;background:#e8f1f6!important;border:1px solid #deebf2!important;box-shadow:inset 0 1px 1px rgba(85,113,135,.05)!important}
+.dhikr-station-main>i>b{background:#8fbed8!important;transition:width .55s cubic-bezier(.22,1,.36,1)!important}
+.dhikr-station-main>i>em{min-width:36px!important;height:27px!important;padding:0 7px!important;border-color:#fff!important;background:#f3fafe!important;color:#557187!important;font-size:12px!important;box-shadow:0 5px 13px rgba(85,113,135,.18)!important}
+.dhikr-station-row.complete .dhikr-station-main>i>b{background:#bfe6d0!important}
+.dhikr-station-row.complete .dhikr-station-main>i>em{background:#effaf4!important;color:#5f9a7a!important}
+.dhikr-station-row.missed .dhikr-station-main>i>b{background:#f7c7cc!important}
+.dhikr-station-row.missed .dhikr-station-main>i>em{background:#fff5f6!important;color:#c97d84!important}
+.dhikr-station-row.selected .dhikr-station-main>i{height:12px!important;background:#e1f0f8!important;border-color:#c4e1ef!important;box-shadow:0 0 0 3px rgba(207,231,245,.62),inset 0 1px 1px rgba(85,113,135,.05)!important}
+.dhikr-station-row.selected .dhikr-station-main>i>b{background:linear-gradient(270deg,#8fbed8 0%,#8fbed8 39%,#edf9fe 50%,#8fbed8 61%,#8fbed8 100%)!important;background-size:240% 100%!important;animation:living-progress 2.2s linear infinite!important}
 .dhikr-station-main>i>em.pulse,.dhikr-total-path>i>em.pulse{animation:progress-pulse .68s cubic-bezier(.2,.9,.25,1.45)!important}
-@keyframes living-progress{to{background-position:-200% 0}}
+@keyframes living-progress{from{background-position:200% 0}to{background-position:-100% 0}}
 @keyframes progress-pulse{50%{transform:translateX(50%) scale(1.22)}100%{transform:translateX(50%) scale(1)}}
 .dhikr-goal-remaining{margin:0!important;text-align:center!important;color:#7b8b98!important;font-size:.83rem!important}
 .dhikr-goal-remaining b{color:#ce9556!important;font-size:.94rem!important}
@@ -135,6 +142,6 @@
 .gauge-marker{fill:#8fbcd6!important;stroke:#fff!important;stroke-width:4!important;filter:drop-shadow(0 3px 5px rgba(111,150,173,.22))}
 .gauge-marker.pulse{animation:gauge-pulse .68s cubic-bezier(.2,.9,.25,1.45)!important;transform-origin:center!important}
 .gauge-copy{position:absolute!important;right:0!important;left:0!important;bottom:2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important}
-.gauge-copy span{font-size:.75rem!important;color:#7693a6!important;font-weight:750!important}.gauge-copy b{font-size:1.55rem!important;color:#557187!important;line-height:1!important;font-variant-numeric:tabular-nums!important}.gauge-copy em{margin-top:4px!important;color:#91a8b8!important;font-size:.72rem!important;font-style:normal!important}
+.gauge-copy span{font-size:.74rem!important;color:#7693a6!important;font-weight:800!important}.gauge-copy b{font-size:2rem!important;color:#557187!important;line-height:1!important;font-variant-numeric:tabular-nums!important;letter-spacing:.01em!important}.gauge-copy .gauge-target-label{margin-top:5px!important;font-size:.68rem!important;color:#91a8b8!important}.gauge-copy em{margin-top:1px!important;color:#6f8ca1!important;font-size:.93rem!important;font-style:normal!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
 .dhikr-gauge-summary .dhikr-goal-remaining{margin-top:0!important}
 @keyframes gauge-pulse{50%{r:10;filter:drop-shadow(0 0 8px rgba(57,137,98,.44))}100%{r:7}}
