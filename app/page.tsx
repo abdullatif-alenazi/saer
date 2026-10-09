@@ -219,7 +219,7 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
  const countdownHours=Math.floor(remainingSeconds/3600),countdownMinutes=Math.floor((remainingSeconds%3600)/60),countdownSeconds=remainingSeconds%60;
  const remainingMarkerLabel=countdownHours>0?`${arNumber(countdownHours)}س ${arNumber(countdownMinutes)}د`:`${arNumber(countdownMinutes)}د ${arNumber(countdownSeconds,2)}ث`;
  const focusTask=station.tasks.find(task=>!task.done)??station.tasks[0]??{name:"لا يوجد نشاط",meta:"لا شيء من هذا النوع في هذه المحطة",done:false,kind:"tasks" as const};
- const alternatives=station.tasks.filter(task=>task!==focusTask&&!task.done).slice(0,2);
+ const visibleTasks=station.tasks.filter(task=>!task.done).slice(0,3);
  useEffect(()=>{setFlipped(false);setTurning(null)},[selected]);
  const moveWeek=(delta:number)=>{const nextOffset=weekOffset+delta,dayIndex=(activeDate.getDay()+1)%7,nextStart=new Date(currentWeekStart.getFullYear(),currentWeekStart.getMonth(),currentWeekStart.getDate()+nextOffset*7),nextDate=new Date(nextStart.getFullYear(),nextStart.getMonth(),nextStart.getDate()+dayIndex);setWeekMotion(delta<0?"previous":"next");setWeekOffset(nextOffset);onDateChange(nextDate);window.setTimeout(()=>setWeekMotion(null),320)};
  const returnToday=()=>{setWeekMotion(weekOffset<0?"next":"previous");setWeekOffset(0);onDateChange(today);window.setTimeout(()=>setWeekMotion(null),320)};
@@ -237,7 +237,7 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
       {selected===effectiveCurrent&&<span className="current-time-label" style={{right:`clamp(48px, ${elapsedPercent}%, calc(100% - 48px))`}}>بقي {remainingMarkerLabel}</span>}
       <div className="period-times"><span>{stationTime}</span><span>{endTimeLabel}</span></div>
      </div>
-     {station.tasks.length?<div className="hero-action"><small>المطلوب الآن</small><b>{focusTask.name}</b><span>{focusTask.meta}</span><button onClick={event=>{event.stopPropagation();onOpen(focusTask)}}>{focusTask.appointment||focusTask.task?"فتح التفاصيل":"افتح الآن"}<i>←</i></button></div>:<div className="hero-action empty"><b>لا شيء مطلوب الآن</b><span>هذه المحطة متاحة لك.</span></div>}
+     <div className="hero-quiet-note">{station.tasks.length?`${arNumber(station.tasks.length)} مهام مرتبة لهذه المحطة`:"هذه المحطة متاحة لك."}</div>
     </article>:<article className={`station-hero flip-face flip-back station-tone-${selected}`} role="button" tabIndex={0} aria-label="العودة إلى ملخص المحطة" onClick={flip} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();flip()}}}>
      <div className="back-kicker"><span>الآن وقت</span><b>↻</b></div>
      <h2>{focusTask.name}</h2>
@@ -248,7 +248,7 @@ function DayJourney({journey,selected,current,today,activeDate,calendarMode,rema
     </article>}
    </div>
   </div>
-  <section className="period-task-section"><h3>بعد المهمة الحالية</h3>{alternatives.length?<div className="period-task-card">{alternatives.map(task=><div key={`${task.kind}-${task.name}-${task.meta}`} role="button" tabIndex={0} aria-label={`فتح ${task.name}`} onClick={()=>onOpen(task)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onOpen(task)}}} className={`period-task-row tappable task-kind-${task.kind} ${task.done?"task-done":""} ${task.appointment?"appointment-row":""}`}><span className="task-row-orb" aria-hidden="true">{task.done?"✓":""}</span><div className="period-task-main"><h4>{task.name}</h4>{task.progress&&<span className="task-unit-progress" aria-label={`${arNumber(task.progress.done)} من ${arNumber(task.progress.target)}`}><i><b style={{width:`${task.progress.percent}%`}}/></i><small>{arNumber(task.progress.done)} من {arNumber(task.progress.target)}</small></span>}</div><b>{task.meta}</b><span className="task-open-arrow" aria-hidden="true">←</span></div>)}</div>:<div className="empty-period"><p>لا بدائل الآن.</p><span>ركّز على المطلوب الحالي فقط.</span></div>}</section>
+  <section className="period-task-section"><h3>مهام هذه المحطة</h3>{visibleTasks.length?<div className="period-task-card">{visibleTasks.map(task=><div key={`${task.kind}-${task.name}-${task.meta}`} role="button" tabIndex={0} aria-label={`فتح ${task.name}`} onClick={()=>onOpen(task)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onOpen(task)}}} className={`period-task-row tappable task-kind-${task.kind} ${task.done?"task-done":""} ${task.appointment?"appointment-row":""}`}><span className="task-row-orb" aria-hidden="true">{task.done?"✓":""}</span><div className="period-task-main"><h4>{task.name}</h4>{task.progress&&<span className="task-unit-progress" aria-label={`${arNumber(task.progress.done)} من ${arNumber(task.progress.target)}`}><i><b style={{width:`${task.progress.percent}%`}}/></i><small>{arNumber(task.progress.done)} من {arNumber(task.progress.target)}</small></span>}</div><b>{task.meta}</b><span className="task-open-arrow" aria-hidden="true">←</span></div>)}</div>:<div className="empty-period"><p>لا مهام متبقية في هذه المحطة.</p><span>وقتك الآن متاح لك.</span></div>}</section>
  </section>
 }
 function Head({kicker,title,text}:{kicker:string;title:string;text:string}){return <div className="screen-head"><p className="eyebrow">{kicker}</p><h1>{title}</h1><p>{text}</p></div>}
