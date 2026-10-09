@@ -1,11 +1,11 @@
 /* الهوية الجديدة: باستيل خفيف، وحالة نشطة واضحة بلا ألوان مشبعة. */
 .topbar{
-  background:linear-gradient(115deg,#eef7fb 0%,#f5f1ff 52%,#fff7ee 100%)!important;
-  border-bottom:1px solid #dbe9ee!important;
+  background:linear-gradient(115deg,#eff9fe 0%,#f8fcfe 52%,#eef8fd 100%)!important;
+  border-bottom:1px solid #dcecf4!important;
   box-shadow:0 8px 25px rgba(97,125,151,.10)!important;
 }
-.topbar,.topbar *{color:#536a82!important}
-.top-brand,.top-brand b{color:#59718a!important}
+.topbar,.topbar *{color:#557187!important}
+.top-brand,.top-brand b{color:#6f8ca1!important}
 .profile-trigger,.now-filter-trigger{
   background:rgba(255,255,255,.84)!important;
   border:1px solid #d9e6eb!important;
@@ -22,15 +22,15 @@
 .topbar-page-title{display:flex!important;flex-direction:column!important;align-items:center!important;line-height:1.15!important}
 .topbar-page-title small{font-size:.65rem!important;color:#879db1!important;font-weight:700!important}
 .topbar-page-title b{font-size:1.05rem!important;color:#4f6d87!important}
-.topbar-add{width:42px!important;height:42px!important;min-width:42px!important;margin:0!important;border-radius:15px!important;background:linear-gradient(135deg,#d8eaff,#eee4ff)!important;color:#626093!important;border:1px solid #fff!important;box-shadow:0 7px 18px rgba(126,118,183,.17)!important;font-size:1.6rem!important;line-height:1!important}
+.topbar-add{width:42px!important;height:42px!important;min-width:42px!important;margin:0!important;border-radius:15px!important;background:linear-gradient(135deg,#e5f4fb,#cfe7f5)!important;color:#557187!important;border:1px solid #fff!important;box-shadow:0 7px 18px rgba(111,150,173,.14)!important;font-size:1.6rem!important;line-height:1!important}
 .topbar .top-brand{justify-self:center!important}
 
 .calendar-switch{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .calendar-switch button{font-size:.82rem!important;padding:8px 4px!important}
 .calendar-switch button.selected{
-  background:linear-gradient(135deg,#dcefff,#eee3ff)!important;
-  color:#60769b!important;
-  box-shadow:0 3px 10px rgba(135,121,190,.16)!important;
+  background:linear-gradient(135deg,#e5f4fb,#cfe7f5)!important;
+  color:#557187!important;
+  box-shadow:0 3px 10px rgba(111,150,173,.14)!important;
 }
 .cycling-date{animation:calendar-face .38s ease both}
 @keyframes calendar-face{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -75,13 +75,13 @@
 .bottom-nav button{min-height:55px!important;color:#9aa3ad!important;border-radius:22px!important;gap:3px!important}
 .bottom-nav button svg{color:currentColor!important}
 .bottom-nav button span{font-size:.72rem!important;font-weight:650!important}
-.bottom-nav button.active{color:#665b99!important;background:transparent!important;box-shadow:none!important;font-weight:750!important}
+.bottom-nav button.active{color:#557187!important;background:transparent!important;box-shadow:none!important;font-weight:750!important}
 .bottom-nav button.active span{
   width:58px!important;height:37px!important;display:grid!important;place-items:center!important;
-  background:linear-gradient(135deg,#dcd4ff 0%,#b9c9ff 52%,#dacdff 100%)!important;
-  color:#fff!important;
+  background:linear-gradient(135deg,#e5f4fb 0%,#cfe7f5 52%,#dceef7 100%)!important;
+  color:#557187!important;
   border:1px solid rgba(255,255,255,.85)!important;
-  border-radius:17px!important;box-shadow:0 7px 18px rgba(128,111,214,.30)!important;
+  border-radius:17px!important;box-shadow:0 7px 18px rgba(111,150,173,.18)!important;
 }
 .app-shell{padding-bottom:116px!important}
 @media(max-width:520px){
@@ -106,21 +106,18 @@
 .period-task-card{overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
 .period-task-row{grid-template-columns:30px minmax(0,1fr) auto auto!important;gap:9px!important;padding:11px 12px!important;border:1px solid transparent!important;box-shadow:0 6px 16px rgba(71,99,124,.055)!important}
 .task-row-orb{width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#e4f4ee;border:1px solid #b8dfca;color:#4e9270;font-size:.72rem;font-weight:900}
-.period-task-row.task-kind-goals{background:linear-gradient(90deg,#f3ebff,#fbf9ff)!important;border-color:#e3d4fb!important}.task-kind-goals .task-row-orb{background:#eee2ff;border-color:#d8c3fb;color:#8061aa}
-.period-task-row.task-kind-commitments{background:linear-gradient(90deg,#eaf8f0,#fbfffc)!important;border-color:#c8e8d5!important}.task-kind-commitments .task-row-orb{background:#dff4e8;border-color:#b6dfc7;color:#4e9270}
-.period-task-row.task-kind-tasks{background:linear-gradient(90deg,#e9f7fc,#fbfdff)!important;border-color:#c7e5ef!important}.task-kind-tasks .task-row-orb{background:#dff2f9;border-color:#b7dce8;color:#4d88a0}
-.period-task-row.task-kind-appointments{background:linear-gradient(90deg,#fff4e9,#fffdfa)!important;border-color:#f0d9bd!important}.task-kind-appointments .task-row-orb{background:#ffecd7;border-color:#f0cfaa;color:#b77c45}
+.period-task-row.task-kind-goals,.period-task-row.task-kind-commitments,.period-task-row.task-kind-tasks,.period-task-row.task-kind-appointments{background:linear-gradient(90deg,#f8fcfe,#edf8fd)!important;border-color:#dcecf4!important}.task-kind-goals .task-row-orb,.task-kind-commitments .task-row-orb,.task-kind-tasks .task-row-orb,.task-kind-appointments .task-row-orb{background:#dceef7;border-color:#c5e2f2;color:#63869d}
 .period-task-row h4{font-size:.92rem!important;color:#3f5c74!important}.period-task-row>b{max-width:88px;overflow:hidden;text-overflow:ellipsis}.task-open-arrow{width:27px!important;height:27px!important;border-radius:50%!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(116,143,163,.16)!important;color:#708a9d!important;font-size:.88rem!important}
 
 /* يوم الأسبوع المختار: نفس باستيل بطاقات الورد، لا أزرق مشبع. */
 .week-strip .today{color:#6b91a8!important}
 .week-strip .today.selected{
-  background:linear-gradient(145deg,#e4f4ee,#edf9f4)!important;
-  color:#4f8c70!important;
-  border:1px solid #b9e1cd!important;
-  box-shadow:0 7px 17px rgba(82,148,113,.14)!important;
+  background:linear-gradient(145deg,#e5f4fb,#cfe7f5)!important;
+  color:#557187!important;
+  border:1px solid #c5e2f2!important;
+  box-shadow:0 7px 17px rgba(111,150,173,.14)!important;
 }
-.week-strip .today.selected .day-indicator.done{background:#d9f1e4!important;color:#4f8c70!important}
+.week-strip .today.selected .day-indicator.done{background:#dceef7!important;color:#557187!important}
 .day-screen .journey-title.journey-date-only{align-items:center!important;justify-content:center!important;min-height:20px!important;margin-bottom:10px!important;position:relative!important}
 .journey-date-only .cycling-date{margin:0!important;color:#7890a5!important;font-size:.78rem!important;font-weight:700!important}
 .journey-date-only>button{position:absolute!important;left:0!important;top:50%!important;transform:translateY(-50%)!important}
@@ -134,10 +131,10 @@
 .dhikr-gauge{position:relative!important;width:min(100%,250px)!important;height:136px!important;margin:0 auto!important}
 .dhikr-gauge svg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;overflow:visible!important}
 .dhikr-gauge path{fill:none!important;stroke-width:12!important;stroke-linecap:round!important}
-.dhikr-gauge .gauge-track{stroke:#dceee4!important}.dhikr-gauge .gauge-fill{stroke:#63b288!important;transition:stroke-dasharray .55s cubic-bezier(.22,1,.36,1)!important}
-.gauge-marker{fill:#419c71!important;stroke:#fff!important;stroke-width:4!important;filter:drop-shadow(0 3px 5px rgba(57,137,98,.22))}
+.dhikr-gauge .gauge-track{stroke:#dcecf4!important}.dhikr-gauge .gauge-fill{stroke:#a9cde3!important;transition:stroke-dasharray .55s cubic-bezier(.22,1,.36,1)!important}
+.gauge-marker{fill:#8fbcd6!important;stroke:#fff!important;stroke-width:4!important;filter:drop-shadow(0 3px 5px rgba(111,150,173,.22))}
 .gauge-marker.pulse{animation:gauge-pulse .68s cubic-bezier(.2,.9,.25,1.45)!important;transform-origin:center!important}
 .gauge-copy{position:absolute!important;right:0!important;left:0!important;bottom:2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important}
-.gauge-copy span{font-size:.75rem!important;color:#668874!important;font-weight:750!important}.gauge-copy b{font-size:1.55rem!important;color:#3e946b!important;line-height:1!important;font-variant-numeric:tabular-nums!important}.gauge-copy em{margin-top:4px!important;color:#7f9a8b!important;font-size:.72rem!important;font-style:normal!important}
+.gauge-copy span{font-size:.75rem!important;color:#7693a6!important;font-weight:750!important}.gauge-copy b{font-size:1.55rem!important;color:#557187!important;line-height:1!important;font-variant-numeric:tabular-nums!important}.gauge-copy em{margin-top:4px!important;color:#91a8b8!important;font-size:.72rem!important;font-style:normal!important}
 .dhikr-gauge-summary .dhikr-goal-remaining{margin-top:0!important}
 @keyframes gauge-pulse{50%{r:10;filter:drop-shadow(0 0 8px rgba(57,137,98,.44))}100%{r:7}}
