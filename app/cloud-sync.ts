@@ -11,6 +11,17 @@ let listener:Listener|undefined;
 let loadingAccount:Promise<void>|undefined;
 const report=(status:SyncStatus)=>listener?.(currentUser,status);
 const hasContent=(snapshot:LocalSnapshot)=>Boolean(snapshot.plan.length||snapshot.tasks.length||snapshot.appointments.length||snapshot.executionLog.length||snapshot.unitProgress.length);
+const byId=<T extends {id:string}>(remote:T[],local:T[])=>[...remote.filter(item=>!local.some(candidate=>candidate.id===item.id)),...local];
+const mergeSnapshots=(remote:LocalSnapshot,local:LocalSnapshot):LocalSnapshot=>{
+ const logs=[...remote.executionLog,...local.executionLog].filter((item,index,all)=>all.findIndex(candidate=>JSON.stringify(candidate)===JSON.stringify(item))===index);
+ const progress=[...remote.unitProgress,...local.unitProgress].reduce<LocalSnapshot["unitProgress"]>((all,item)=>{
+  const index=all.findIndex(candidate=>candidate.activityId===item.activityId&&candidate.date===item.date);
+  if(index<0){all.push(item);return all}
+  if(new Date(item.updatedAt).getTime()>=new Date(all[index].updatedAt).getTime())all[index]=item;
+  return all;
+ },[]);
+ return {version:1,plan:byId(remote.plan,local.plan),tasks:byId(remote.tasks,local.tasks),appointments:byId(remote.appointments,local.appointments),executionLog:logs.slice(0,500),unitProgress:progress.slice(0,400),preferences:{calendarMode:local.preferences?.calendarMode??remote.preferences?.calendarMode??null,journeyFilter:local.preferences?.journeyFilter??remote.preferences?.journeyFilter??null}};
+};
 
 async function saveAccountState(snapshot=readLocalSnapshot()){
  if(!supabase||!currentUser)return;
@@ -28,7 +39,15 @@ async function openAccount(){
  if(currentUser?.id!==userId)return;
  if(error){report("error");return}
  const local=readLocalSnapshot(),remote=data?.payload as LocalSnapshot|undefined;
- if(remote&&hasContent(remote)){replaceLocalSnapshot(remote);report("ready");return}
+ if(remote&&hasContent(remote)){
+  if(hasContent(local)){
+   const merged=mergeSnapshots(remote,local);
+   replaceLocalSnapshot(merged);
+   await saveAccountState(merged);
+   return;
+  }
+  replaceLocalSnapshot(remote);report("ready");return;
+ }
  // أول جهاز يفتح الحساب ينشئ النسخة المرتبطة به تلقائيًا.
  // بيانات الحساب الموجودة تبقى هي المرجع، ولا تستبدلها بيانات جهاز فارغ.
  await saveAccountState(local);
