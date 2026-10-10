@@ -15,6 +15,17 @@
 .task-achievement-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:21px 0 16px;padding:4px;border-radius:15px;background:#edf5f8}
 .task-achievement-tabs button{min-height:39px;border:0;border-radius:11px;background:transparent;color:#8196a5;font-size:13px;font-weight:750;cursor:pointer}
 .task-achievement-tabs button.selected{background:white;color:#527d97;box-shadow:0 3px 12px rgba(57,100,126,.1)}
+.task-week-browser{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:9px;margin:-3px 0 13px;padding:9px 10px;border:1px solid #e4eef3;border-radius:16px;background:linear-gradient(100deg,#f6fbfd,#fff);overflow:hidden}
+.task-week-browser>button{width:38px;height:38px;display:grid;place-items:center;border:1px solid #dce8ef;border-radius:13px;background:#fff;color:#527d97;font-size:21px;line-height:1;cursor:pointer;transition:background .2s ease,transform .2s ease}
+.task-week-browser>button:active{background:#eaf5fa;transform:scale(.94)}
+.task-week-range{min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;animation:week-range-in .32s cubic-bezier(.22,1,.36,1) both}
+.task-week-browser.week-shift-previous .task-week-range{animation-name:week-range-from-right}
+.task-week-browser.week-shift-next .task-week-range{animation-name:week-range-from-left}
+.task-week-range strong{color:#55778d;font-size:13px;font-weight:850;font-variant-numeric:tabular-nums}
+.task-week-range small{color:#91a7b5;font-size:10px;font-variant-numeric:tabular-nums}
+.task-week-range span{color:#9aabb5;font-size:9px}
+.task-week-chart.week-shift-previous,.task-achievement-total.week-shift-previous{animation:week-content-from-right .38s cubic-bezier(.22,1,.36,1) both}
+.task-week-chart.week-shift-next,.task-achievement-total.week-shift-next{animation:week-content-from-left .38s cubic-bezier(.22,1,.36,1) both}
 .task-achievement-total{display:flex;align-items:baseline;gap:7px;padding:15px 16px;border:1px solid #dfedf2;border-radius:17px;background:linear-gradient(100deg,#f6fbfd,#fff)}
 .task-achievement-total small{margin-left:auto;color:#8399a8;font-size:12px}
 .task-achievement-total strong{color:#507e99;font-size:25px;font-variant-numeric:tabular-nums}
@@ -51,5 +62,10 @@
 .week-start-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 @keyframes achievement-fade{from{opacity:0}to{opacity:1}}
 @keyframes achievement-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes week-range-in{from{opacity:.45;transform:translateX(7px)}to{opacity:1;transform:translateX(0)}}
+@keyframes week-range-from-right{from{opacity:.4;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes week-range-from-left{from{opacity:.4;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes week-content-from-right{from{opacity:.45;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes week-content-from-left{from{opacity:.45;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:380px){.task-achievements{padding:17px}.task-week-chart{gap:5px;padding-inline:5px}.task-month-grid{gap:3px;padding:8px}.task-month-grid>div{min-height:52px}.task-month-grid>i{min-height:39px}}
-@media(prefers-reduced-motion:reduce){.task-achievements-backdrop,.task-achievements,.task-week-track i,.task-year-chart i b{animation:none;transition:none}}
+@media(prefers-reduced-motion:reduce){.task-achievements-backdrop,.task-achievements,.task-week-range,.task-week-chart,.task-achievement-total,.task-week-track i,.task-year-chart i b{animation:none;transition:none}}
