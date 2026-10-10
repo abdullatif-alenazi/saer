@@ -32,8 +32,10 @@
   color:#557187!important;
   box-shadow:0 3px 10px rgba(111,150,173,.14)!important;
 }
-.cycling-date{animation:calendar-face .38s ease both}
-@keyframes calendar-face{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.cycling-date{animation:calendar-face .52s cubic-bezier(.22,1,.36,1) both}
+.cycling-day{display:inline-block;animation:calendar-day .44s cubic-bezier(.22,1,.36,1) both}
+@keyframes calendar-face{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes calendar-day{from{opacity:0;transform:translateY(5px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* المنجز هو البطل؛ الواجب امتداد طبيعي لأرقام الفترات، والمتبقي جملة هادئة. */
 .dhikr-day-total{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;align-items:center!important;margin-top:11px!important;padding-top:0!important;border:0!important}
@@ -45,17 +47,17 @@
 .dhikr-total-path>i{height:9px!important;background:#d9ece1!important}
 .dhikr-total-path>i>b{background:#57ad7f!important}
 .dhikr-total-path>i>em{bottom:18px!important;min-width:38px!important;height:28px!important;padding:0 8px!important;font-size:12px!important;background:#35936a!important;box-shadow:0 5px 13px rgba(53,147,106,.24)!important}
-.dhikr-station-main>i{height:11px!important;background:#e8f1f6!important;border:1px solid #deebf2!important;box-shadow:inset 0 1px 1px rgba(85,113,135,.05)!important}
-.dhikr-station-main>i>b{background:#8fbed8!important;transition:width .72s cubic-bezier(.22,1,.36,1)!important}
+.dhikr-station-main>i{position:relative!important;height:11px!important;overflow:hidden!important;background:#e8f1f6!important;border:1px solid #deebf2!important;box-shadow:inset 0 1px 1px rgba(85,113,135,.05)!important}
+.dhikr-station-main>i>b{position:absolute!important;inset-block:0!important;right:0!important;width:100%!important;background:#8fbed8!important;transform:scaleX(var(--period-progress,0))!important;transform-origin:right center!important;transition:transform .78s cubic-bezier(.22,1,.36,1)!important}
 .dhikr-station-main>i>em{min-width:36px!important;height:27px!important;padding:0 7px!important;border-color:#fff!important;background:#f3fafe!important;color:#557187!important;font-size:12px!important;box-shadow:0 5px 13px rgba(85,113,135,.18)!important}
 .dhikr-station-row.complete .dhikr-station-main>i>b{background:#bfe6d0!important}
 .dhikr-station-row.complete .dhikr-station-main>i>em{background:#effaf4!important;color:#5f9a7a!important}
 .dhikr-station-row.missed .dhikr-station-main>i>b{background:#f7c7cc!important}
 .dhikr-station-row.missed .dhikr-station-main>i>em{background:#fff5f6!important;color:#c97d84!important}
 .dhikr-station-row.selected .dhikr-station-main>i{height:12px!important;background:#e1f0f8!important;border-color:#c4e1ef!important;box-shadow:0 0 0 3px rgba(207,231,245,.62),inset 0 1px 1px rgba(85,113,135,.05)!important}
-.dhikr-station-row.selected .dhikr-station-main>i>b{background:linear-gradient(270deg,#8fbed8 0%,#8fbed8 39%,#edf9fe 50%,#8fbed8 61%,#8fbed8 100%)!important;background-size:240% 100%!important;animation:living-progress 2.2s linear infinite!important}
+.dhikr-station-row.selected .dhikr-station-main>i>b{background:#7fadc8!important;animation:selected-progress-breathe 3.2s ease-in-out infinite!important}
 .dhikr-station-main>i>em.pulse,.dhikr-total-path>i>em.pulse{animation:progress-pulse .82s cubic-bezier(.2,.9,.25,1.22)!important}
-@keyframes living-progress{from{background-position:200% 0}to{background-position:-100% 0}}
+@keyframes selected-progress-breathe{0%,100%{opacity:1}50%{opacity:.8}}
 @keyframes progress-pulse{0%{transform:translateX(50%) scale(1)}45%{transform:translateX(50%) scale(1.14)}100%{transform:translateX(50%) scale(1)}}
 .dhikr-goal-remaining{margin:0!important;text-align:center!important;color:#7b8b98!important;font-size:.83rem!important}
 .dhikr-goal-remaining b{color:#ce9556!important;font-size:.94rem!important}
