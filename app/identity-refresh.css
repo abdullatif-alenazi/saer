@@ -143,7 +143,7 @@
 .dhikr-gauge-summary{display:block!important;margin:0 0 13px!important;padding:2px 0 13px!important;border:0!important;border-bottom:1px solid #e4edf0!important;background:transparent!important}
 .dhikr-gauge{position:relative!important;width:min(100%,236px)!important;height:160px!important;margin:0 auto!important}
 .dhikr-gauge svg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;overflow:visible!important}
-.dhikr-gauge path{fill:none!important;stroke-width:16px!important;stroke-linecap:butt!important}
+.dhikr-gauge path{fill:none!important;stroke-width:16px!important;stroke-linecap:butt!important;stroke-linejoin:miter!important}
 .dhikr-gauge .gauge-track{stroke:#e4f0f6!important}.dhikr-gauge .gauge-fill{stroke:#8ebbd5!important;stroke-linecap:butt!important;transition:stroke-dasharray .8s cubic-bezier(.22,1,.36,1)!important}
 .gauge-tick{stroke:rgba(255,255,255,.92)!important;stroke-width:1.45!important;stroke-linecap:round!important}
 .gauge-needle{transform-box:view-box!important;transform-origin:120px 118px!important;transition:transform .78s cubic-bezier(.22,1,.36,1)!important}
