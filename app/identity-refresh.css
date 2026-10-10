@@ -90,6 +90,12 @@
   border:1px solid rgba(255,255,255,.85)!important;
   border-radius:17px!important;box-shadow:0 7px 18px rgba(111,150,173,.18)!important;
 }
+.bottom-nav.bottom-nav-three .nav-icon{width:34px!important;height:31px!important;display:grid!important;place-items:center!important;border-radius:15px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.bottom-nav.bottom-nav-three .nav-icon svg{width:19px!important;height:19px!important;stroke-width:1.85!important}
+.bottom-nav.bottom-nav-three button.active .nav-icon{width:58px!important;height:37px!important;background:linear-gradient(135deg,#e5f4fb 0%,#cfe7f5 52%,#dceef7 100%)!important;border:1px solid rgba(255,255,255,.88)!important;box-shadow:0 7px 18px rgba(111,150,173,.18)!important}
+.bottom-nav.bottom-nav-three .nav-now.active .nav-icon{width:82px!important;height:42px!important;border-radius:21px!important;background:linear-gradient(135deg,#dfeffa 0%,#c7e3f4 55%,#d9edf8 100%)!important;box-shadow:0 10px 22px rgba(111,150,173,.24)!important}
+.bottom-nav.bottom-nav-three .nav-now.active .nav-icon svg{width:22px!important;height:22px!important}
+.bottom-nav.bottom-nav-three .nav-now.active small{color:#4b718d!important;font-weight:850!important}
 .app-shell{padding-bottom:116px!important}
 @media(max-width:520px){
  .bottom-nav{width:calc(100% - 20px)!important;bottom:calc(9px + env(safe-area-inset-bottom))!important}
@@ -158,3 +164,7 @@
 .task-confirm>div{padding:16px;border:1px solid #dcecf4;border-radius:17px;background:#fff}
 .task-confirm b{display:block;color:#557187;font-size:1rem}.task-confirm p{margin:7px 0 0;color:#7891a3;font-size:.8rem;line-height:1.65}
 .task-confirm footer{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:12px}.task-confirm footer button{min-height:45px;border:1px solid #dcecf4;border-radius:13px;background:#fff;color:#6f8ca1;font:inherit;font-weight:800;cursor:pointer}.task-confirm .confirm-archive{border-color:#c5e2f2;background:#eaf6fc;color:#557187}.task-confirm .confirm-delete{border-color:#efc9ce;background:#fdeff1;color:#b76771}
+
+.plan-hub{padding-top:22px!important}
+.plan-hub>header{margin:0 2px 18px!important}.plan-hub>header small{color:#89a1b2!important;font-size:.76rem!important;font-weight:800!important}.plan-hub>header h1{margin:4px 0!important;color:#47677f!important;font-size:2rem!important}.plan-hub>header p{margin:0!important;color:#879bab!important;font-size:.86rem!important}
+.plan-hub>div{display:grid!important;gap:10px!important}.plan-hub>div>button{display:grid!important;grid-template-columns:42px 1fr 24px!important;align-items:center!important;gap:12px!important;min-height:78px!important;padding:13px!important;border:1px solid #dcecf4!important;border-radius:20px!important;background:linear-gradient(115deg,#fff,#f6fbfe)!important;box-shadow:0 7px 20px rgba(84,113,137,.06)!important;color:#557187!important;text-align:right!important;cursor:pointer!important;font:inherit!important}.plan-hub>div>button:active{transform:scale(.985)!important}.plan-hub>div>button>span{width:38px!important;height:38px!important;display:grid!important;place-items:center!important;border-radius:14px!important;background:#e4f3fb!important;color:#63869d!important;font-size:.78rem!important;font-weight:850!important}.plan-hub>div>button section{display:grid!important;gap:3px!important}.plan-hub>div>button b{font-size:1rem!important}.plan-hub>div>button section small{color:#879bab!important;font-size:.76rem!important}.plan-hub>div>button i{font-style:normal!important;font-size:1.7rem!important;color:#9bb4c4!important;line-height:1!important}

@@ -15,8 +15,8 @@ const isGoalDisplay=(activity:PlannedActivity)=>activity.nature==="goal"||(["ق�
 export type SectionKind="goals"|"commitments"|"tasks"|"appointments";
 type Mode="current"|"results"|"archive";
 
-export function SectionScreen({kind,plan,tasks,appointments,records,unitProgress,onEditActivity,onStartActivity,onEditTask,onEditAppointment,onCompleteTask,onQuickPrayer}:{kind:SectionKind;plan:PlannedActivity[];tasks:TaskItem[];appointments:Appointment[];records:ExecutionRecord[];unitProgress:UnitProgress[];onEditActivity:(item:PlannedActivity|null)=>void;onStartActivity:(item:PlannedActivity)=>void;onEditTask:(item:TaskItem|null)=>void;onEditAppointment:(item:Appointment|null)=>void;onCompleteTask:(item:TaskItem)=>void;onQuickPrayer:()=>void}){
- const [menu,setMenu]=useState(false),[mode,setMode]=useState<Mode>("current"),[range,setRange]=useState<"week"|"month"|"year">("week"),[goalDetail,setGoalDetail]=useState<PlannedActivity|null>(null);
+export function SectionScreen({kind,initialMode="current",plan,tasks,appointments,records,unitProgress,onEditActivity,onStartActivity,onEditTask,onEditAppointment,onCompleteTask,onQuickPrayer}:{kind:SectionKind;initialMode?:Mode;plan:PlannedActivity[];tasks:TaskItem[];appointments:Appointment[];records:ExecutionRecord[];unitProgress:UnitProgress[];onEditActivity:(item:PlannedActivity|null)=>void;onStartActivity:(item:PlannedActivity)=>void;onEditTask:(item:TaskItem|null)=>void;onEditAppointment:(item:Appointment|null)=>void;onCompleteTask:(item:TaskItem)=>void;onQuickPrayer:()=>void}){
+ const [menu,setMenu]=useState(false),[mode,setMode]=useState<Mode>(initialMode),[range,setRange]=useState<"week"|"month"|"year">("week"),[goalDetail,setGoalDetail]=useState<PlannedActivity|null>(null);
  const title={goals:"الأهداف",commitments:"الالتزامات",tasks:"المهام",appointments:"المواعيد"}[kind];
  const addLabel={goals:"إضافة هدف",commitments:"إضافة التزام",tasks:"إضافة مهمة",appointments:"إضافة موعد"}[kind];
  const add=()=>kind==="goals"||kind==="commitments"?onEditActivity(null):kind==="tasks"?onEditTask(null):onEditAppointment(null);
