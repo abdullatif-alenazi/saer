@@ -44,6 +44,11 @@
 .task-year-chart i{height:10px;overflow:hidden;border-radius:20px;background:#f0f4f6}
 .task-year-chart i b{display:block;height:100%;border-radius:inherit;background:#9dcfe2;transition:width .45s cubic-bezier(.2,.8,.2,1)}
 .task-achievements>footer{margin-top:15px;text-align:center;color:#9aabb5;font-size:10px}
+.week-start-setting{margin:0 0 10px;padding:15px;border:1px solid rgba(36,59,100,.1);border-radius:17px;background:rgba(255,255,255,.66)}
+.week-start-setting>div:first-child{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.week-start-setting h3{margin:0;color:var(--ink);font-size:16px}
+.week-start-setting p{margin:0;color:var(--muted);font-size:10px}
+.week-start-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 @keyframes achievement-fade{from{opacity:0}to{opacity:1}}
 @keyframes achievement-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:380px){.task-achievements{padding:17px}.task-week-chart{gap:5px;padding-inline:5px}.task-month-grid{gap:3px;padding:8px}.task-month-grid>div{min-height:52px}.task-month-grid>i{min-height:39px}}

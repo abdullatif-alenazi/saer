@@ -20,7 +20,7 @@ const mergeSnapshots=(remote:LocalSnapshot,local:LocalSnapshot):LocalSnapshot=>{
   if(new Date(item.updatedAt).getTime()>=new Date(all[index].updatedAt).getTime())all[index]=item;
   return all;
  },[]);
- return {version:1,plan:byId(remote.plan,local.plan),tasks:byId(remote.tasks,local.tasks),appointments:byId(remote.appointments,local.appointments),executionLog:logs.slice(0,500),unitProgress:progress.slice(0,400),preferences:{calendarMode:local.preferences?.calendarMode??remote.preferences?.calendarMode??null,journeyFilter:local.preferences?.journeyFilter??remote.preferences?.journeyFilter??null}};
+ return {version:1,plan:byId(remote.plan,local.plan),tasks:byId(remote.tasks,local.tasks),appointments:byId(remote.appointments,local.appointments),executionLog:logs.slice(0,500),unitProgress:progress.slice(0,400),preferences:{calendarMode:local.preferences?.calendarMode??remote.preferences?.calendarMode??null,journeyFilter:local.preferences?.journeyFilter??remote.preferences?.journeyFilter??null,weekStartsOn:local.preferences?.weekStartsOn??remote.preferences?.weekStartsOn??null}};
 };
 
 async function saveAccountState(snapshot=readLocalSnapshot()){
