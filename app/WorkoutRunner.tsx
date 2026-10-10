@@ -7,7 +7,7 @@ const ar=(value:number,pad=1)=>value.toLocaleString("ar-SA",{minimumIntegerDigit
 const clock=(seconds:number)=>`${ar(Math.floor(seconds/60),2)}:${ar(seconds%60,2)}`;
 type Mode="ready"|"prepare"|"work"|"rest"|"exerciseDone"|"sessionDone";
 
-export default function WorkoutRunner({activity,date,today,calendarMode,onDateChange,onExit,onFinish}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number)=>void}){
+export default function WorkoutRunner({activity,date,today,calendarMode,onDateChange,onExit,onFinish,onOpenAchievements}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number)=>void;onOpenAchievements:()=>void}){
  const exercises=activity.exercises??[];
  const [exerciseIndex,setExerciseIndex]=useState(0),[setIndex,setSetIndex]=useState(1),[mode,setMode]=useState<Mode>("ready"),[seconds,setSeconds]=useState(0),[workTotal,setWorkTotal]=useState(0),[restTotal,setRestTotal]=useState(0),[repetitions,setRepetitions]=useState(0);
  const exercise=exercises[exerciseIndex];
@@ -28,7 +28,7 @@ export default function WorkoutRunner({activity,date,today,calendarMode,onDateCh
  return <section className={`workout-runner workout-${mode} ${isFinalPulse?"is-counting-pulse":""}`} aria-live="polite">
   {isFinalPulse&&<span key={`${mode}-${seconds}`} className="second-pulse" aria-hidden="true"/>}
   {mode!=="sessionDone"?<>
-   <div className="workout-head"><button onClick={onExit}>×</button><div><small>{activity.name}</small><b>{ar(exerciseIndex+1)} من {ar(exercises.length)}</b></div></div>
+   <div className="workout-head"><button onClick={onExit}>×</button><div><button className="workout-achievement-title" onClick={onOpenAchievements}>{activity.name}</button><b>{ar(exerciseIndex+1)} من {ar(exercises.length)}</b></div></div>
    {mode==="ready"&&<WeekStrip date={date} today={today} calendarMode={calendarMode} onChange={onDateChange}/>}
    <p className="workout-status">{status}</p><h1>{exercise.name}</h1>
    {mode!=="exerciseDone"&&<p className="set-label">الجولة <b>{ar(setIndex)}</b> من {ar(exercise.sets)}</p>}
