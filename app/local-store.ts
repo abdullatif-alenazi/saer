@@ -42,7 +42,7 @@ export function saveAppointment(item:Appointment){const next=[...readAppointment
 export function updateAppointment(item:Appointment){const next=readAppointments().map(value=>value.id===item.id?item:value);localStorage.setItem(appointmentKey,JSON.stringify(next));notifyChange();return next}
 export function deleteAppointment(id:string){const next=readAppointments().filter(item=>item.id!==id);localStorage.setItem(appointmentKey,JSON.stringify(next));notifyChange();return next}
 
-export type TaskItem={id:string;title:string;date?:string;time?:string;urgent?:boolean;completedAt?:string;reminder?:Reminder};
+export type TaskItem={id:string;title:string;date?:string;time?:string;urgent?:boolean;completedAt?:string;archivedAt?:string;reminder?:Reminder};
 const taskKey="sair.tasks.v1";
 export function readTasks():TaskItem[]{try{return JSON.parse(localStorage.getItem(taskKey)||"[]")}catch{return[]}}
 export function saveTask(item:TaskItem){const next=[...readTasks(),item];localStorage.setItem(taskKey,JSON.stringify(next));notifyChange();return next}
