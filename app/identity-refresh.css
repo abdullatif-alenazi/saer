@@ -148,7 +148,7 @@
 .dhikr-gauge .gauge-leg-fill{stroke:#8ebbd5!important;stroke-linecap:butt!important}
 .gauge-tick{stroke:rgba(255,255,255,.92)!important;stroke-width:1.45!important;stroke-linecap:round!important}
 .gauge-needle{transform-box:view-box!important;transform-origin:120px 118px!important;transition:transform .78s cubic-bezier(.22,1,.36,1)!important}
-.gauge-needle-shadow{stroke:rgba(80,99,114,.18)!important;stroke-width:6px!important;stroke-linecap:butt!important}.gauge-needle-face{stroke:#fff!important;stroke-width:2.8px!important;stroke-linecap:butt!important;filter:drop-shadow(0 2px 2px rgba(85,113,135,.06))!important}
+.gauge-needle-shadow{stroke:rgba(80,99,114,.34)!important;stroke-width:7px!important;stroke-linecap:butt!important}.gauge-needle-face{stroke:#fff!important;stroke-width:2.8px!important;stroke-linecap:butt!important;filter:drop-shadow(0 2px 2px rgba(85,113,135,.08))!important}
 .gauge-needle.add .gauge-needle-face{stroke:#f3fcf7!important}.gauge-needle.undo .gauge-needle-face{stroke:#fff6f7!important}
 .gauge-dial-shadow{fill:rgba(145,163,176,.24)!important}.gauge-dial-halo{fill:#edf2f5!important}.gauge-dial-face{fill:#fff!important;stroke:#dce8ee!important;stroke-width:1.2!important}.gauge-dial-label,.gauge-dial-value{text-anchor:middle!important;font-family:inherit!important;font-weight:800!important}.gauge-dial-label{fill:#7693a6!important;font-size:13px!important}.gauge-dial-value{fill:#557187!important;font-size:25px!important;font-variant-numeric:tabular-nums!important}
 .gauge-period-goal{margin:2px 0 0!important;text-align:center!important;color:#8aa0af!important;font-size:.76rem!important;font-weight:700!important}.gauge-period-goal b{color:#5e829c!important;font-variant-numeric:tabular-nums!important}
