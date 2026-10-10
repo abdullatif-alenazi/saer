@@ -141,17 +141,17 @@
 
 /* عداد اليوم العام: قراءة واحدة فوق خريطة الفترات، دون لمس أشرطة الفترات. */
 .dhikr-gauge-summary{display:block!important;margin:0 0 13px!important;padding:2px 0 13px!important;border:0!important;border-bottom:1px solid #e4edf0!important;background:transparent!important}
-.dhikr-gauge{position:relative!important;width:min(100%,250px)!important;height:154px!important;margin:0 auto!important}
+.dhikr-gauge{position:relative!important;width:min(100%,250px)!important;height:174px!important;margin:0 auto!important}
 .dhikr-gauge svg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;overflow:visible!important}
 .dhikr-gauge path{fill:none!important;stroke-width:12!important;stroke-linecap:round!important}
 .dhikr-gauge .gauge-track{stroke:#dcecf4!important}.dhikr-gauge .gauge-fill{stroke:#a9cde3!important;transition:stroke-dasharray .8s cubic-bezier(.22,1,.36,1)!important}
 .gauge-tick{stroke:rgba(255,255,255,.88)!important;stroke-width:1.7!important;stroke-linecap:round!important}
 .gauge-goal-marker,.gauge-needle{transform-box:view-box!important;transform-origin:120px 118px!important;transition:transform .78s cubic-bezier(.22,1,.36,1)!important}
 .gauge-goal-marker line{stroke:#62849c!important;stroke-width:2.4!important;stroke-linecap:round!important}
-.gauge-needle line{stroke:#fff!important;stroke-width:3.6!important;stroke-linecap:round!important;filter:drop-shadow(0 1px 2px rgba(85,113,135,.18))}
-.gauge-needle.add line{stroke:#eefaf3!important}.gauge-needle.undo line{stroke:#fff3f4!important}
-.gauge-copy{position:absolute!important;right:0!important;left:0!important;bottom:2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important}
-.gauge-copy span{font-size:.74rem!important;color:#7693a6!important;font-weight:800!important}.gauge-copy b{font-size:2rem!important;color:#557187!important;line-height:1!important;font-variant-numeric:tabular-nums!important;letter-spacing:.01em!important}.gauge-copy .gauge-target-label{margin-top:5px!important;font-size:.68rem!important;color:#91a8b8!important}.gauge-copy em{margin-top:1px!important;color:#6f8ca1!important;font-size:.93rem!important;font-style:normal!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
+.gauge-needle-shadow{stroke:rgba(89,111,128,.27)!important;stroke-width:5px!important;stroke-linecap:round!important;filter:blur(.65px)!important}.gauge-needle-face{stroke:#fff!important;stroke-width:3.3px!important;stroke-linecap:round!important;filter:drop-shadow(0 1px 1px rgba(85,113,135,.12))!important}
+.gauge-needle.add .gauge-needle-face{stroke:#f3fcf7!important}.gauge-needle.undo .gauge-needle-face{stroke:#fff6f7!important}
+.gauge-copy{position:absolute!important;z-index:2!important;right:auto!important;left:50%!important;bottom:-4px!important;width:126px!important;height:126px!important;transform:translateX(-50%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:1px!important;border:1px solid rgba(219,230,237,.95)!important;border-radius:50%!important;background:rgba(255,255,255,.98)!important;box-shadow:0 12px 25px rgba(91,112,128,.14),0 0 0 8px rgba(218,227,233,.34)!important}
+.gauge-copy span{font-size:.72rem!important;color:#7693a6!important;font-weight:800!important}.gauge-copy b{font-size:1.9rem!important;color:#557187!important;line-height:1!important;font-variant-numeric:tabular-nums!important;letter-spacing:.01em!important}.gauge-copy .gauge-target-label{margin-top:5px!important;font-size:.66rem!important;color:#91a8b8!important}.gauge-copy em{margin-top:1px!important;color:#6f8ca1!important;font-size:.88rem!important;font-style:normal!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
 .dhikr-gauge-summary .dhikr-goal-remaining{margin-top:0!important}
 .number-feedback.add{animation:count-added .82s ease-out!important}.number-feedback.undo{animation:count-undone .82s ease-out!important}
 .dhikr-station-main>i>em.pulse.add{animation-name:progress-pulse,count-added!important}.dhikr-station-main>i>em.pulse.undo{animation-name:progress-pulse,count-undone!important}
