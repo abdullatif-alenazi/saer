@@ -12,6 +12,7 @@ import "./progress.css";
 import "./progress-overrides.css";
 import "./pastel-overrides.css";
 import "./identity-refresh.css";
+import "./dhikr-settings.css";
 
 export const metadata: Metadata = {
   title: "سائر — ماذا تفعل الآن؟",

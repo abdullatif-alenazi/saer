@@ -1,0 +1,38 @@
+/* إعداد الورد: رأس ثابت، محتوى داخلي قابل للتمرير، وحواف كاملة */
+dialog[open].dhikr-settings-sheet{position:fixed;inset:50% auto auto 50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;width:min(calc(100% - 24px),496px);height:min(760px,88dvh);max-height:88dvh;margin:0;padding:0;overflow:hidden;border:1px solid #dce9ef;border-radius:25px;background:linear-gradient(155deg,#fff 0%,#f7fbfd 100%);color:var(--ink);box-shadow:0 24px 80px rgba(45,75,95,.2)}
+dialog[open].dhikr-settings-sheet::backdrop{background:rgba(39,56,69,.28);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.dhikr-settings-header{position:relative;z-index:2;flex:0 0 auto;padding:17px 19px 14px;border-bottom:1px solid #e8f0f4;background:rgba(255,255,255,.96)}
+.dhikr-settings-header .sheet-head{align-items:center}
+.dhikr-settings-header .sheet-head .eyebrow{margin:0 0 2px;font-size:10px;color:#86a0b1}
+.dhikr-settings-header .sheet-head h2{font-size:21px;color:#405f76}
+.dhikr-settings-header .sheet-head>button{width:34px;height:34px;flex-basis:34px;display:grid;place-items:center;border:1px solid #dce8ef;background:#fff;color:#6e879a}
+.dhikr-settings-scroll.wizard-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:grid;align-content:start;gap:11px;padding:14px 16px 16px;animation:none}
+.dhikr-settings-scroll.wizard-body label+label,.dhikr-settings-scroll.wizard-body .field-label{margin-top:0}
+.dhikr-settings-card{min-width:0;padding:13px;border:1px solid #e0ebf0;border-radius:17px;background:rgba(255,255,255,.88);box-shadow:0 5px 16px rgba(63,94,112,.045)}
+.dhikr-settings-card h3{margin:0;color:#55758b;font-size:13px;font-weight:850}
+.dhikr-settings-card-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
+.dhikr-settings-card-heading small{color:#91a5b2;font-size:9px}
+.dhikr-name-card input{width:100%;height:43px;margin-top:8px;padding:0 11px;border:1px solid #dfe9ee;border-radius:12px;background:#fbfdfe;color:#405a6b;font:inherit;font-size:14px;outline:none}
+.dhikr-name-card input:focus,.dhikr-station-editor-row input:focus{border-color:#a9cfe2;box-shadow:0 0 0 3px rgba(144,193,216,.16)}
+.dhikr-station-editor-list{display:grid;gap:7px}
+.dhikr-station-editor-row{display:grid;grid-template-columns:minmax(62px,1fr) 32px minmax(72px,.9fr) 32px;direction:rtl;align-items:center;gap:6px;min-width:0}
+.dhikr-station-editor-row select{min-width:0;width:100%;height:37px;margin:0;padding:0 8px;border:1px solid #e0e9ee;border-radius:10px;background:#fbfdfe;color:#536e81;font:inherit;font-size:11px;font-weight:750}
+.dhikr-station-editor-row button{width:32px;height:32px;display:grid;place-items:center;padding:0;border:1px solid #dce8ee;border-radius:10px;background:#f8fcfe;color:#64869b;font-size:19px;font-weight:700;line-height:1;cursor:pointer;transition:transform .16s ease,background .16s ease}
+.dhikr-station-editor-row button:active{transform:scale(.92);background:#e9f5fa}
+.dhikr-station-editor-row input{width:100%;min-width:0;height:37px;margin:0;padding:0 5px;border:1px solid #dfe9ee;border-radius:10px;background:#fff;color:#496c83;text-align:center;font:inherit;font-size:13px;font-weight:850;font-variant-numeric:tabular-nums;outline:none}
+.dhikr-stations-total{align-items:center;margin-top:10px;padding:11px 12px;border:1px solid #d8edf3;border-radius:13px;background:linear-gradient(110deg,#f1fafb,#eaf6f8);color:#607e90}
+.dhikr-stations-total span{font-size:11px;font-weight:750}
+.dhikr-stations-total b{color:#4d7891;font-size:17px;font-variant-numeric:tabular-nums}
+.dhikr-duration-card .dhikr-timing-fields{grid-template-columns:1.05fr .8fr .8fr;gap:7px}
+.dhikr-duration-card .dhikr-timing-fields label{min-width:0;margin:0!important;color:#6e8493;font-size:10px}
+.dhikr-duration-card .dhikr-timing-fields input{height:38px;margin-top:5px;padding:0 7px;border:1px solid #e0e9ee;border-radius:10px;background:#fbfdfe;color:#496c83;text-align:center;font:inherit;font-size:12px;font-weight:750;font-variant-numeric:tabular-nums}
+.dhikr-duration-estimate{margin:9px 0 0;padding-top:8px;border-top:1px solid #edf2f5;color:#718b9c;font-size:10px;line-height:1.6}
+.dhikr-settings-card.dhikr-gauge-settings{gap:0;padding:13px;background:rgba(255,255,255,.88)}
+.dhikr-settings-card.dhikr-gauge-settings .dhikr-settings-card-heading{margin-bottom:9px}
+.dhikr-settings-card.dhikr-gauge-settings>div[role="group"]{grid-template-columns:1fr 1fr;gap:7px}
+.dhikr-settings-card.dhikr-gauge-settings button{min-height:50px;padding:8px 10px;border-color:#e0e9ee;border-radius:12px}
+.dhikr-settings-footer{position:relative;z-index:2;flex:0 0 auto;display:flex;gap:8px;padding:11px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #e8f0f4;background:rgba(255,255,255,.97)}
+.dhikr-settings-footer .wizard-back{min-width:82px;min-height:46px;border-radius:13px}
+.dhikr-settings-footer .primary{flex:1;min-height:46px;border-radius:13px;font-size:14px}
+@media(max-height:650px){dialog[open].dhikr-settings-sheet{height:92dvh;max-height:92dvh}.dhikr-settings-header{padding-block:12px}.dhikr-settings-scroll.wizard-body{gap:8px;padding-block:10px}.dhikr-settings-card{padding:10px}.dhikr-station-editor-list{gap:5px}.dhikr-settings-footer{padding-block:8px}}
+@media(max-width:350px){.dhikr-settings-scroll.wizard-body{padding-inline:11px}.dhikr-settings-card{padding:10px}.dhikr-station-editor-row{grid-template-columns:minmax(57px,1fr) 29px minmax(65px,.85fr) 29px;gap:4px}.dhikr-station-editor-row button{width:29px;height:29px}}
