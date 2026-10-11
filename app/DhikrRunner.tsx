@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type TouchEvent} from "react";
+import {Pencil} from "lucide-react";
 import type {PlannedActivity,UnitPeriod,UnitProgress} from "./local-store";
 import WeekStrip from "./WeekStrip";
 
@@ -51,7 +52,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
  const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  return <section className="dhikr-runner">
-  <header><button className="dhikr-exit" onClick={onExit} aria-label="العودة إلى رحلة اليوم" title="العودة إلى رحلة اليوم">↩</button><div><button className="dhikr-runner-title" onClick={onOpenAchievements}>{activity.name}</button></div><div className="dhikr-head-actions"><button onClick={onEdit} aria-label="تعديل الورد" title="تعديل الورد"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14.7 4.1 5.2 5.2M5 19l3.8-.8L19.2 7.8a2 2 0 0 0 0-2.8l-.2-.2a2 2 0 0 0-2.8 0L5.8 15.2 5 19Z"/></svg></button></div></header>
+  <header><button className="dhikr-exit" onClick={onExit} aria-label="العودة إلى رحلة اليوم" title="العودة إلى رحلة اليوم">↩</button><div><button className="dhikr-runner-title" onClick={onOpenAchievements}>{activity.name}</button></div><div className="dhikr-head-actions"><button onClick={onEdit} aria-label="تعديل الورد" title="تعديل الورد"><Pencil size={19} strokeWidth={2} aria-hidden="true"/></button></div></header>
   <WeekStrip date={date} today={today} calendarMode={calendarMode} weekStartsOn={weekStartsOn} onChange={next=>{const current=new Date(`${date}T12:00:00`),target=new Date(`${next}T12:00:00`);onDateChange(Math.round((target.getTime()-current.getTime())/86400000))}}/>
   <article className="dhikr-overview-card">
    <div className="dhikr-day-total dhikr-gauge-summary" aria-label="ملخص ورد اليوم">
