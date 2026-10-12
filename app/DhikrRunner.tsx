@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type TouchEvent} from "react";
 import {Pencil} from "lucide-react";
-import type {PlannedActivity,UnitPeriod,UnitProgress} from "./local-store";
+import {counterValue,setCounterValue,type PlannedActivity,type UnitPeriod,type UnitProgress} from "./local-store";
 import WeekStrip from "./WeekStrip";
 
 const ar=(value:number)=>value.toLocaleString("ar-SA",{useGrouping:true});
@@ -30,7 +30,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const [celebration,setCelebration]=useState<{message:string;id:number}|null>(null);
  const periods=useMemo(()=>basePeriods.map(period=>{const target=progress.targetByPeriod?.[period.id]??period.target;return{...period,target,unitCount:Math.max(1,Math.ceil(target/period.unitValue))}}),[basePeriods,progress.targetByPeriod]);
  const active=periods.find(period=>period.id===selected)??periods[0];
- const doneFor=(period:UnitPeriod,source=progress)=>Math.max(source.counterByPeriod[period.id]??0,(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
+ const doneFor=(period:UnitPeriod,source=progress)=>Math.max(counterValue(source,period.id),(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
  const gaugeStyle=config.gaugeStyle??"ring";
  const totalTarget=periods.reduce((sum,period)=>sum+period.target,0),totalDone=periods.reduce((sum,period)=>sum+doneFor(period),0);
  const dailyRemaining=Math.max(0,totalTarget-totalDone);
@@ -39,8 +39,8 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  // تدريجات بصرية محدودة؛ العداد العام للمنجز، وهدف الفترة يظهر كنص مستقل.
  const dayEnded=date<today;
  const persist=(next:UnitProgress)=>{const nextPeriods=basePeriods.map(period=>({...period,target:next.targetByPeriod?.[period.id]??period.target}));const completed=nextPeriods.every(period=>doneFor(period,next)>=period.target);const saved={...next,updatedAt:new Date().toISOString(),completedAt:completed?(next.completedAt??new Date().toISOString()):undefined};setProgress(saved);onChange(saved);if(completed&&!progress.completedAt)onFinish(nextPeriods.reduce((sum,period)=>sum+period.target,0))};
- const add=(amount:number)=>{const before=doneFor(active);if(decrementMode&&before===0)return;const units=[...(progress.completedUnitsByPeriod[active.id]??[])],nextCount=decrementMode?Math.max(0,before-amount):before+amount,kind=decrementMode?"undo":"add";setOperationHistory(current=>({...current,[active.id]:[...(current[active.id]??[]),{counter:progress.counterByPeriod[active.id]??0,units}]}));setFeedback({amount,kind,id:Date.now()});const next={...progress,counterByPeriod:{...progress.counterByPeriod,[active.id]:nextCount},completedUnitsByPeriod:decrementMode?{...progress.completedUnitsByPeriod,[active.id]:[]}:progress.completedUnitsByPeriod};if(!decrementMode&&before<active.target&&nextCount>=active.target){const messages=["أحسنت صنعًا","رائع، لقد أنجزت","بارك الله فيك","كم أنت بطل"];setCelebration({message:messages[Math.floor(Math.random()*messages.length)],id:Date.now()})}persist(next)};
- const undo=()=>{const history=operationHistory[active.id]??[],last=history.at(-1);if(!last)return;const before=doneFor(active),restored=Math.max(last.counter,last.units.length*active.unitValue);setOperationHistory(current=>({...current,[active.id]:history.slice(0,-1)}));setFeedback({amount:Math.abs(restored-before),kind:restored>=before?"add":"undo",id:Date.now()});persist({...progress,completedAt:undefined,counterByPeriod:{...progress.counterByPeriod,[active.id]:last.counter},completedUnitsByPeriod:{...progress.completedUnitsByPeriod,[active.id]:last.units}})};
+ const add=(amount:number)=>{const before=doneFor(active);if(decrementMode&&before===0)return;const units=[...(progress.completedUnitsByPeriod[active.id]??[])],nextCount=decrementMode?Math.max(0,before-amount):before+amount,kind=decrementMode?"undo":"add";setOperationHistory(current=>({...current,[active.id]:[...(current[active.id]??[]),{counter:before,units}]}));setFeedback({amount,kind,id:Date.now()});const next=setCounterValue(progress,active.id,nextCount,units.length*active.unitValue);next.completedUnitsByPeriod=decrementMode?{...progress.completedUnitsByPeriod,[active.id]:[]}:progress.completedUnitsByPeriod;if(!decrementMode&&before<active.target&&nextCount>=active.target){const messages=["أحسنت صنعًا","رائع، لقد أنجزت","بارك الله فيك","كم أنت بطل"];setCelebration({message:messages[Math.floor(Math.random()*messages.length)],id:Date.now()})}persist(next)};
+ const undo=()=>{const history=operationHistory[active.id]??[],last=history.at(-1);if(!last)return;const before=doneFor(active),restored=Math.max(last.counter,last.units.length*active.unitValue);setOperationHistory(current=>({...current,[active.id]:history.slice(0,-1)}));setFeedback({amount:Math.abs(restored-before),kind:restored>=before?"add":"undo",id:Date.now()});const next=setCounterValue(progress,active.id,restored,last.units.length*active.unitValue);persist({...next,completedAt:undefined,completedUnitsByPeriod:{...progress.completedUnitsByPeriod,[active.id]:last.units}})};
  const startModeHold=()=>{if(holdTimer.current!==null)window.clearTimeout(holdTimer.current);longPressTriggered.current=false;holdTimer.current=window.setTimeout(()=>{longPressTriggered.current=true;setDecrementMode(value=>!value)},520)};
  const endModeHold=()=>{if(holdTimer.current!==null){window.clearTimeout(holdTimer.current);holdTimer.current=null}};
  const handleGaugeTouchStart=(event:TouchEvent<HTMLDivElement>)=>{const touch=event.touches[0];if(touch)gaugeTouchStart.current={x:touch.clientX,y:touch.clientY}};
