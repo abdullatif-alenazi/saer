@@ -43,7 +43,7 @@ const sairDayDate=(value:Date)=>{const parts=new Intl.DateTimeFormat("en-CA",{ti
 const riyadhDay=(value:Date|string)=>riyadhCalendarKey(sairDayDate(value instanceof Date?value:new Date(`${value}T12:00:00`)));
 const appointmentPeriod=(time:string,starts:number[])=>{const minute=timeToMinutes(time);for(let i=starts.length-1;i>=0;i--)if(minute>=starts[i])return i;return 4};
 const unitPeriodFor=(activity:PlannedActivity,period:string)=>activity.unitTracking?.periods.find(item=>item.period===period);
-const unitDone=(progress:UnitProgress|undefined,period:UnitPeriod|undefined)=>!progress||!period?0:Math.min(period.target,Math.max(counterValue(progress,period.id),(progress.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue));
+ const unitDone=(progress:UnitProgress|undefined,period:UnitPeriod|undefined)=>!progress||!period?0:Math.min(period.target,Math.max(counterValue(progress,period.id),((progress.completedUnitsByPeriod??{})[period.id]?.length??0)*period.unitValue));
 const weekDayName=(date:Date)=>new Intl.DateTimeFormat("ar-SA",{weekday:"long",timeZone:"Asia/Riyadh"}).format(date);
 const scheduledOn=(activity:PlannedActivity,date:Date)=>activity.schedule.mode==="daily"||Boolean(activity.schedule.days?.includes(weekDayName(date))||activity.schedule.value.includes(weekDayName(date)));
 const isGoalDisplay=(activity:PlannedActivity)=>activity.nature==="goal"||(["قراءة","مهارة"].includes(activity.template)&&!activity.parentGoalId);

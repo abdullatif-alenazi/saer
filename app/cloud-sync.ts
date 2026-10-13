@@ -1,6 +1,6 @@
 "use client";
 import type {User} from "@supabase/supabase-js";
-import {readLocalSnapshot,replaceLocalSnapshot,type ExecutionRecord,type LocalSnapshot,type UnitProgress} from "./local-store";
+import {normalizeUnitProgress,readLocalSnapshot,replaceLocalSnapshot,type ExecutionRecord,type LocalSnapshot,type UnitProgress} from "./local-store";
 import {supabase} from "./supabase";
 
 export type SyncStatus="offline"|"ready"|"syncing"|"error";
@@ -19,7 +19,7 @@ const report=(status:SyncStatus)=>listener?.(currentUser,status);
 type Pending={base:LocalSnapshot;local:LocalSnapshot;revision:string};
 const storage=(userId:string,kind:"base"|"pending")=>`sair.sync.${kind}.v2.${userId}`;
 const emptySnapshot=():LocalSnapshot=>({version:1,plan:[],tasks:[],appointments:[],executionLog:[],unitProgress:[],preferences:{calendarMode:null,journeyFilter:null,weekStartsOn:null}});
-const normalizeSnapshot=(value:unknown):LocalSnapshot=>{const data=(value&&typeof value==="object"?value:{}) as Partial<LocalSnapshot>;return{...emptySnapshot(),...data,plan:data.plan??[],tasks:data.tasks??[],appointments:data.appointments??[],executionLog:data.executionLog??[],unitProgress:data.unitProgress??[],preferences:{...emptySnapshot().preferences,...data.preferences}}};
+const normalizeSnapshot=(value:unknown):LocalSnapshot=>{const data=(value&&typeof value==="object"?value:{}) as Partial<LocalSnapshot>;return{...emptySnapshot(),...data,plan:data.plan??[],tasks:data.tasks??[],appointments:data.appointments??[],executionLog:data.executionLog??[],unitProgress:normalizeUnitProgress(data.unitProgress),preferences:{...emptySnapshot().preferences,...data.preferences}}};
 const same=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
 const readSaved=<T,>(key:string):T|undefined=>{try{const value=localStorage.getItem(key);return value?JSON.parse(value) as T:undefined}catch{return undefined}};
 const writeBase=(id:string,value:LocalSnapshot)=>localStorage.setItem(storage(id,"base"),JSON.stringify(value));
