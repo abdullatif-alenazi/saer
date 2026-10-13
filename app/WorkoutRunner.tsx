@@ -7,7 +7,7 @@ const ar=(value:number,pad=1)=>value.toLocaleString("ar-SA",{minimumIntegerDigit
 const clock=(seconds:number)=>`${ar(Math.floor(seconds/60),2)}:${ar(seconds%60,2)}`;
 type Mode="ready"|"prepare"|"work"|"rest"|"exerciseDone"|"sessionDone";
 
-export default function WorkoutRunner({activity,date,today,calendarMode,weekStartsOn,onDateChange,onExit,onFinish,onOpenAchievements}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";weekStartsOn:"saturday"|"sunday";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number)=>void;onOpenAchievements:()=>void}){
+export default function WorkoutRunner({activity,date,today,calendarMode,weekStartsOn,onDateChange,onExit,onFinish,onOpenAchievements}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";weekStartsOn:"saturday"|"sunday";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number,durationSeconds?:number)=>void;onOpenAchievements:()=>void}){
  const exercises=activity.exercises??[];
  const [exerciseIndex,setExerciseIndex]=useState(0),[setIndex,setSetIndex]=useState(1),[mode,setMode]=useState<Mode>("ready"),[seconds,setSeconds]=useState(0),[workTotal,setWorkTotal]=useState(0),[restTotal,setRestTotal]=useState(0),[repetitions,setRepetitions]=useState(0);
  const exercise=exercises[exerciseIndex];
@@ -39,6 +39,6 @@ export default function WorkoutRunner({activity,date,today,calendarMode,weekStar
    {mode==="work"&&exercise.measurement==="duration"&&<button className="soft workout-secondary" onClick={completeSet}>إنهاء الجولة مبكرًا</button>}
    {mode==="rest"&&<div className="rest-actions"><button onClick={()=>setSeconds(value=>value+30)}>+ ٣٠ ثانية</button><button onClick={beginWork}>تخطي الراحة</button></div>}
    {mode==="exerciseDone"&&<div className="exercise-finish"><span>✓</span><h2>تم {exercise.name}.</h2><p>{ar(exercise.sets)} جولات{exercise.measurement==="repetitions"?` · ${ar(exercise.sets*(exercise.reps??0))} عدة`:""}</p><button className="primary" onClick={nextExercise}>{exerciseIndex<exercises.length-1?"التمرين التالي":"عرض ملخص الجلسة"}</button></div>}
-  </>:<div className="session-finish"><span>✓</span><p>تمت الجلسة.</p><h1>{ar(exercises.length)} تمارين</h1><div><b>{clock(workTotal)}</b><small>وقت الأداء</small><b>{clock(restTotal)}</b><small>وقت الراحة</small><b>{ar(repetitions)}</b><small>عدة</small></div><button className="primary" onClick={()=>onFinish(Math.max(1,Math.round((workTotal+restTotal)/60)),repetitions)}>إنهاء الجلسة</button><p>أحسنت. انتهيت. استمتع بوقتك.</p></div>}
+  </>:<div className="session-finish"><span>✓</span><p>تمت الجلسة.</p><h1>{ar(exercises.length)} تمارين</h1><div><b>{clock(workTotal)}</b><small>وقت الأداء</small><b>{clock(restTotal)}</b><small>وقت الراحة</small><b>{ar(repetitions)}</b><small>عدة</small></div><button className="primary" onClick={()=>onFinish(Math.max(1,(workTotal+restTotal)/60),repetitions,workTotal+restTotal)}>إنهاء الجلسة</button><p>أحسنت. انتهيت. استمتع بوقتك.</p></div>}
  </section>
 }

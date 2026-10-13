@@ -4,8 +4,10 @@ export type Schedule={mode:"daily"|"fixed"|"flexible";value:string;days?:string[
 export type GoalDefinition={kind:GoalMetricKind;currentValue?:number;targetValue?:number;unit?:string;currentLevel?:string;targetLevel?:string;milestoneLabel?:string;currentMilestone?:number;targetMilestone?:number};
 export type SupportingPlan={enabled:boolean;actionName:string;expectedMinutes:number;schedule:Schedule;period:string};
 export type UnitPeriod={id:string;label:string;period:string;target:number;unitCount:number;unitValue:number};
-export type UnitTracking={method:"counter"|"units";target:number;pressValue:number;periods:UnitPeriod[];timing?:{count:number;seconds:number};gaugeStyle?:"ring"|"semi"};
-export type ExecutionRecord={activityId?:string;activity:string;minutes:number;quantity?:number;quantityUnit?:string;completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number};
+export type UnitTracking={method:"counter"|"units";target:number;pressValue:number;periods:UnitPeriod[];timing?:{count:number;seconds:number;showTimer?:boolean;roundSize?:number};gaugeStyle?:"ring"|"semi"};
+export type TimedRound={id:string;sessionId:string;periodId:string;sequence:number;amount:number;unitIndex?:number;startedAt:string;completedAt:string;durationSeconds:number;status:"completed"|"undone";method:"counter"|"units"};
+export type TimedSession={id:string;activityId:string;date:string;startedAt:string;roundStartedAt?:string;updatedAt:string;status:"running"|"paused"|"finished";elapsedMs:number;roundElapsedMs:number;rounds:TimedRound[];interrupted?:boolean;finishedAt?:string};
+export type ExecutionRecord={id?:string;activityId?:string;activity:string;minutes:number;durationSeconds?:number;quantity?:number;targetQuantity?:number;quantityUnit?:string;activityKind?:"quantity"|"time"|"single";completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number;sessionId?:string;rounds?:TimedRound[]};
 const key="sair.executionLog.v1";
 const calendarKey="sair.calendar.v1";
 const journeyFilterKey="sair.journeyFilter.v1";
@@ -15,7 +17,7 @@ export function readWeekStartsOn():WeekStartsOn{return localStorage.getItem(week
 export function saveWeekStartsOn(value:WeekStartsOn){localStorage.setItem(weekStartsOnKey,value);notifyChange()}
 const notifyChange=()=>{if(typeof window!=="undefined")window.dispatchEvent(new Event("sair-local-change"))};
 export function readExecutionLog():ExecutionRecord[]{try{return JSON.parse(localStorage.getItem(key)||"[]")}catch{return[]}}
-export function saveExecution(record:ExecutionRecord){const records=readExecutionLog();localStorage.setItem(key,JSON.stringify([record,...records].slice(0,500)));notifyChange();return records.length+1}
+export function saveExecution(record:ExecutionRecord){const records=readExecutionLog(),next=record.id?[record,...records.filter(item=>item.id!==record.id)].slice(0,500):[record,...records].slice(0,500);localStorage.setItem(key,JSON.stringify(next));notifyChange();return next.length}
 
 export type PlannedActivity={
  id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;updatedAt?:string;
@@ -35,12 +37,12 @@ export function updatePlan(activity:PlannedActivity){const next=readPlan().map(i
 export function deletePlan(id:string){const next=readPlan().filter(item=>item.id!==id);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 
 export type CounterEvent={id:string;periodId:string;delta:number;createdAt:string};
-export type UnitProgress={activityId:string;date:string;counterByPeriod:Record<string,number>;counterEvents?:CounterEvent[];completedUnitsByPeriod:Record<string,number[]>;targetByPeriod?:Record<string,number>;updatedAt:string;completedAt?:string};
+export type UnitProgress={activityId:string;date:string;counterByPeriod:Record<string,number>;counterEvents?:CounterEvent[];completedUnitsByPeriod:Record<string,number[]>;targetByPeriod?:Record<string,number>;timedSessions?:TimedSession[];activeSessionId?:string;updatedAt:string;completedAt?:string};
 export function counterValue(progress:UnitProgress|undefined,periodId:string){if(!progress)return 0;const base=progress.counterByPeriod?.[periodId]??0;const changes=(progress.counterEvents??[]).filter(event=>event.periodId===periodId).reduce((sum,event)=>sum+event.delta,0);return Math.max(0,base+changes)}
 export function setCounterValue(progress:UnitProgress,periodId:string,value:number,minimumBase=0):UnitProgress{const base=Math.max(progress.counterByPeriod[periodId]??0,minimumBase),current=Math.max(0,base+(progress.counterEvents??[]).filter(event=>event.periodId===periodId).reduce((sum,event)=>sum+event.delta,0)),delta=Math.max(0,value)-current;if(!delta)return{...progress,counterByPeriod:{...progress.counterByPeriod,[periodId]:base}};const id=globalThis.crypto?.randomUUID?.()??`${Date.now()}-${Math.random().toString(36).slice(2)}`;return{...progress,counterByPeriod:{...progress.counterByPeriod,[periodId]:base},counterEvents:[...(progress.counterEvents??[]),{id,periodId,delta,createdAt:new Date().toISOString()}]}}
 const unitProgressKey="sair.unitProgress.v1";
 export function readUnitProgress():UnitProgress[]{try{return JSON.parse(localStorage.getItem(unitProgressKey)||"[]")}catch{return[]}}
-export function saveUnitProgress(progress:UnitProgress){const all=readUnitProgress(),next=[progress,...all.filter(item=>!(item.activityId===progress.activityId&&item.date===progress.date))].slice(0,400);localStorage.setItem(unitProgressKey,JSON.stringify(next));notifyChange();return next}
+export function saveUnitProgress(progress:UnitProgress,notify=true){const all=readUnitProgress(),next=[progress,...all.filter(item=>!(item.activityId===progress.activityId&&item.date===progress.date))].slice(0,400);localStorage.setItem(unitProgressKey,JSON.stringify(next));if(notify)notifyChange();return next}
 
 export type Appointment={id:string;title:string;date:string;time:string;alertMinutes?:number;updatedAt?:string};
 const appointmentKey="sair.appointments.v1";
