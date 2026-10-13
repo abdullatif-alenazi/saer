@@ -37,3 +37,16 @@ dialog[open].dhikr-settings-sheet::backdrop{background:rgba(39,56,69,.28);backdr
 .dhikr-settings-footer .primary{flex:1;min-height:46px;border-radius:13px;font-size:14px}
 @media(max-height:650px){dialog[open].dhikr-settings-sheet{height:92dvh;max-height:92dvh}.dhikr-settings-header{padding-block:12px}.dhikr-settings-scroll.wizard-body{gap:8px;padding-block:10px}.dhikr-settings-card{padding:10px}.dhikr-station-editor-list{gap:5px}.dhikr-settings-footer{padding-block:8px}}
 @media(max-width:350px){.dhikr-settings-scroll.wizard-body{padding-inline:11px}.dhikr-settings-card{padding:10px}.dhikr-station-editor-row{grid-template-columns:minmax(57px,1fr) 29px minmax(65px,.85fr) 29px;gap:4px}.dhikr-station-editor-row button{width:29px;height:29px}}
+.dhikr-settings-card.dhikr-run-options{gap:9px;padding:13px;background:rgba(255,255,255,.88)}
+.dhikr-settings-card.dhikr-run-options .dhikr-round-size-setting{margin:0!important}
+.dhikr-switch{display:flex!important;align-items:center;gap:10px;width:100%;min-height:48px;padding:0!important;border:0!important;background:transparent!important;color:#6e8493!important;text-align:right;font:inherit;cursor:pointer}
+.dhikr-switch-track{position:relative;flex:0 0 42px;width:42px;height:24px;border-radius:99px;background:#dce5ea;transition:background .22s ease}
+.dhikr-switch-track i{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(40,75,95,.17);transition:transform .22s ease}
+.dhikr-switch.on .dhikr-switch-track{background:#9fcfdf}
+.dhikr-switch.on .dhikr-switch-track i{transform:translateX(-18px)}
+.dhikr-switch-copy{display:grid;gap:3px}.dhikr-switch-copy b{font-size:11px}.dhikr-switch-copy small{color:#91a5b2;font-size:9px;font-weight:500}
+.quick-sheet button.urgent-check{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:5px 0;border:0;background:transparent;color:var(--ink);text-align:right;font:inherit;cursor:pointer}
+.dhikr-timer-style{display:grid;gap:7px;color:#6e8493;font-size:11px;font-weight:750}
+.dhikr-timer-style>div{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:3px;border:1px solid #e1ebef;border-radius:12px;background:#f4f8fa}
+.dhikr-settings-card.dhikr-run-options .dhikr-timer-style button{min-height:36px;border:1px solid transparent;border-radius:9px;background:transparent;color:#8299a8;font:inherit;font-size:11px;font-weight:750}
+.dhikr-settings-card.dhikr-run-options .dhikr-timer-style button.selected{border-color:#cce4ed;background:#fff;color:#547b92;box-shadow:0 2px 7px rgba(77,122,146,.08)}
