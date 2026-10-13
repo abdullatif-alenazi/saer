@@ -40,7 +40,7 @@ const calendarNoon=(value:Date)=>new Date(value.getFullYear(),value.getMonth(),v
 const sairDayDate=(value:Date)=>{const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh",hour:"numeric",minute:"numeric",hourCycle:"h23"}).formatToParts(value),read=(type:string)=>Number(parts.find(part=>part.type===type)?.value??0),minute=read("hour")*60+read("minute");return minute<getRiyadhPrayerTimes(value).fajr?new Date(value.getTime()-86400000):value};
 // نص تاريخ YYYY-MM-DD يُفسَّر كـ UTC عند تمريره مباشرة إلى Date، فينقلب إلى اليوم السابق
 // بعد قاعدة «اليوم يبدأ بالفجر». نثبته عند الظهر المحلي حتى يظل اليوم الذي اختاره المستخدم نفسه.
-const riyadhDay=(value:Date|string)=>riyadhCalendarKey(sairDayDate(value instanceof Date?value:new Date(`${value}T12:00:00`)));
+const riyadhDay=(value:Date|string)=>{const date=value instanceof Date?value:/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(`${value}T12:00:00`):new Date(value);return Number.isFinite(date.getTime())?riyadhCalendarKey(sairDayDate(date)):""};
 const appointmentPeriod=(time:string,starts:number[])=>{const minute=timeToMinutes(time);for(let i=starts.length-1;i>=0;i--)if(minute>=starts[i])return i;return 4};
 const unitPeriodFor=(activity:PlannedActivity,period:string)=>activity.unitTracking?.periods.find(item=>item.period===period);
  const unitDone=(progress:UnitProgress|undefined,period:UnitPeriod|undefined)=>!progress||!period?0:Math.min(period.target,Math.max(counterValue(progress,period.id),((progress.completedUnitsByPeriod??{})[period.id]?.length??0)*period.unitValue));
