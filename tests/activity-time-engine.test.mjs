@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   activeSeconds,
   checkpointSession,
+  completePendingRound,
   completeTimedRound,
   createTimedSession,
   estimateActivityTime,
@@ -50,6 +51,32 @@ test("session clocks count active time, exclude pauses, and finish safely", () =
   session = finishSession(session, 20_000, 8_000, 68_000);
   assert.equal(session.elapsedMs, 20_000);
   assert.equal(session.status, "finished");
+});
+
+test("manual rounds accumulate clicks, preserve session total, and summarize real pace", () => {
+  let session = createTimedSession("dhikr-1", "2026-10-13", 0);
+  session = { ...session, pendingRoundAmounts: { morning: 120 }, pendingRoundAmount: 120 };
+  session = checkpointSession(session, 45_000, 45_000, 45_000);
+  session = completePendingRound(session, 45, "counter", 45_000);
+  assert.equal(session.rounds.length, 1);
+  assert.equal(session.rounds[0].amount, 120);
+  assert.equal(session.elapsedMs, 45_000);
+  assert.equal(session.roundElapsedMs, 0);
+  const duplicateCapture = completePendingRound(session, 0, "counter", 45_001);
+  assert.equal(duplicateCapture.rounds.length, 1);
+
+  session = pauseSession(session, 45_000, 0, 45_000);
+  session = resumeSession(session, 200_000);
+  session = { ...session, pendingRoundAmounts: { noon: 60 }, pendingRoundAmount: 60 };
+  session = checkpointSession(session, 75_000, 30_000, 230_000);
+  session = completePendingRound(session, 30, "counter", 230_000);
+  session = finishSession(session, 75_000, 0, 230_000);
+  const summary = summarizeSession(session);
+  assert.equal(summary.quantity, 180);
+  assert.equal(summary.roundCount, 2);
+  assert.equal(summary.elapsedSeconds, 75);
+  assert.equal(summary.averageRatePerMinute, 144);
+  assert.deepEqual(summary.rounds.map((round) => round.durationSeconds), [45, 30]);
 });
 
 test("counter and icon rounds preserve amount and duration, and canceled rounds leave summaries", () => {
