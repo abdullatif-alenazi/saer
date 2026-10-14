@@ -79,6 +79,22 @@ test("manual rounds accumulate clicks, preserve session total, and summarize rea
   assert.deepEqual(summary.rounds.map((round) => round.durationSeconds), [45, 30]);
 });
 
+test("each configured counter press becomes one round while pace stays session-wide", () => {
+  let session = createTimedSession("dhikr-1", "2026-10-13", 0);
+  for (const [elapsed, roundElapsed] of [[60_000, 60], [120_000, 60]]) {
+    const periodAmounts = { morning: 100 };
+    const checkpointed = checkpointSession(session, elapsed, roundElapsed * 1000, elapsed);
+    session = completePendingRound({ ...checkpointed, pendingRoundAmounts: periodAmounts, pendingRoundAmount: 100, pendingRoundPeriodId: "morning" }, roundElapsed, "counter", elapsed);
+  }
+  const summary = summarizeSession(session);
+  assert.deepEqual(summary.rounds.map(round => round.amount), [100, 100]);
+  assert.deepEqual(summary.rounds.map(round => round.durationSeconds), [60, 60]);
+  assert.equal(summary.quantity, 200);
+  assert.equal(summary.roundCount, 2);
+  assert.equal(summary.elapsedSeconds, 120);
+  assert.equal(summary.averageRatePerMinute, 100);
+});
+
 test("counter and icon rounds preserve amount and duration, and canceled rounds leave summaries", () => {
   let session = createTimedSession("dhikr-1", "2026-10-13", 0);
   let first = completeTimedRound(session, "morning", 10, 8, "counter", undefined, 8_000);
