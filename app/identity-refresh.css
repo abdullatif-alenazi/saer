@@ -11,12 +11,15 @@
   border:1px solid #d9e6eb!important;
   box-shadow:0 6px 16px rgba(104,130,152,.11)!important;
 }
-.dhikr-topbar{display:grid!important;grid-template-columns:44px 1fr 44px!important;gap:10px!important;direction:rtl!important}
+.dhikr-topbar{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px!important;gap:10px!important;direction:rtl!important}
 .dhikr-top-title{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:0!important}
 .dhikr-top-title small{font-size:.68rem!important;color:#7897ad!important;font-weight:750!important;line-height:1.15!important}
 .dhikr-top-title b{font-size:1.22rem!important;color:#3d5f7a!important;line-height:1.25!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
-.saer-back,.dhikr-top-edit{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;border:1px solid #d9e6eb!important;border-radius:15px!important;background:rgba(255,255,255,.86)!important;color:#597b96!important;box-shadow:0 5px 14px rgba(104,130,152,.10)!important}
-.saer-back svg,.dhikr-top-edit svg{width:20px!important;height:20px!important;stroke:currentColor!important;stroke-width:2.1!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.dhikr-top-title{appearance:none!important;-webkit-appearance:none!important;border:0!important;background:transparent!important;padding:5px!important;color:inherit!important;box-shadow:none!important;font:inherit!important;cursor:pointer!important}
+.dhikr-top-title:focus-visible{outline:2px solid #b9d9e8!important;outline-offset:3px!important;border-radius:8px!important}
+.dhikr-top-spacer{width:42px;height:42px;display:block}
+.saer-back{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;border:1px solid #d9e6eb!important;border-radius:15px!important;background:rgba(255,255,255,.86)!important;color:#597b96!important;box-shadow:0 5px 14px rgba(104,130,152,.10)!important}
+.saer-back svg{width:20px!important;height:20px!important;stroke:currentColor!important;stroke-width:2.1!important;stroke-linecap:round!important;stroke-linejoin:round!important}
 .dhikr-active .dhikr-runner>header{display:none!important}
 .topbar:not(.dhikr-topbar){grid-template-columns:42px 1fr 42px!important;display:grid!important;gap:10px!important}
 .topbar-page-title{display:flex!important;flex-direction:column!important;align-items:center!important;line-height:1.15!important}
