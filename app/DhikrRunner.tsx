@@ -14,7 +14,7 @@ function RingGauge({totalRatio,activeRatio,totalDone,activeDone,activeLabel}:{to
 
 type GaugeFeedback={amount:number;kind:"add"|"undo";id:number}|null;
 function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLabel,totalPercent,periodMarkers,feedback,idSuffix,className=""}:{style:GaugeStyle;totalRatio:number;activeRatio:number;totalDone:number;activeDone:number;activeLabel:string;totalPercent:number;periodMarkers:number[];feedback:GaugeFeedback;idSuffix:string;className?:string}){
- const gaugeTicks=style==="periods"?periodMarkers:Array.from({length:9},(_,index)=>(index+1)/10),clipId=`gauge-shared-cut-${idSuffix}`,needleShadowId=`gauge-needle-soft-shadow-${idSuffix}`,dialShadowId=`gauge-dial-soft-shadow-${idSuffix}`;
+ const gaugeTicks=style==="periods"?periodMarkers.map(marker=>marker.ratio):Array.from({length:9},(_,index)=>(index+1)/10),clipId=`gauge-shared-cut-${idSuffix}`,needleShadowId=`gauge-needle-soft-shadow-${idSuffix}`,dialShadowId=`gauge-dial-soft-shadow-${idSuffix}`;
  return <div className={`dhikr-gauge gauge-${style} ${className}`} aria-hidden={Boolean(className)}>
   <RingGauge totalRatio={totalRatio} activeRatio={activeRatio} totalDone={totalDone} activeDone={activeDone} activeLabel={activeLabel}/>
   <svg className="gauge-semi" viewBox="0 0 240 160" aria-hidden="true">
@@ -33,6 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,x=120+84*Math.cos(angle),y=118+84*Math.sin(angle);return <g key={`period-bubble-${index}`} className="gauge-period-marker"><circle cx={x} cy={y} r="10"/><text x={x} y={y+3.3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
@@ -75,7 +76,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const doneFor=(period:UnitPeriod,source=progress)=>Math.max(counterValue(source,period.id),(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
  const gaugeStyle=config.gaugeStyle??"ring";
  const totalTarget=periods.reduce((sum,period)=>sum+period.target,0),totalDone=periods.reduce((sum,period)=>sum+doneFor(period),0);
- const periodMarkers=periods.reduce<number[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0);if(totalTarget>0)markers.push(boundary/totalTarget);return markers},[]);
+ const periodMarkers=periods.reduce<{ratio:number;label:string}[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0),labels:Record<string,string>={الصباح:"ص",الظهر:"ظ",العصر:"ع",المغرب:"م",الليل:"ل"};if(totalTarget>0)markers.push({ratio:boundary/totalTarget,label:labels[period.period]??period.period.slice(0,1)});return markers},[]);
  const dailyRemaining=Math.max(0,totalTarget-totalDone);
  const roundRemaining=decrementMode?doneFor(active):Number.POSITIVE_INFINITY;
  const configuredRoundAmount=Math.max(1,Math.floor(config.timing?.roundSize??100));
