@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent,type TouchEvent} from "react";
 import {Pencil,Pause,Play,Square} from "lucide-react";
-import {counterValue,setCounterValue,type PlannedActivity,type TimedSession,type UnitPeriod,type UnitProgress} from "./local-store";
+import {counterValue,setCounterValue,type GaugeStyle,type PlannedActivity,type TimedSession,type UnitPeriod,type UnitProgress} from "./local-store";
 import {activeSeconds,checkpointSession,completePendingRound,createTimedSession,finishSession as finishTimedSession,formatStopwatch as fmt,pauseSession,removeTimedAmount,resumeSession,summarizeSession,undoTimedRound,undoTimedUnit} from "./activity-time-engine";
 import WeekStrip from "./WeekStrip";
 
@@ -12,10 +12,9 @@ function RingGauge({totalRatio,activeRatio,totalDone,activeDone,activeLabel}:{to
  return <div className="gauge-ring-face"><svg viewBox="0 0 240 240" aria-hidden="true"><g transform="rotate(-90 120 120)"><circle className="gauge-ring-track gauge-ring-outer" cx="120" cy="120" r="94" pathLength="100"/><circle className="gauge-ring-day" cx="120" cy="120" r="94" pathLength="100" style={{strokeDasharray:dash(totalRatio)}}/><circle className="gauge-ring-track gauge-ring-inner" cx="120" cy="120" r="68" pathLength="100"/><circle className="gauge-ring-period" cx="120" cy="120" r="68" pathLength="100" style={{strokeDasharray:dash(activeRatio)}}/></g><text className="gauge-ring-label" x="120" y="99">تم إنجاز</text><text className="gauge-ring-value" x="120" y="129">{ar(totalDone)}</text><text className="gauge-ring-period-label" x="120" y="153">{activeLabel.replace(/^بعد\s+/,"")} · {ar(activeDone)}</text></svg></div>
 }
 
-type GaugeStyle="ring"|"semi";
 type GaugeFeedback={amount:number;kind:"add"|"undo";id:number}|null;
-function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLabel,totalPercent,feedback,idSuffix,className=""}:{style:GaugeStyle;totalRatio:number;activeRatio:number;totalDone:number;activeDone:number;activeLabel:string;totalPercent:number;feedback:GaugeFeedback;idSuffix:string;className?:string}){
- const gaugeTicks=Array.from({length:9},(_,index)=>(index+1)/10),clipId=`gauge-shared-cut-${idSuffix}`,needleShadowId=`gauge-needle-soft-shadow-${idSuffix}`,dialShadowId=`gauge-dial-soft-shadow-${idSuffix}`;
+function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLabel,totalPercent,periodMarkers,feedback,idSuffix,className=""}:{style:GaugeStyle;totalRatio:number;activeRatio:number;totalDone:number;activeDone:number;activeLabel:string;totalPercent:number;periodMarkers:number[];feedback:GaugeFeedback;idSuffix:string;className?:string}){
+ const gaugeTicks=style==="periods"?periodMarkers:Array.from({length:9},(_,index)=>(index+1)/10),clipId=`gauge-shared-cut-${idSuffix}`,needleShadowId=`gauge-needle-soft-shadow-${idSuffix}`,dialShadowId=`gauge-dial-soft-shadow-${idSuffix}`;
  return <div className={`dhikr-gauge gauge-${style} ${className}`} aria-hidden={Boolean(className)}>
   <RingGauge totalRatio={totalRatio} activeRatio={activeRatio} totalDone={totalDone} activeDone={activeDone} activeLabel={activeLabel}/>
   <svg className="gauge-semi" viewBox="0 0 240 160" aria-hidden="true">
@@ -76,6 +75,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const doneFor=(period:UnitPeriod,source=progress)=>Math.max(counterValue(source,period.id),(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
  const gaugeStyle=config.gaugeStyle??"ring";
  const totalTarget=periods.reduce((sum,period)=>sum+period.target,0),totalDone=periods.reduce((sum,period)=>sum+doneFor(period),0);
+ const periodMarkers=periods.reduce<number[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0);if(totalTarget>0)markers.push(boundary/totalTarget);return markers},[]);
  const dailyRemaining=Math.max(0,totalTarget-totalDone);
  const roundRemaining=decrementMode?doneFor(active):Number.POSITIVE_INFINITY;
  const configuredRoundAmount=Math.max(1,Math.floor(config.timing?.roundSize??100));
@@ -157,7 +157,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const startModeHold=()=>{if(holdTimer.current!==null)window.clearTimeout(holdTimer.current);longPressTriggered.current=false;holdTimer.current=window.setTimeout(()=>{longPressTriggered.current=true;setDecrementMode(value=>!value)},520)};
  const endModeHold=()=>{if(holdTimer.current!==null){window.clearTimeout(holdTimer.current);holdTimer.current=null}};
  const handleGaugeTouchStart=(event:TouchEvent<HTMLDivElement>)=>{const touch=event.touches[0];if(touch)gaugeTouchStart.current={x:touch.clientX,y:touch.clientY}};
- const handleGaugeTouchEnd=(event:TouchEvent<HTMLDivElement>)=>{const start=gaugeTouchStart.current,touch=event.changedTouches[0];gaugeTouchStart.current=null;if(!start||!touch)return;const dx=touch.clientX-start.x,dy=touch.clientY-start.y;if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.2)return;setGaugeTransition({from:gaugeStyle,direction:dx<0?"left":"right"});onGaugeStyleChange(gaugeStyle==="ring"?"semi":"ring")};
+ const handleGaugeTouchEnd=(event:TouchEvent<HTMLDivElement>)=>{const start=gaugeTouchStart.current,touch=event.changedTouches[0];gaugeTouchStart.current=null;if(!start||!touch)return;const dx=touch.clientX-start.x,dy=touch.clientY-start.y;if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.2)return;const styles:GaugeStyle[]=["ring","semi","periods"],nextStyle=styles[(styles.indexOf(gaugeStyle)+(dx<0?1:styles.length-1))%styles.length];setGaugeTransition({from:gaugeStyle,direction:dx<0?"left":"right"});onGaugeStyleChange(nextStyle)};
  useEffect(()=>{const saved=(progressRef.current.timedSessions??[]).find(item=>item.id===progressRef.current.activeSessionId)??[...(progressRef.current.timedSessions??[])].reverse().find(item=>item.date===date);if(saved?.status==="running"){const recovered=pauseSession(saved,saved.elapsedMs,saved.roundElapsedMs,Date.now(),true);totalBase.current=recovered.elapsedMs;roundBase.current=recovered.roundElapsedMs;saveSession(recovered,true);setTimerPulse({totalSeconds:activeSeconds(recovered,recovered.elapsedMs),roundSeconds:Math.floor(recovered.roundElapsedMs/1000)})}else if(saved){sessionRef.current=saved;setTimerSession(saved);totalBase.current=saved.elapsedMs;roundBase.current=saved.roundElapsedMs;setTimerPulse({totalSeconds:activeSeconds(saved,saved.elapsedMs),roundSeconds:Math.floor(saved.roundElapsedMs/1000)})}else{sessionRef.current=null;setTimerSession(null);totalBase.current=0;roundBase.current=0;setTimerPulse({totalSeconds:0,roundSeconds:0})}const onVisibility=()=>{if(document.visibilityState==="hidden")stopTimer(true)};const onPageHide=()=>stopTimer(true);document.addEventListener("visibilitychange",onVisibility);window.addEventListener("pagehide",onPageHide);return()=>{document.removeEventListener("visibilitychange",onVisibility);window.removeEventListener("pagehide",onPageHide);stopTimer(true)}},[activity.id,date]);
  useEffect(()=>{if(timerSession?.status!=="running")return;const interval=window.setInterval(()=>checkpoint(false),1000);return()=>window.clearInterval(interval)},[timerSession?.status]);
  useEffect(()=>{if(!feedback)return;const timer=window.setTimeout(()=>setFeedback(null),760);return()=>window.clearTimeout(timer)},[feedback]);
@@ -172,8 +172,8 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   <article className="dhikr-overview-card">
    <div className="dhikr-day-total dhikr-gauge-summary" aria-label="ملخص ورد اليوم">
     <div className="gauge-swipe-stage" onTouchStart={handleGaugeTouchStart} onTouchEnd={handleGaugeTouchEnd} onTouchCancel={()=>{gaugeTouchStart.current=null}} aria-label="اسحب لتغيير شكل العداد">
-     {gaugeTransition&&<DhikrGauge key={`from-${gaugeTransition.from}`} style={gaugeTransition.from} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} feedback={feedback} idSuffix={`${activity.id}-${gaugeTransition.from}-old`} className={`gauge-swipe-old gauge-out-${gaugeTransition.direction}`}/>}
-     <DhikrGauge key={`current-${gaugeStyle}`} style={gaugeStyle} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} feedback={feedback} idSuffix={`${activity.id}-${gaugeStyle}-current`} className={gaugeTransition?`gauge-swipe-new gauge-in-${gaugeTransition.direction}`:""}/>
+     {gaugeTransition&&<DhikrGauge key={`from-${gaugeTransition.from}`} style={gaugeTransition.from} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeTransition.from}-old`} className={`gauge-swipe-old gauge-out-${gaugeTransition.direction}`}/>}
+     <DhikrGauge key={`current-${gaugeStyle}`} style={gaugeStyle} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeStyle}-current`} className={gaugeTransition?`gauge-swipe-new gauge-in-${gaugeTransition.direction}`:""}/>
     </div>
     <p className={`dhikr-goal-remaining ${dayEnded&&dailyRemaining>0?"late":""}`}>{dailyRemaining>0?<>تبقّى لإنجاز هدفك <b>{ar(dailyRemaining)}</b> ذكرًا</>:"أتممت هدفك اليوم"}</p>
    </div>

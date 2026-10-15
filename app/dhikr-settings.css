@@ -30,8 +30,10 @@ dialog[open].dhikr-settings-sheet::backdrop{background:rgba(39,56,69,.28);backdr
 .dhikr-round-size-setting{display:grid!important;grid-template-columns:1fr 76px;align-items:center;gap:3px 10px;margin:10px 0 0!important;color:#6e8493!important;font-size:11px!important;font-weight:750}.dhikr-round-size-setting input{grid-column:2;grid-row:1/3;width:100%;height:38px;margin:0!important;padding:0 7px;border:1px solid #e0e9ee;border-radius:10px;background:#fbfdfe;color:#496c83;text-align:center;font:inherit;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}.dhikr-round-size-setting small{grid-column:1;color:#91a5b2;font-size:9px;font-weight:500}
 .dhikr-settings-card.dhikr-gauge-settings{gap:0;padding:13px;background:rgba(255,255,255,.88)}
 .dhikr-settings-card.dhikr-gauge-settings .dhikr-settings-card-heading{margin-bottom:9px}
-.dhikr-settings-card.dhikr-gauge-settings>div[role="group"]{grid-template-columns:1fr 1fr;gap:7px}
-.dhikr-settings-card.dhikr-gauge-settings button{min-height:50px;padding:8px 10px;border-color:#e0e9ee;border-radius:12px}
+.dhikr-settings-card.dhikr-gauge-settings>div[role="group"]{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dhikr-settings-card.dhikr-gauge-settings button{min-height:58px;padding:7px 5px;border-color:#e0e9ee;border-radius:12px;text-align:center}
+.dhikr-settings-card.dhikr-gauge-settings button b{font-size:11px}
+.dhikr-settings-card.dhikr-gauge-settings button small{font-size:8px;line-height:1.3}
 .dhikr-settings-footer{position:relative;z-index:2;flex:0 0 auto;display:flex;gap:8px;padding:11px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #e8f0f4;background:rgba(255,255,255,.97)}
 .dhikr-settings-footer .wizard-back{min-width:82px;min-height:46px;border-radius:13px}
 .dhikr-settings-footer .primary{flex:1;min-height:46px;border-radius:13px;font-size:14px}
