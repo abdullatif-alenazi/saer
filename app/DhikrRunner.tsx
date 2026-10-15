@@ -33,7 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
-    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,x=Math.max(10,Math.min(230,120+118*Math.cos(angle))),y=Math.max(9,118+118*Math.sin(angle));return <g key={`period-bubble-${index}`} className="gauge-period-marker"><circle cx={x} cy={y} r="8"/><text x={x} y={y+3}>{marker.label}</text></g>})}
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,x=Math.max(12,Math.min(228,120+118*Math.cos(angle))),y=Math.max(9,118+118*Math.sin(angle));return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
@@ -74,9 +74,11 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const periods=useMemo(()=>basePeriods.map(period=>{const target=progress.targetByPeriod?.[period.id]??period.target;return{...period,target,unitCount:Math.max(1,Math.ceil(target/period.unitValue))}}),[basePeriods,progress.targetByPeriod]);
  const active=periods.find(period=>period.id===selected)??periods[0];
  const doneFor=(period:UnitPeriod,source=progress)=>Math.max(counterValue(source,period.id),(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
+ const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
+ const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  const gaugeStyle=config.gaugeStyle??"ring";
  const totalTarget=periods.reduce((sum,period)=>sum+period.target,0),totalDone=periods.reduce((sum,period)=>sum+doneFor(period),0);
- const periodMarkers=periods.reduce<{ratio:number;label:string}[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0),labels:Record<string,string>={الصباح:"ص",الظهر:"ظ",العصر:"ع",المغرب:"م",الليل:"ل"};if(totalTarget>0)markers.push({ratio:boundary/totalTarget,label:labels[period.period]??period.period.slice(0,1)});return markers},[]);
+ const periodMarkers=periods.reduce<{ratio:number;label:string;state:string}[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0),labels:Record<string,string>={الصباح:"ص",الظهر:"ظ",العصر:"ع",المغرب:"م",الليل:"ل"},done=doneFor(period),state=done>=period.target?"complete":isMissed(period)?"missed":period.id===active.id?"selected":"";if(totalTarget>0)markers.push({ratio:boundary/totalTarget,label:labels[period.period]??period.period.slice(0,1),state});return markers},[]);
  const dailyRemaining=Math.max(0,totalTarget-totalDone);
  const roundRemaining=decrementMode?doneFor(active):Number.POSITIVE_INFINITY;
  const configuredRoundAmount=Math.max(1,Math.floor(config.timing?.roundSize??100));
@@ -165,8 +167,6 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  useEffect(()=>{if(!celebration)return;const timer=window.setTimeout(()=>setCelebration(null),3000);return()=>window.clearTimeout(timer)},[celebration]);
  useEffect(()=>{if(!gaugeTransition)return;const timer=window.setTimeout(()=>setGaugeTransition(null),460);return()=>window.clearTimeout(timer)},[gaugeTransition]);
  const adjustPeriodUnits=(period:UnitPeriod,change:number)=>{const target=Math.max(period.unitValue,period.target+(change*period.unitValue));persist({...progress,completedAt:undefined,targetByPeriod:{...(progress.targetByPeriod??{}),[period.id]:target}})};
- const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
- const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  return <section className="dhikr-runner">
   <header><button className="dhikr-exit" onClick={onExit} aria-label="العودة إلى رحلة اليوم" title="العودة إلى رحلة اليوم">↩</button><div><button className="dhikr-runner-title" onClick={onOpenAchievements}>{activity.name}</button></div><div className="dhikr-head-actions"><button onClick={onEdit} aria-label="تعديل الورد" title="تعديل الورد"><Pencil size={19} strokeWidth={2} aria-hidden="true"/></button></div></header>
   <WeekStrip date={date} today={today} calendarMode={calendarMode} weekStartsOn={weekStartsOn} onChange={next=>{const current=new Date(`${date}T12:00:00`),target=new Date(`${next}T12:00:00`);onDateChange(Math.round((target.getTime()-current.getTime())/86400000))}}/>
