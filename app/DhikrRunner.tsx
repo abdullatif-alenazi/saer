@@ -33,7 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
-    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,x=120+84*Math.cos(angle),y=118+84*Math.sin(angle);return <g key={`period-bubble-${index}`} className="gauge-period-marker"><circle cx={x} cy={y} r="10"/><text x={x} y={y+3.3}>{marker.label}</text></g>})}
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,x=Math.max(10,Math.min(230,120+118*Math.cos(angle))),y=Math.max(9,118+118*Math.sin(angle));return <g key={`period-bubble-${index}`} className="gauge-period-marker"><circle cx={x} cy={y} r="8"/><text x={x} y={y+3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
