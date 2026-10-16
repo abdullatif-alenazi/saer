@@ -19,7 +19,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
   <RingGauge totalRatio={totalRatio} activeRatio={activeRatio} totalDone={totalDone} activeDone={activeDone} activeLabel={activeLabel}/>
   <svg className="gauge-semi" viewBox="0 0 240 160" aria-hidden="true">
    <defs>
-    <clipPath id={clipId}><rect x="0" y={style==="periods"?"-18":"0"} width="240" height={style==="periods"?"168":"132"}/></clipPath>
+    <clipPath id={clipId}><rect x={style==="periods"?"-16":"0"} y={style==="periods"?"-18":"0"} width={style==="periods"?"272":"240"} height={style==="periods"?"168":"132"}/></clipPath>
     <filter id={needleShadowId} filterUnits="userSpaceOnUse" x="-20" y="-10" width="280" height="180"><feGaussianBlur in="SourceGraphic" stdDeviation="3.1" result="needleBlur"/><feOffset in="needleBlur" dx="1" dy="3.8"/></filter>
     <filter id={dialShadowId} filterUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="220"><feGaussianBlur stdDeviation="3.8"/></filter>
    </defs>
@@ -33,7 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
-    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?12:228):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=isEnd?90:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?0:240):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=isEnd?118:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
