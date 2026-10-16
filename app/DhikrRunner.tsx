@@ -19,7 +19,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
   <RingGauge totalRatio={totalRatio} activeRatio={activeRatio} totalDone={totalDone} activeDone={activeDone} activeLabel={activeLabel}/>
   <svg className="gauge-semi" viewBox="0 0 240 160" aria-hidden="true">
    <defs>
-    <clipPath id={clipId}><rect x="0" y={style==="periods"?"-18":"0"} width="240" height={style==="periods"?"196":"132"}/></clipPath>
+    <clipPath id={clipId}><rect x="0" y={style==="periods"?"-18":"0"} width="240" height={style==="periods"?"168":"132"}/></clipPath>
     <filter id={needleShadowId} filterUnits="userSpaceOnUse" x="-20" y="-10" width="280" height="180"><feGaussianBlur in="SourceGraphic" stdDeviation="3.1" result="needleBlur"/><feOffset in="needleBlur" dx="1" dy="3.8"/></filter>
     <filter id={dialShadowId} filterUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="220"><feGaussianBlur stdDeviation="3.8"/></filter>
    </defs>
@@ -33,7 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
-    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?20:220):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=marker.ratio>=1?148:marker.ratio<=0?100:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?12:228):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=isEnd?90:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
@@ -148,7 +148,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   const last=operationHistory.at(-1),currentProgress=progressRef.current;
   if(!last){
    const targetPeriod=active,before=doneFor(targetPeriod,currentProgress);if(before<=0)return;
-   const requested=config.method==="units"?targetPeriod.unitValue:(config.pressValue??config.timing?.roundSize??1),amount=Math.min(before,Math.max(1,Math.floor(requested))),restored=before-amount;
+   const requested=config.method==="units"?targetPeriod.unitValue:roundAmount,amount=Math.min(before,Math.max(1,Math.floor(requested))),restored=before-amount;
    const previousUnits=currentProgress.completedUnitsByPeriod[targetPeriod.id]??[],units=config.method==="units"?previousUnits.slice(0,Math.floor(restored/targetPeriod.unitValue)):previousUnits;
    let next=setCounterValue(currentProgress,targetPeriod.id,restored,config.method==="units"?units.length*targetPeriod.unitValue:0);next.completedUnitsByPeriod={...currentProgress.completedUnitsByPeriod,[targetPeriod.id]:units};
    const current=sessionRef.current;
@@ -187,7 +187,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   <WeekStrip date={date} today={today} calendarMode={calendarMode} weekStartsOn={weekStartsOn} onChange={next=>{const current=new Date(`${date}T12:00:00`),target=new Date(`${next}T12:00:00`);onDateChange(Math.round((target.getTime()-current.getTime())/86400000))}}/>
   <article className="dhikr-overview-card">
    <div className="dhikr-day-total dhikr-gauge-summary" aria-label="ملخص ورد اليوم">
-    <div className={`gauge-swipe-stage ${gaugeStyle==="periods"?"period-endpoint-stage":""}`} onTouchStart={handleGaugeTouchStart} onTouchEnd={handleGaugeTouchEnd} onTouchCancel={()=>{gaugeTouchStart.current=null}} aria-label="اسحب لتغيير شكل العداد">
+    <div className="gauge-swipe-stage" onTouchStart={handleGaugeTouchStart} onTouchEnd={handleGaugeTouchEnd} onTouchCancel={()=>{gaugeTouchStart.current=null}} aria-label="اسحب لتغيير شكل العداد">
      {gaugeTransition&&<DhikrGauge key={`from-${gaugeTransition.from}`} style={gaugeTransition.from} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeTransition.from}-old`} className={`gauge-swipe-old gauge-out-${gaugeTransition.direction}`}/>}
      <DhikrGauge key={`current-${gaugeStyle}`} style={gaugeStyle} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeStyle}-current`} className={gaugeTransition?`gauge-swipe-new gauge-in-${gaugeTransition.direction}`:""}/>
     </div>
