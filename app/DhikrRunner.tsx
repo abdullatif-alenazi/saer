@@ -19,7 +19,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
   <RingGauge totalRatio={totalRatio} activeRatio={activeRatio} totalDone={totalDone} activeDone={activeDone} activeLabel={activeLabel}/>
   <svg className="gauge-semi" viewBox="0 0 240 160" aria-hidden="true">
    <defs>
-    <clipPath id={clipId}><rect x="0" y={style==="periods"?"-18":"0"} width="240" height={style==="periods"?"168":"132"}/></clipPath>
+    <clipPath id={clipId}><rect x="0" y={style==="periods"?"-18":"0"} width="240" height={style==="periods"?"196":"132"}/></clipPath>
     <filter id={needleShadowId} filterUnits="userSpaceOnUse" x="-20" y="-10" width="280" height="180"><feGaussianBlur in="SourceGraphic" stdDeviation="3.1" result="needleBlur"/><feOffset in="needleBlur" dx="1" dy="3.8"/></filter>
     <filter id={dialShadowId} filterUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="220"><feGaussianBlur stdDeviation="3.8"/></filter>
    </defs>
@@ -33,7 +33,7 @@ function DhikrGauge({style,totalRatio,activeRatio,totalDone,activeDone,activeLab
      <line filter={`url(#${needleShadowId})`} className="gauge-needle-shadow" x1="120" y1="118" x2="226" y2="118"/>
      <line className="gauge-needle-face" x1="120" y1="118" x2="226" y2="118"/>
     </g>
-    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?12:228):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=isEnd?100:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
+    {style==="periods"&&periodMarkers.map((marker,index)=>{const angle=-Math.PI*marker.ratio,isEnd=marker.ratio<=0||marker.ratio>=1,x=isEnd?(marker.ratio>=1?20:220):Math.max(12,Math.min(228,120+124*Math.cos(angle))),y=marker.ratio>=1?148:marker.ratio<=0?100:118+124*Math.sin(angle);return <g key={`period-bubble-${index}`} className={`gauge-period-marker ${marker.state}`}><rect x={x-12} y={y-10} width="24" height="20" rx="10"/><text x={x} y={y+3}>{marker.label}</text></g>})}
     <g className="gauge-dial">
      <circle filter={`url(#${dialShadowId})`} className="gauge-dial-shadow" cx="120" cy="118" r="60"/>
      <circle className="gauge-dial-halo" cx="120" cy="118" r="63"/>
@@ -145,7 +145,20 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   if(!isDone&&before<active.target&&nextCount>=active.target){const messages=["أحسنت صنعًا","رائع، لقد أنجزت","بارك الله فيك","كم أنت بطل"];setCelebration({message:messages[Math.floor(Math.random()*messages.length)],id:Date.now()})}
  };
  const undo=()=>{
-  const last=operationHistory.at(-1),currentProgress=progressRef.current;if(!last)return;
+  const last=operationHistory.at(-1),currentProgress=progressRef.current;
+  if(!last){
+   const targetPeriod=active,before=doneFor(targetPeriod,currentProgress);if(before<=0)return;
+   const requested=config.method==="units"?targetPeriod.unitValue:(config.pressValue??config.timing?.roundSize??1),amount=Math.min(before,Math.max(1,Math.floor(requested))),restored=before-amount;
+   const previousUnits=currentProgress.completedUnitsByPeriod[targetPeriod.id]??[],units=config.method==="units"?previousUnits.slice(0,Math.floor(restored/targetPeriod.unitValue)):previousUnits;
+   let next=setCounterValue(currentProgress,targetPeriod.id,restored,config.method==="units"?units.length*targetPeriod.unitValue:0);next.completedUnitsByPeriod={...currentProgress.completedUnitsByPeriod,[targetPeriod.id]:units};
+   const current=sessionRef.current;
+   if(current&&current.status!=="finished"){
+    const updated=removeTimedAmount(current,targetPeriod.id,amount),beforeSeconds=current.rounds.filter(round=>round.status==="completed").reduce((sum,round)=>sum+round.durationSeconds,0),afterSeconds=updated.rounds.filter(round=>round.status==="completed").reduce((sum,round)=>sum+round.durationSeconds,0),now=performance.now(),elapsed=Math.max(0,elapsedAt(now)-(beforeSeconds-afterSeconds)*1000),roundElapsed=roundElapsedAt(now),nextSession=checkpointSession(updated,elapsed,roundElapsed);
+    totalBase.current=nextSession.elapsedMs;roundBase.current=nextSession.roundElapsedMs;totalAnchor.current=current.status==="running"?now:0;roundAnchor.current=current.status==="running"?now:0;
+    next={...next,timedSessions:[...(currentProgress.timedSessions??[]).filter(item=>item.id!==nextSession.id),nextSession],activeSessionId:nextSession.status==="finished"?undefined:nextSession.id};sessionRef.current=nextSession;setTimerSession(nextSession);
+   }
+   setFeedback({amount,kind:"undo",id:Date.now(),periodId:targetPeriod.id});persist(next);return;
+  }
   const targetPeriod=periods.find(period=>period.id===last.periodId);if(!targetPeriod)return;
   const before=doneFor(targetPeriod,currentProgress),restored=Math.max(last.counter,last.units.length*targetPeriod.unitValue);
   setOperationHistory(value=>value.slice(0,-1));setFeedback({amount:Math.abs(restored-before),kind:restored>=before?"add":"undo",id:Date.now(),periodId:last.periodId});
@@ -174,7 +187,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   <WeekStrip date={date} today={today} calendarMode={calendarMode} weekStartsOn={weekStartsOn} onChange={next=>{const current=new Date(`${date}T12:00:00`),target=new Date(`${next}T12:00:00`);onDateChange(Math.round((target.getTime()-current.getTime())/86400000))}}/>
   <article className="dhikr-overview-card">
    <div className="dhikr-day-total dhikr-gauge-summary" aria-label="ملخص ورد اليوم">
-    <div className="gauge-swipe-stage" onTouchStart={handleGaugeTouchStart} onTouchEnd={handleGaugeTouchEnd} onTouchCancel={()=>{gaugeTouchStart.current=null}} aria-label="اسحب لتغيير شكل العداد">
+    <div className={`gauge-swipe-stage ${gaugeStyle==="periods"?"period-endpoint-stage":""}`} onTouchStart={handleGaugeTouchStart} onTouchEnd={handleGaugeTouchEnd} onTouchCancel={()=>{gaugeTouchStart.current=null}} aria-label="اسحب لتغيير شكل العداد">
      {gaugeTransition&&<DhikrGauge key={`from-${gaugeTransition.from}`} style={gaugeTransition.from} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeTransition.from}-old`} className={`gauge-swipe-old gauge-out-${gaugeTransition.direction}`}/>}
      <DhikrGauge key={`current-${gaugeStyle}`} style={gaugeStyle} totalRatio={totalRatio} activeRatio={active.target?Math.min(1,doneFor(active)/active.target):0} totalDone={totalDone} activeDone={doneFor(active)} activeLabel={active.label} totalPercent={totalPercent} periodMarkers={periodMarkers} feedback={feedback} idSuffix={`${activity.id}-${gaugeStyle}-current`} className={gaugeTransition?`gauge-swipe-new gauge-in-${gaugeTransition.direction}`:""}/>
     </div>
@@ -186,7 +199,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
   {decrementMode&&roundRemaining===0?<p className="dhikr-period-complete">لا يوجد عدد لإنقاصه</p>:(!timingEnabled||timerSession?.status==="running")&&<button type="button" className={`dhikr-round-submit ${decrementMode?"decrement-mode":""}`} disabled={!roundAmount||timingEnabled&&timerSession?.status!=="running"} onPointerUp={handleCounterPointerUp} onClick={handleCounterClick} aria-label={`${decrementMode?"إنقاص":"أتممت"} ${ar(roundAmount)} ذكرًا`}>{decrementMode?"−":"＋"}{ar(roundAmount)}</button>}
   </section>}
   {timingEnabled&&<DhikrStopwatch session={timerSession} pulse={timerPulse} showTime={showTimer} onStart={startNewSession} onPause={()=>stopTimer(false)} onResume={resumeCurrentSession} onFinish={endSession}/>}
-  <div className="dhikr-session-tools" aria-label="أدوات الجلسة"><button className={`dhikr-undo ${decrementMode?"decrement-mode":""} ${operationHistory.length?"":"undo-unavailable"}`} onPointerDown={startModeHold} onPointerUp={endModeHold} onPointerLeave={endModeHold} onPointerCancel={endModeHold} onKeyDown={event=>{if((event.key==="Enter"||event.key===" ")&&!event.repeat)startModeHold()}} onKeyUp={endModeHold} onBlur={endModeHold} onContextMenu={event=>event.preventDefault()} onClick={()=>{if(longPressTriggered.current){longPressTriggered.current=false;return}if(decrementMode){setDecrementMode(false);return}undo()}} aria-pressed={decrementMode} aria-label={decrementMode?"إيقاف وضع الإنقاص":"تراجع عن آخر ضغطة؛ اضغط مطولًا لتفعيل الإنقاص"} title={decrementMode?"اضغط للعودة إلى الزيادة":"اضغط للتراجع عن آخر ضغطة أو اضغط مطولًا لتفعيل الإنقاص"}><span className="undo-icon" aria-hidden="true">{decrementMode?<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5v14"/></svg>:<svg viewBox="0 0 24 24" fill="none"><path d="M8.2 8.4H4.5v-3.7M4.9 8.1a8 8 0 1 1-1 8.3"/><path d="M4.9 8.1 8.2 4.8"/></svg>}</span><small>{decrementMode?"إنقاص":"تراجع"}</small></button></div>
+  <div className="dhikr-session-tools" aria-label="أدوات الجلسة"><button className={`dhikr-undo ${decrementMode?"decrement-mode":""}`} onPointerDown={startModeHold} onPointerUp={endModeHold} onPointerLeave={endModeHold} onPointerCancel={endModeHold} onKeyDown={event=>{if((event.key==="Enter"||event.key===" ")&&!event.repeat)startModeHold()}} onKeyUp={endModeHold} onBlur={endModeHold} onContextMenu={event=>event.preventDefault()} onClick={()=>{if(longPressTriggered.current){longPressTriggered.current=false;return}if(decrementMode){setDecrementMode(false);return}undo()}} aria-pressed={decrementMode} aria-label={decrementMode?"إيقاف وضع الإنقاص":"تراجع عن آخر ضغطة أو أنقص من الفترة المختارة"} title={decrementMode?"اضغط للعودة إلى الزيادة":"اضغط للتراجع عن آخر ضغطة أو أنقص من الفترة المختارة"}><span className="undo-icon" aria-hidden="true">{decrementMode?<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5v14"/></svg>:<svg viewBox="0 0 24 24" fill="none"><path d="M8.2 8.4H4.5v-3.7M4.9 8.1a8 8 0 1 1-1 8.3"/><path d="M4.9 8.1 8.2 4.8"/></svg>}</span><small>{decrementMode?"إنقاص":"تراجع"}</small></button></div>
   {totalDone>=totalTarget&&<div className="dhikr-complete"><b>تم ورد اليوم.</b><span>يمكنك مواصلة الذكر لتعويض النقص في الفترات السابقة.</span></div>}
   {celebration&&<div key={celebration.id} className="dhikr-celebration" role="status" aria-live="polite"><div className="dhikr-celebration-card"><svg className="dhikr-celebration-art" viewBox="0 0 96 96" aria-hidden="true"><path className="celebration-rays" d="M48 5v10M48 81v10M5 48h10M81 48h10M17.6 17.6l7 7M71.4 71.4l7 7M78.4 17.6l-7 7M24.6 71.4l-7 7"/><circle className="celebration-medal" cx="48" cy="43" r="25"/><path className="celebration-ribbon" d="m33 63-4 20 19-9 19 9-4-20"/><path className="celebration-check" d="m37 43 8 8 15-17"/></svg><strong>{celebration.message}</strong><span>أتممت هدف هذه الفترة</span></div></div>}
  </section>
