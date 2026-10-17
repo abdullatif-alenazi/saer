@@ -1,6 +1,6 @@
 "use client";
 import {useMemo,useState} from "react";
-import type {ExecutionRecord,PlannedActivity,UnitProgress} from "./local-store";
+import {counterValue,type ExecutionRecord,type PlannedActivity,type UnitProgress} from "./local-store";
 
 type Range="week"|"month"|"year";
 type CalendarKind="islamic"|"gregory";
@@ -18,7 +18,10 @@ export default function TaskAchievements({activity,records,unitProgress,weekStar
   const byDay=new Map<string,number>();
   if(activity.unitTracking){
    for(const progress of unitProgress.filter(item=>item.activityId===activity.id)){
-    const count=activity.unitTracking.periods.reduce((sum,period)=>sum+Math.max(progress.counterByPeriod[period.id]??0,(progress.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue),0);
+    // Counter increments are stored as events on top of a base value. Reading
+    // counterByPeriod directly misses those increments, so achievements stayed
+    // at zero until a timed session was explicitly finished.
+    const count=activity.unitTracking.periods.reduce((sum,period)=>sum+Math.max(counterValue(progress,period.id),(progress.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue),0);
     byDay.set(progress.date,count);
    }
   }
