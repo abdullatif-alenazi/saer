@@ -9,6 +9,7 @@
 .task-achievements-backdrop{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:18px;background:rgba(74,96,113,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:achievement-fade .2s ease-out both}
 .task-achievements-page{position:relative;z-index:1;width:100%;max-height:calc(100dvh - 210px);overflow:auto;overscroll-behavior:contain;margin:8px auto 20px;padding:0 0 10px;direction:rtl}
 .task-achievements.embedded{width:100%;max-height:none;overflow:visible;padding:20px;border-radius:24px;box-shadow:0 12px 34px rgba(45,75,95,.08);animation:none}
+.task-achievements-kicker{margin:0 0 11px;color:#819bad;font-size:13px;font-weight:800}
 .task-achievements{width:min(100%,480px);max-height:min(88dvh,760px);overflow:auto;overscroll-behavior:contain;padding:22px;border:1px solid #dce9ef;border-radius:26px;background:linear-gradient(155deg,#fff 0%,#f7fbfd 100%);box-shadow:0 24px 80px rgba(45,75,95,.2);direction:rtl;color:#344f63;animation:achievement-pop .3s cubic-bezier(.2,.8,.2,1) both}
 .task-achievements>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .task-achievements>header small{color:#819bad;font-size:12px;font-weight:750}
@@ -71,3 +72,16 @@
 @keyframes week-content-from-left{from{opacity:.45;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:380px){.task-achievements{padding:17px}.task-week-chart{gap:5px;padding-inline:5px}.task-month-grid{gap:3px;padding:8px}.task-month-grid>div{min-height:52px}.task-month-grid>i{min-height:39px}}
 @media(prefers-reduced-motion:reduce){.task-achievements-backdrop,.task-achievements,.task-week-range,.task-week-chart,.task-achievement-total,.task-week-track i,.task-year-chart i b{animation:none;transition:none}}
+.achievements-topbar{position:relative!important;z-index:30!important;overflow:visible!important}
+.achievement-task-picker{position:relative;justify-self:center;min-width:0;max-width:min(70vw,320px)}
+.achievement-task-trigger{display:flex;align-items:center;justify-content:center;gap:5px;max-width:100%;padding:5px 8px;border:0;background:transparent;color:#557187;font:inherit;font-size:1.12rem;font-weight:850;cursor:pointer}
+.achievement-task-trigger>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.achievement-task-trigger svg{flex:0 0 auto;color:#7897ad;transition:transform .2s ease}
+.achievement-task-trigger[aria-expanded="true"] svg{transform:rotate(180deg)}
+.achievement-task-menu{position:absolute;top:calc(100% + 12px);left:50%;z-index:80;display:grid;gap:4px;width:min(290px,calc(100vw - 48px));max-height:min(55dvh,390px);overflow:auto;padding:7px;border:1px solid #dce9ef;border-radius:17px;background:rgba(255,255,255,.98);box-shadow:0 14px 34px rgba(45,75,95,.2);transform:translateX(-50%);overscroll-behavior:contain}
+.achievement-task-menu>button{min-height:43px;padding:8px 12px;border:0;border-radius:11px;background:transparent;color:#68849a;text-align:right;font:inherit;font-size:14px;font-weight:750;cursor:pointer}
+.achievement-task-menu>button.selected{background:#eaf5fa;color:#426b85}
+.achievement-task-menu>p{margin:8px 10px;color:#8ba0ad;font-size:12px}
+.task-achievements-empty{display:flex;flex-direction:column;align-items:center;gap:10px;margin:20px 0;padding:30px 20px;border:1px solid #dce9ef;border-radius:24px;background:rgba(255,255,255,.86);text-align:center;color:#557187}
+.task-achievements-empty>span{color:#8ba0ad;font-size:13px}
+.task-achievements-empty>button{margin-top:4px;padding:10px 16px;border:1px solid #cce3ef;border-radius:13px;background:#eaf5fa;color:#527d97;font:inherit;font-weight:750;cursor:pointer}
