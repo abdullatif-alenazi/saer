@@ -206,6 +206,41 @@
 @keyframes count-added{0%,100%{color:#557187;fill:#8fbcd6}35%{color:#4f9a70;fill:#8fcbae}65%{color:#4f9a70;fill:#8fcbae}}
 @keyframes count-undone{0%,100%{color:#557187;fill:#8fbcd6}35%{color:#c97d84;fill:#e4a8ad}65%{color:#c97d84;fill:#e4a8ad}}
 
+/* شاشة الذكر: توزّع المساحة المتاحة بدل تمديد الصفحة أسفل شريط التنقل. */
+.dhikr-active.app-shell{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;overflow-y:hidden!important}
+.dhikr-active .activity-page{height:100%!important;min-height:0!important;overflow:hidden!important}
+.dhikr-active .dhikr-runner{height:100%!important;max-height:100%!important;min-height:0!important;gap:clamp(2px,.45dvh,4px)!important;padding-bottom:2px!important;overflow:hidden!important}
+.dhikr-active .shared-week-strip{flex:0 0 auto!important;margin:0!important}
+.dhikr-active .shared-week-strip .week-browser{margin-bottom:2px!important}
+.dhikr-active .week-strip{margin-bottom:0!important;padding:2px!important}
+.dhikr-active .week-strip button{height:clamp(34px,5dvh,44px)!important}
+.dhikr-active .dhikr-overview-card{flex:1 1 0!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:0!important;padding:clamp(5px,1dvh,9px) clamp(9px,2.5vw,13px)!important;overflow:hidden!important}
+.dhikr-active .dhikr-gauge-summary{flex:0 0 auto!important;margin:0 0 clamp(5px,.8dvh,8px)!important;padding:0 0 clamp(5px,.8dvh,8px)!important}
+.dhikr-active .gauge-swipe-stage,.dhikr-active .dhikr-gauge{height:clamp(82px,12dvh,118px)!important}
+.dhikr-active .dhikr-gauge-summary .dhikr-goal-remaining{margin-top:5px!important;font-size:clamp(10px,1.55dvh,13px)!important;line-height:1.25!important}
+.dhikr-active .dhikr-station-tracks{flex:1 1 auto!important;min-height:0!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:clamp(1px,.35dvh,3px)!important}
+.dhikr-active .dhikr-station-row{min-height:0!important;padding-block:0!important}
+.dhikr-active .dhikr-station-main{height:100%!important;min-height:0!important}
+.dhikr-active .dhikr-station-main>i,.dhikr-active .dhikr-station-row.selected .dhikr-station-main>i{height:clamp(22px,3.8dvh,32px)!important}
+.dhikr-active .dhikr-station-main>i>em{height:clamp(19px,3.3dvh,27px)!important;min-width:clamp(34px,5.3dvh,42px)!important;font-size:clamp(9px,1.35dvh,11px)!important}
+.dhikr-active .dhikr-row-units{min-width:38px!important}
+.dhikr-active .dhikr-counter,.dhikr-active .dhikr-unit-grid,.dhikr-active .dhikr-session-clock,.dhikr-active .dhikr-session-tools,.dhikr-active .dhikr-complete{flex:0 0 auto!important}
+.dhikr-active .dhikr-round-submit{min-height:clamp(44px,7dvh,58px)!important}
+.dhikr-active .dhikr-session-clock{gap:6px!important;padding:clamp(6px,.9dvh,9px)!important}
+.dhikr-active .dhikr-stopwatch-actions button{min-height:clamp(34px,5.2dvh,40px)!important;padding-block:5px!important}
+.dhikr-active .dhikr-session-tools .dhikr-undo{min-height:30px!important;padding-block:3px!important}
+.dhikr-active .stopwatch-finished-results{max-height:24dvh!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+@media(max-height:650px){
+ .dhikr-active .week-strip button{height:32px!important}
+ .dhikr-active .gauge-swipe-stage,.dhikr-active .dhikr-gauge{height:76px!important}
+ .dhikr-active .dhikr-gauge-summary{margin-bottom:3px!important;padding-bottom:4px!important}
+ .dhikr-active .dhikr-station-tracks{gap:0!important}
+ .dhikr-active .dhikr-station-main>i,.dhikr-active .dhikr-station-row.selected .dhikr-station-main>i{height:21px!important}
+ .dhikr-active .dhikr-station-main>i>em{height:18px!important;min-width:32px!important;font-size:8px!important}
+ .dhikr-active .dhikr-round-submit{min-height:40px!important}
+ .dhikr-active .dhikr-session-clock{padding:5px!important}
+}
+
 /* إدارة المهام: إجراءات واضحة، مع تأكيد قبل أي تغيير يصعب التراجع عنه. */
 .task-management{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .archive-task,.task-management .delete-activity{width:100%;margin:0!important;padding:12px 9px!important;border:1px solid #dcecf4!important;border-radius:13px!important;background:#f6fbfe!important;color:#6f8ca1!important;font:inherit!important;font-size:.8rem!important;font-weight:800!important;cursor:pointer}
