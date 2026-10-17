@@ -26,7 +26,7 @@
 .task-week-browser.week-shift-next .task-week-range{animation-name:week-range-from-left}
 .task-week-range strong{color:#55778d;font-size:13px;font-weight:850;font-variant-numeric:tabular-nums}
 .task-week-range small{color:#91a7b5;font-size:10px;font-variant-numeric:tabular-nums}
-.task-week-range span{color:#9aabb5;font-size:9px}
+.task-week-range>span{display:none}
 .task-week-chart.week-shift-previous,.task-achievement-total.week-shift-previous{animation:week-content-from-right .38s cubic-bezier(.22,1,.36,1) both}
 .task-week-chart.week-shift-next,.task-achievement-total.week-shift-next{animation:week-content-from-left .38s cubic-bezier(.22,1,.36,1) both}
 .task-achievement-total{display:flex;align-items:baseline;gap:7px;padding:15px 16px;border:1px solid #dfedf2;border-radius:17px;background:linear-gradient(100deg,#f6fbfd,#fff)}
