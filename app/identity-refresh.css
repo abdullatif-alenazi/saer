@@ -241,6 +241,34 @@
  .dhikr-active .dhikr-session-clock{padding:5px!important}
 }
 
+/* زر الذكر والتراجع وحدة واحدة؛ النمو في المساحة يذهب إلى العداد العلوي لا إلى الزر. */
+.dhikr-active .dhikr-execution-row{--execute-size:clamp(54px,8dvh,62px);display:grid!important;grid-template-columns:minmax(0,1fr) var(--execute-size)!important;direction:rtl!important;align-items:stretch!important;gap:0!important;width:100%!important;min-height:var(--execute-size)!important;flex:0 0 auto!important}
+.dhikr-active .dhikr-execution-row>.dhikr-counter{display:block!important;width:100%!important;height:var(--execute-size)!important;min-width:0!important;margin:0!important}
+.dhikr-active .dhikr-execution-row .dhikr-round-submit{display:grid!important;width:100%!important;max-width:none!important;height:var(--execute-size)!important;min-height:var(--execute-size)!important;margin:0!important;padding:8px 12px!important;border-radius:0 17px 17px 0!important;border-left:0!important;box-shadow:none!important;font-size:25px!important}
+.dhikr-active .dhikr-execution-row .dhikr-period-complete{height:var(--execute-size)!important;display:grid!important;place-items:center!important;border-radius:0 17px 17px 0!important}
+.dhikr-active .dhikr-execution-row>.dhikr-session-tools{display:flex!important;align-items:stretch!important;justify-content:stretch!important;flex-wrap:nowrap!important;width:100%!important;height:var(--execute-size)!important;min-width:0!important;margin:0!important;gap:0!important}
+.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo{display:grid!important;place-items:center!important;width:100%!important;height:var(--execute-size)!important;min-height:var(--execute-size)!important;margin:0!important;padding:5px!important;border:1px solid #b9dce8!important;border-right:0!important;border-radius:17px 0 0 17px!important;background:#dff2f8!important;color:#4f7891!important;box-shadow:none!important}
+.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo small{display:none!important}
+.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo .undo-icon,.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo svg{width:23px!important;height:23px!important}
+.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo.decrement-mode{border-color:#e5b4b7!important;background:#fff0f0!important;color:#aa626a!important}
+.dhikr-active .dhikr-execution-row.units-mode{display:flex!important;flex-direction:column!important;gap:4px!important;min-height:0!important}
+.dhikr-active .dhikr-execution-row.units-mode>.dhikr-unit-grid{flex:none!important;width:100%!important}
+.dhikr-active .dhikr-execution-row.units-mode>.dhikr-session-tools{width:auto!important;height:auto!important;min-height:0!important;justify-content:center!important}
+.dhikr-active .dhikr-execution-row.units-mode .dhikr-undo{width:auto!important;height:34px!important;min-height:34px!important;padding:4px 10px!important;border:1px solid #dce8ee!important;border-radius:10px!important;background:#f7fcfd!important}
+.dhikr-active .dhikr-execution-row.units-mode .dhikr-undo small{display:block!important}
+.dhikr-active .dhikr-execution-row.counter-hidden{display:flex!important;min-height:0!important;justify-content:center!important}
+.dhikr-active .dhikr-execution-row.counter-hidden .dhikr-session-tools{width:auto!important;height:auto!important;min-height:0!important}
+.dhikr-active .dhikr-execution-row.counter-hidden .dhikr-undo{width:auto!important;height:34px!important;min-height:34px!important;padding:4px 10px!important;border:1px solid #dce8ee!important;border-radius:10px!important;background:#f7fcfd!important}
+.dhikr-active .dhikr-execution-row.counter-hidden .dhikr-undo small{display:block!important}
+.dhikr-active .dhikr-gauge-summary{display:flex!important;flex:1 1 0!important;flex-direction:column!important;min-height:0!important}
+.dhikr-active .gauge-swipe-stage{flex:1 1 0!important;min-height:clamp(82px,12dvh,118px)!important;height:auto!important}
+.dhikr-active .gauge-swipe-stage>.dhikr-gauge{height:100%!important}
+.dhikr-active .dhikr-station-tracks{flex:1 1 0!important}
+@media(max-height:650px){
+ .dhikr-active .dhikr-execution-row,.dhikr-active .dhikr-execution-row>.dhikr-counter,.dhikr-active .dhikr-execution-row .dhikr-round-submit,.dhikr-active .dhikr-execution-row>.dhikr-session-tools,.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo{--execute-size:54px;min-height:54px!important;height:54px!important}
+ .dhikr-active .gauge-swipe-stage{min-height:72px!important}
+}
+
 /* إدارة المهام: إجراءات واضحة، مع تأكيد قبل أي تغيير يصعب التراجع عنه. */
 .task-management{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .archive-task,.task-management .delete-activity{width:100%;margin:0!important;padding:12px 9px!important;border:1px solid #dcecf4!important;border-radius:13px!important;background:#f6fbfe!important;color:#6f8ca1!important;font:inherit!important;font-size:.8rem!important;font-weight:800!important;cursor:pointer}
