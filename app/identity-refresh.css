@@ -264,6 +264,7 @@
 .dhikr-active .gauge-swipe-stage{flex:1 1 0!important;min-height:clamp(82px,12dvh,118px)!important;height:auto!important}
 .dhikr-active .gauge-swipe-stage>.dhikr-gauge{height:100%!important}
 .dhikr-active .dhikr-station-tracks{flex:1 1 0!important}
+.dhikr-active .dhikr-execution-row .dhikr-round-submit-label{display:block!important;width:max-content!important;justify-self:center!important;transform:translateX(calc(var(--execute-size) / -2))!important}
 @media(max-height:650px){
  .dhikr-active .dhikr-execution-row,.dhikr-active .dhikr-execution-row>.dhikr-counter,.dhikr-active .dhikr-execution-row .dhikr-round-submit,.dhikr-active .dhikr-execution-row>.dhikr-session-tools,.dhikr-active .dhikr-execution-row .dhikr-session-tools .dhikr-undo{--execute-size:54px;min-height:54px!important;height:54px!important}
  .dhikr-active .gauge-swipe-stage{min-height:72px!important}
