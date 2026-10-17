@@ -42,6 +42,11 @@
 .task-week-column>span{color:#8b9eaa;font-size:10px}
 .task-week-column>span.today{color:#477a98;font-weight:900}
 .task-month-heading{margin:17px 0 11px;text-align:center;color:#718c9e;font-size:13px;font-weight:800}
+.task-calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 11px}
+.task-calendar-toolbar>strong{color:#718c9e;font-size:13px;font-weight:800}
+.task-calendar-kind{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:3px;border:1px solid #e4eef3;border-radius:12px;background:#edf5f8}
+.task-calendar-kind button{min-height:30px;padding:4px 11px;border:0;border-radius:9px;background:transparent;color:#8196a5;font:inherit;font-size:11px;font-weight:750;cursor:pointer;transition:background .2s ease,color .2s ease,box-shadow .2s ease}
+.task-calendar-kind button.selected{background:#fff;color:#527d97;box-shadow:0 3px 10px rgba(57,100,126,.1)}
 .task-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:11px;border:1px solid #edf2f5;border-radius:18px;background:#fff}
 .task-month-grid>b{padding:3px 0;text-align:center;color:#99aab4;font-size:10px}
 .task-month-grid>i{min-height:45px}
