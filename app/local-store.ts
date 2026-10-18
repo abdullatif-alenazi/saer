@@ -55,7 +55,9 @@ const unitProgressKey="sair.unitProgress.v1";
 export function readUnitProgress():UnitProgress[]{try{return normalizeUnitProgress(JSON.parse(localStorage.getItem(unitProgressKey)||"[]"))}catch{return[]}}
 export function saveUnitProgress(progress:UnitProgress,notify=true){const all=readUnitProgress(),next=[progress,...all.filter(item=>!(item.activityId===progress.activityId&&item.date===progress.date))].slice(0,400);localStorage.setItem(unitProgressKey,JSON.stringify(next));if(notify)notifyChange();return next}
 
-export type Appointment={id:string;title:string;date:string;time:string;alertMinutes?:number;updatedAt?:string};
+export type CalendarRecordKind="appointment"|"occasion"|"event"|"memory";
+export type CalendarOriginalDate={calendar:"gregory"|"islamic";year:number;month:number;day:number};
+export type Appointment={id:string;title:string;date:string;time:string;alertMinutes?:number;updatedAt?:string;kind?:CalendarRecordKind;endDate?:string;calendar?:"gregory"|"islamic";originalDate?:CalendarOriginalDate;yearly?:boolean;repeat?:"none"|"daily"|"weekly"|"monthly"|"yearly";alerts?:number[];location?:string;notes?:string;person?:string;taskId?:string;timeEnabled?:boolean;endTime?:string};
 const appointmentKey="sair.appointments.v1";
 export function readAppointments():Appointment[]{try{return JSON.parse(localStorage.getItem(appointmentKey)||"[]")}catch{return[]}}
 export function saveAppointment(item:Appointment){const next=[...readAppointments(),{...item,updatedAt:new Date().toISOString()}];localStorage.setItem(appointmentKey,JSON.stringify(next));notifyChange();return next}
