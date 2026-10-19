@@ -411,3 +411,11 @@
 .calendar-record-sheet .delete-activity{margin-top:8px}
 @media(max-width:390px){.calendar-type-card{min-height:104px;padding:8px}.calendar-type-card small{font-size:8px}.calendar-period{gap:3px}.calendar-period select{max-width:105px}.calendar-record-list>button{grid-template-columns:23px minmax(0,1fr) auto 10px;gap:6px}}
 @media(max-height:680px){.calendar-type-picker[open]{max-height:94dvh;padding:12px}.calendar-type-card{min-height:88px}.calendar-record-sheet[open]{max-height:94dvh}.calendar-form-head{margin-bottom:8px}.calendar-form-head h2{font-size:18px}.calendar-form-body.wizard-body{gap:6px}.calendar-form-body.wizard-body input,.calendar-form-body.wizard-body select{height:36px}}
+.now-filter-results{margin-top:0;opacity:0;transform:translateY(5px);transition:opacity .18s ease,transform .18s ease}
+.now-filter-results.is-visible{opacity:1;transform:translateY(0)}
+.now-filter-results .now-task-source{min-height:0}
+.day-screen:has(.now-source-filters button:nth-child(2).selected) .period-task-section,.day-screen:has(.now-source-filters button:nth-child(3).selected) .period-task-section{animation:now-task-list-out .15s ease both}
+.day-screen:has(.now-source-filters button:first-child.selected) .period-task-section{animation:now-task-list-in .18s ease both}
+@keyframes now-task-list-out{to{opacity:0;transform:translateY(5px);height:0;min-height:0;margin-block:0;overflow:hidden;visibility:hidden}}
+@keyframes now-task-list-in{from{opacity:0;transform:translateY(5px);visibility:hidden;max-height:0}to{opacity:1;transform:translateY(0);visibility:visible;max-height:1200px}}
+@media(prefers-reduced-motion:reduce){.now-filter-results,.day-screen:has(.now-source-filters) .period-task-section{animation:none!important;transition:none!important}.now-filter-results{opacity:1;transform:none}}
