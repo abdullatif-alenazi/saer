@@ -10,6 +10,7 @@
   color: #405f76;
   overflow-x: clip;
 }
+.achievements-overview-topbar .topbar-page-title b { font-size: clamp(22px, 6vw, 30px) !important; }
 .achievement-overview.is-transitioning-out {
   animation: achievement-overview-leave-right .19s cubic-bezier(.4, 0, 1, 1) both;
   pointer-events: none;
@@ -109,8 +110,14 @@
 }
 .achievement-card:active { transform: scale(.99); }
 .achievement-card.selected { border-color: #9fd2e5; box-shadow: 0 0 0 2px rgba(159, 210, 229, .2); }
-.achievement-card-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; background: rgba(255,255,255,.72); color: #54809a; }
+.achievement-card-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; }
 .achievement-card-icon svg { width: 21px; height: 21px; }
+.pastel-icon-0 { background: #dceef7; color: #5486a2; }
+.pastel-icon-1 { background: #daeee0; color: #5a8c6b; }
+.pastel-icon-2 { background: #e6dcf3; color: #8069a2; }
+.pastel-icon-3 { background: #f4dfe5; color: #a66f82; }
+.pastel-icon-4 { background: #f3e8bf; color: #9b8342; }
+.pastel-icon-5 { background: #f5dfd1; color: #a97558; }
 .achievement-card-copy { display: grid; gap: 4px; min-width: 0; }
 .achievement-card-copy b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
 .achievement-card-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
