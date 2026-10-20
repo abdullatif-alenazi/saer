@@ -436,3 +436,40 @@
 .journey-page .day-screen>.period-task-section .period-task-card>.period-task-row:nth-child(5){animation-delay:.82s}
 @keyframes now-entry-reveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.topbar-page-title,.journey-page .day-screen>.week-browser,.journey-page .day-screen>.week-days-window,.journey-page .day-screen>.journey-strip,.journey-page .day-screen>.flip-scene,.journey-page .day-screen>.now-source-filters,.journey-page .day-screen>.period-task-section>.period-task-heading,.journey-page .day-screen>.period-task-section .period-task-card>.period-task-row{animation:none!important;opacity:1;transform:none}}
+
+/* الهيكل الجديد: كبسولة الوجهات مع زر إضافة مستقل في أسفل الشاشة. */
+.bottom-navigation{position:fixed;z-index:30;left:50%;right:auto;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(520px,calc(100% - 24px));display:flex;align-items:center;gap:9px;direction:rtl}
+.bottom-navigation .bottom-nav{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0!important;height:76px!important;min-height:76px!important;margin:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;border:1px solid rgba(220,226,237,.92)!important;border-radius:999px!important;overflow:hidden!important}
+.bottom-navigation .bottom-add{width:58px;height:58px;flex:0 0 58px;border:1px solid rgba(255,255,255,.9);border-radius:50%;background:#a9cde3;color:#557187;box-shadow:0 9px 20px rgba(85,113,135,.18);font-size:29px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:transform .18s ease,background .18s ease}
+.bottom-navigation .bottom-add:active{transform:scale(.95)}
+.bottom-navigation .bottom-nav .nav-selection-bubble{right:var(--nav-bubble-right,0)}
+.app-shell{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
+.home-date-toggle{width:auto!important;min-width:0;height:auto!important;min-height:0!important;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:0!important;background:transparent!important;color:inherit;font:inherit;cursor:pointer}
+.home-date-toggle small{font-size:9px;color:var(--muted);font-weight:650}
+.home-calendar-expanded{margin:0 0 12px;padding:10px;border:1px solid rgba(220,236,244,.8);border-radius:20px;background:rgba(255,255,255,.68);animation:now-entry-reveal .24s cubic-bezier(.22,1,.36,1) both}
+.home-calendar-expanded .saer-calendar{margin:0;padding:0}
+.home-calendar-expanded .calendar-workspace-switch{margin:0 0 8px}
+.home-calendar-expanded .calendar-toolbar{gap:6px;margin:0 0 8px}
+.home-calendar-expanded .month-calendar{padding:8px;border-radius:15px}
+.home-calendar-expanded .calendar-days{gap:2px}
+.home-calendar-expanded .calendar-days button{min-height:31px;height:31px;border-radius:10px}
+.station-accordion-trigger{cursor:pointer;border-radius:12px;outline:none}
+.station-accordion-trigger:focus-visible{box-shadow:0 0 0 2px #a9cde3}
+.day-screen .station-hero{min-height:0!important}
+.day-screen .flip-scene{height:auto!important;min-height:170px!important}
+.day-screen .flip-card{height:auto!important;min-height:170px}
+.day-screen .station-hero.flip-front{position:relative!important;inset:auto!important;min-height:170px!important;height:auto!important;gap:12px!important;cursor:default!important}
+.day-screen .period-task-section{margin-top:8px}
+.day-screen .period-task-card{gap:6px}
+.day-screen .period-task-row{min-height:54px!important;padding:7px 9px!important;border-radius:14px!important}
+.day-screen .period-task-row .period-task-main h4{font-size:13px}
+.unified-add-groups{min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;padding-inline:2px}
+.unified-add-groups section{margin:0 0 12px}
+.unified-add-groups section>h3{margin:0 2px 6px;color:#7895a8;font-size:12px}
+.unified-add-groups .quick-add-grid{grid-template-rows:repeat(2,minmax(82px,1fr));flex:none;max-width:none;align-self:stretch;width:100%;overflow:visible}
+.unified-add-groups section:first-child .quick-add-grid{grid-template-rows:minmax(82px,1fr)}
+.unified-add-groups .quick-add-card{min-height:82px!important}
+.quick-add-back{margin-inline-end:8px;border:0;background:none;color:#64869b;font-size:12px;font-weight:750;cursor:pointer}
+@media(max-width:520px){.bottom-navigation{width:calc(100% - 20px);bottom:calc(8px + env(safe-area-inset-bottom));gap:7px}.bottom-navigation .bottom-nav{width:auto!important;padding:5px 7px!important}.bottom-navigation .bottom-add{width:54px;height:54px;flex-basis:54px}.app-shell{padding-bottom:calc(140px + env(safe-area-inset-bottom))!important}}
+@media(max-height:700px){.unified-add-groups section{margin-bottom:6px}.unified-add-groups .quick-add-card{min-height:70px!important}.home-calendar-expanded .calendar-days button{height:27px;min-height:27px}}
+@media(prefers-reduced-motion:reduce){.bottom-navigation .bottom-add,.home-calendar-expanded{transition:none;animation:none}}
