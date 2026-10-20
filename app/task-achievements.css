@@ -8,6 +8,7 @@
 .achievement-title-button:disabled{cursor:default}
 .task-achievements-backdrop{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:18px;background:rgba(74,96,113,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:achievement-fade .2s ease-out both}
 .task-achievements-page{position:relative;z-index:1;width:100%;max-height:calc(100dvh - 210px);overflow:auto;overscroll-behavior:contain;margin:0 auto 20px;padding:0 0 10px;direction:rtl}
+.task-achievements-page.achievement-detail-entering{animation:achievement-detail-enter .34s cubic-bezier(.22,1,.36,1) both}
 .task-achievements.embedded{width:100%;max-height:none;overflow:visible;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;animation:none}
 .task-achievements{width:min(100%,480px);max-height:min(88dvh,760px);overflow:auto;overscroll-behavior:contain;padding:22px;border:1px solid #dce9ef;border-radius:26px;background:linear-gradient(155deg,#fff 0%,#f7fbfd 100%);box-shadow:0 24px 80px rgba(45,75,95,.2);direction:rtl;color:#344f63;animation:achievement-pop .3s cubic-bezier(.2,.8,.2,1) both}
 .task-achievements>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -86,9 +87,11 @@
 @keyframes week-content-from-right{from{opacity:.45;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @keyframes week-content-from-left{from{opacity:.45;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:380px){.task-achievements{padding:17px}.task-week-chart{gap:5px;padding-inline:5px}.task-month-grid{gap:3px;padding:8px}.task-month-grid>div{min-height:52px}.task-month-grid>i{min-height:39px}}
-@media(prefers-reduced-motion:reduce){.task-achievements-backdrop,.task-achievements,.task-week-range,.task-week-chart,.task-achievement-total,.task-week-track i,.task-year-chart i b{animation:none;transition:none}}
+@media(prefers-reduced-motion:reduce){.task-achievements-backdrop,.task-achievements-page.achievement-detail-entering,.task-achievements,.task-week-range,.task-week-chart,.task-achievement-total,.task-week-track i,.task-year-chart i b{animation:none;transition:none}}
+@keyframes achievement-detail-enter{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:translateX(0)}}
 .achievements-topbar{position:fixed!important;z-index:30!important;overflow:visible!important}
 .achievement-task-picker{position:relative;justify-self:center;min-width:0;max-width:min(70vw,320px)}
+.achievement-detail-back{justify-self:start;width:38px;height:38px;border:1px solid #dce8ef;border-radius:13px;background:#fff;color:#527d97;font-size:27px;line-height:1;cursor:pointer}
 .achievement-task-trigger{display:flex;align-items:center;justify-content:center;gap:5px;max-width:100%;padding:5px 8px;border:0;background:transparent;color:#557187;font:inherit;font-size:1.12rem;font-weight:850;cursor:pointer}
 .achievement-task-trigger>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .achievement-task-trigger svg{flex:0 0 auto;color:#7897ad;transition:transform .2s ease}

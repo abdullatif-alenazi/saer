@@ -10,6 +10,10 @@
   color: #405f76;
   overflow-x: clip;
 }
+.achievement-overview.is-transitioning-out {
+  animation: achievement-overview-leave-right .19s cubic-bezier(.4, 0, 1, 1) both;
+  pointer-events: none;
+}
 .achievement-overview-head,
 .achievement-detail-panel > header {
   display: flex;
@@ -163,4 +167,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .achievement-card { transition: none; }
+  .achievement-overview.is-transitioning-out { animation: none; }
+}
+@keyframes achievement-overview-leave-right {
+  to { opacity: 0; transform: translateX(42px); }
 }
