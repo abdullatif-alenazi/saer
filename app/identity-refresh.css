@@ -175,6 +175,7 @@
 .day-screen .remaining-hero{font-size:.9rem!important}
 .day-screen .period-progress{min-height:19px!important;margin:6px 0 3px!important}
 .day-screen .period-rail{height:5px!important}
+.day-screen .period-rail.timeline-rail{height:26px!important}
 .day-screen .current-time-label{bottom:24px!important;font-size:9px!important}
 .day-screen .period-times{margin-top:5px!important;font-size:9px!important}
 .day-screen .hero-quiet-note{margin-top:4px!important;padding-top:5px!important;font-size:.68rem!important;line-height:1.3!important}
