@@ -414,8 +414,8 @@
 .now-filter-results{margin-top:0;opacity:0;transform:translateY(5px);transition:opacity .18s ease,transform .18s ease}
 .now-filter-results.is-visible{opacity:1;transform:translateY(0)}
 .now-filter-results .now-task-source{min-height:0}
-.day-screen:has(.now-source-filters button:nth-child(2).selected) .period-task-section,.day-screen:has(.now-source-filters button:nth-child(3).selected) .period-task-section{animation:now-task-list-out .15s ease both}
-.day-screen:has(.now-source-filters button:first-child.selected) .period-task-section{animation:now-task-list-in .18s ease both}
+.day-screen:has(.now-source-filters button:nth-of-type(2).selected) .period-task-section{animation:now-task-list-out .15s ease both}
+.day-screen:has(.now-source-filters button:first-of-type.selected) .period-task-section{animation:now-task-list-in .18s ease both}
 @keyframes now-task-list-out{to{opacity:0;transform:translateY(5px);height:0;min-height:0;margin-block:0;overflow:hidden;visibility:hidden}}
 @keyframes now-task-list-in{from{opacity:0;transform:translateY(5px);visibility:hidden;max-height:0}to{opacity:1;transform:translateY(0);visibility:visible;max-height:1200px}}
-@media(prefers-reduced-motion:reduce){.now-filter-results,.day-screen:has(.now-source-filters) .period-task-section{animation:none!important;transition:none!important}.now-filter-results{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.now-filter-results,.day-screen:has(.now-source-filters) .period-task-section,.now-source-filters .now-filter-bubble{animation:none!important;transition:none!important}.now-filter-results{opacity:1;transform:none}}
