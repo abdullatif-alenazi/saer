@@ -37,7 +37,7 @@ const activityIcon = (activity: PlannedActivity) => {
   return BookText;
 };
 
-export default function AchievementOverview({ plan, records, unitProgress, weekStartsOn, onManage, onOpen, transitioningOut = false }: {
+export default function AchievementOverview({ plan, records, unitProgress, weekStartsOn, onManage, onOpen, transitioningOut = false, transitioningIn = false }: {
   plan: PlannedActivity[];
   records: ExecutionRecord[];
   unitProgress: UnitProgress[];
@@ -45,8 +45,9 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
   onManage: () => void;
   onOpen: (activity: PlannedActivity) => void;
   transitioningOut?: boolean;
+  transitioningIn?: boolean;
 }) {
-  const [range, setRange] = useState<Range>("week");
+  const range: Range = "week";
   const [offset, setOffset] = useState(0);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const now = new Date();
@@ -143,10 +144,10 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
     return { label: monthLabel(monthStart), keys };
   });
 
-  return <section className={`screen achievement-overview ${transitioningOut ? "is-transitioning-out" : ""}`} dir="rtl">
+  return <section className={`screen achievement-overview ${transitioningOut ? "is-transitioning-out" : ""} ${transitioningIn ? "is-transitioning-in" : ""}`} dir="rtl">
     <header className="achievement-overview-head"><div><small>نتائجك من السجلات المحفوظة</small><h1>الإنجازات</h1></div><button type="button" onClick={onManage}>إدارة الأنشطة</button></header>
     <section className="achievement-summary-card" aria-label="ملخص الإنجاز"><div><small>متوسط الإنجاز</small><b>{averageProgress == null ? "—" : `${arabic(averageProgress)}٪`}</b></div><div><small>أنشطة لها إنجاز</small><b>{arabic(activitiesDone)} <i>من {arabic(items.length)}</i></b></div><div><small>الوقت المسجل</small><b>{totalMinutes > 0 ? durationLabel(totalMinutes) : "—"}</b></div></section>
-    <nav className="achievement-period-nav" aria-label="التنقل بين فترات الإنجاز"><div className="achievement-range" role="tablist">{([ ["week", "أسبوعي"], ["month", "شهري"], ["year", "سنوي"] ] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={range === id} className={range === id ? "selected" : ""} onClick={() => { setRange(id); setOffset(0); }}>{label}</button>)}</div><div className="achievement-period-arrows"><button type="button" aria-label="الفترة السابقة" onClick={() => setOffset(value => value - 1)}>‹</button><strong>{periodLabel}</strong><button type="button" aria-label="الفترة التالية" onClick={() => setOffset(value => value + 1)}>›</button></div></nav>
+    <nav className="achievement-period-nav" aria-label="التنقل بين الأسابيع"><div className="achievement-period-arrows"><button type="button" aria-label="الأسبوع السابق" onClick={() => setOffset(value => value - 1)}>‹</button><strong>{periodLabel}</strong><button type="button" aria-label="الأسبوع التالي" onClick={() => setOffset(value => value + 1)}>›</button></div></nav>
     {metrics.length ? <div className="achievement-cards">{metrics.map((item, index) => { const Icon = activityIcon(item.activity); return <button type="button" key={item.activity.id} className={`achievement-card pastel-${index % 6}`} onClick={() => onOpen(item.activity)}><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-card-copy"><b>{item.activity.name}</b><small>{item.target == null ? "لا يوجد مستهدف رقمي" : `المستهدف ${arabic(item.target)} ${item.unit}`}</small><span className="achievement-progress-track"><i style={{ width: `${item.percent ?? 0}%` }}/></span><small>{item.done > 0 ? `المنجز ${arabic(item.done)} ${item.unit}` : "لا يوجد إنجاز مسجل في هذه الفترة"}</small></span><strong className="achievement-card-percent">{item.percent == null ? "—" : `${arabic(item.percent)}٪`}</strong></button>; })}</div> : <div className="achievement-empty"><p>لا توجد أنشطة محفوظة لعرض إنجازاتها بعد.</p><button type="button" onClick={onManage}>إدارة الأنشطة</button></div>}
     {selected && <section className="achievement-detail-panel"><header><div><small>تفاصيل الفترة · {periodLabel}</small><h2>{selected.activity.name}</h2></div><button type="button" aria-label="إغلاق التفاصيل" onClick={() => setSelectedActivityId(null)}>×</button></header>
       {range === "week" && <div className="achievement-week-table-scroll"><table className="achievement-week-table"><thead><tr><th scope="col">النشاط</th>{dates.map(date => <th key={keyOf(date)} scope="col"><span>{new Intl.DateTimeFormat("ar-SA", { weekday: "short" }).format(date)}</span><small>{new Intl.DateTimeFormat("ar-SA", { day: "numeric" }).format(date)}</small></th>)}</tr></thead><tbody>{metrics.map((item, index) => <tr key={item.activity.id} className={item.activity.id === selectedActivityId ? "current" : ""}><th scope="row"><span className={`activity-dot pastel-${index % 6}`}/><span>{item.activity.name}</span></th>{dates.map(date => { const value = item.values.get(keyOf(date)) ?? 0; return <td key={keyOf(date)} className={value > 0 ? "has-value" : ""}>{value > 0 ? arabic(value) : "—"}</td>; })}</tr>)}</tbody></table></div>}

@@ -14,6 +14,13 @@
   animation: achievement-overview-leave-right .19s cubic-bezier(.4, 0, 1, 1) both;
   pointer-events: none;
 }
+.achievement-overview.is-transitioning-in {
+  animation: achievement-overview-enter-left .34s cubic-bezier(.22, 1, .36, 1) both;
+}
+.achievement-detail-exit-right {
+  animation: achievement-detail-leave-right .19s cubic-bezier(.4, 0, 1, 1) both;
+  pointer-events: none;
+}
 .achievement-overview-head,
 .achievement-detail-panel > header {
   display: flex;
@@ -167,8 +174,17 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .achievement-card { transition: none; }
-  .achievement-overview.is-transitioning-out { animation: none; }
+  .achievement-overview.is-transitioning-out,
+  .achievement-overview.is-transitioning-in,
+  .achievement-detail-exit-right { animation: none; }
 }
 @keyframes achievement-overview-leave-right {
   to { opacity: 0; transform: translateX(42px); }
+}
+@keyframes achievement-detail-leave-right {
+  to { opacity: 0; transform: translateX(42px); }
+}
+@keyframes achievement-overview-enter-left {
+  from { opacity: 0; transform: translateX(-42px); }
+  to { opacity: 1; transform: translateX(0); }
 }
