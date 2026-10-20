@@ -154,6 +154,45 @@
   box-shadow: inset 0 0 0 1px rgba(31,41,66,.06);
 }
 
+.period-rail.timeline-rail {
+  display: flex;
+  direction: rtl;
+  isolation: isolate;
+  height: 30px;
+  overflow: hidden;
+  background: #e9eef1;
+  box-shadow: inset 0 0 0 1px rgba(31,41,66,.08);
+}
+
+.timeline-segment {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  padding: 0 3px;
+  overflow: hidden;
+  border: 0;
+  border-inline-start: 1px solid rgba(255,255,255,.72);
+  border-radius: 0;
+  background: #9bc7dc;
+  color: #355c72;
+  font: inherit;
+  font-size: clamp(8px, 2vw, 10px);
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.timeline-segment.completed { background: #b8ddc9; color: #356b50; }
+.timeline-segment.timeline-free { background: #e9eef1; color: #687b87; }
+.timeline-segment span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.period-rail.timeline-rail .live-time-marker { z-index: 3; pointer-events: none; }
+.timeline-overrun { margin: 7px 0 0; color: #a24d56; font-size: 10px; font-weight: 750; }
+
 .elapsed-rail {
   position: absolute;
   top: 0;
