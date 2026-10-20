@@ -473,3 +473,31 @@
 @media(max-width:520px){.bottom-navigation{width:calc(100% - 20px);bottom:calc(8px + env(safe-area-inset-bottom));gap:7px}.bottom-navigation .bottom-nav{width:auto!important;padding:5px 7px!important}.bottom-navigation .bottom-add{width:54px;height:54px;flex-basis:54px}.app-shell{padding-bottom:calc(140px + env(safe-area-inset-bottom))!important}}
 @media(max-height:700px){.unified-add-groups section{margin-bottom:6px}.unified-add-groups .quick-add-card{min-height:70px!important}.home-calendar-expanded .calendar-days button{height:27px;min-height:27px}}
 @media(prefers-reduced-motion:reduce){.bottom-navigation .bottom-add,.home-calendar-expanded{transition:none;animation:none}}
+
+/* عند فتح الشهر: لا نكرر شريط الأسبوع، ونترك الصفحة تتمرر طبيعيًا بدل قصّها خلف التنقل الثابت. */
+.day-screen .week-browser{grid-template-columns:31px minmax(0,1fr) 31px!important;gap:6px!important;direction:rtl!important}
+.day-screen .week-browser.has-return{grid-template-columns:31px minmax(0,1fr) 31px!important}
+.day-screen .week-date-controls{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0}
+.day-screen .week-browser .home-date-toggle{flex:1 1 auto!important;width:auto!important;min-width:0!important;padding:2px 4px!important;white-space:nowrap!important;font-size:14px!important;line-height:1.25!important}
+.day-screen .week-browser .home-date-toggle .cycling-date{display:block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#7890a5!important;font-size:14px!important;font-weight:750!important;animation:calendar-face .38s ease both!important}
+.day-screen .week-browser .week-return-today{flex:0 0 30px;width:30px!important;height:30px!important;margin:0!important}
+.day-screen.calendar-is-expanded .week-days-window,.day-screen.calendar-is-expanded>.journey-strip.period-tiles{display:none!important}
+.day-screen.calendar-is-expanded .home-calendar-expanded{margin:2px 0 10px;padding:8px}
+.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-toolbar{gap:5px;margin-bottom:6px}
+.day-screen.calendar-is-expanded .home-calendar-expanded .month-calendar{padding:6px}
+.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-weekdays,.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days{gap:1px}
+.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days>i{height:29px}
+.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days button{height:29px;min-height:29px;border-radius:8px}
+.day-screen.calendar-is-expanded .flip-scene{height:auto!important;min-height:100px!important;margin-bottom:8px!important}
+.day-screen.calendar-is-expanded .flip-card,.day-screen.calendar-is-expanded .station-hero.flip-front{min-height:100px!important;height:auto!important}
+.day-screen.calendar-is-expanded .station-hero.flip-front{padding:9px 12px!important;gap:5px!important}
+.day-screen.calendar-is-expanded .station-hero .hero-top h2{font-size:21px!important}
+.day-screen.calendar-is-expanded .station-hero .hero-top p,.day-screen.calendar-is-expanded .remaining-hero>span{font-size:9px!important}
+.day-screen.calendar-is-expanded .remaining-hero{font-size:.72rem!important}
+.day-screen.calendar-is-expanded .station-hero .period-progress{margin:2px 0 0!important;min-height:0!important}
+.day-screen.calendar-is-expanded .station-hero .period-rail.timeline-rail{height:22px!important}
+.day-screen.calendar-is-expanded .station-hero .period-times{margin-top:2px!important}
+.app-shell:has(.day-screen.calendar-is-expanded){overflow:visible!important}
+body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-behavior-y:contain}
+@media(max-width:520px){.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days>i{height:clamp(25px,3.2dvh,30px)}.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days button{height:clamp(25px,3.2dvh,30px);min-height:clamp(25px,3.2dvh,30px)}}
+@media(prefers-reduced-motion:reduce){.day-screen .week-browser .home-date-toggle .cycling-date{animation:none!important}}
