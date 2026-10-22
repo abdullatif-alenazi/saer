@@ -501,3 +501,18 @@
 body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-behavior-y:contain}
 @media(max-width:520px){.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days>i{height:clamp(25px,3.2dvh,30px)}.day-screen.calendar-is-expanded .home-calendar-expanded .calendar-days button{height:clamp(25px,3.2dvh,30px);min-height:clamp(25px,3.2dvh,30px)}}
 @media(prefers-reduced-motion:reduce){.day-screen .week-browser .home-date-toggle .cycling-date{animation:none!important}}
+
+/* تأثيرات عداد الذكر: الرقم وحده يتحرك، ونص «تم إنجاز» يبقى ثابتًا. */
+.gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback{transform-box:fill-box!important;transform-origin:center!important}
+.gauge-ring-value.number-feedback.add,.gauge-dial-value.number-feedback.add{animation:dhikr-number-up .76s cubic-bezier(.22,1,.36,1) both!important}
+.gauge-ring-value.number-feedback.undo,.gauge-dial-value.number-feedback.undo{animation:dhikr-number-down .76s cubic-bezier(.22,1,.36,1) both!important}
+@keyframes dhikr-number-up{0%,100%{fill:#557187;transform:translateY(0)}20%,65%{fill:#4f9a70;transform:translateY(-5px)}}
+@keyframes dhikr-number-down{0%,100%{fill:#557187;transform:translateY(0)}20%,65%{fill:#c97d84;transform:translateY(5px)}}
+.dhikr-round-submit{position:relative!important;overflow:visible!important}
+.dhikr-round-submit>.counter-feedback{left:50%;right:auto;top:-3px;animation:dhikr-counter-float .76s cubic-bezier(.18,.8,.24,1) forwards}
+@keyframes dhikr-counter-float{0%{opacity:0;transform:translate(-50%,9px) scale(.78)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-35px) scale(1.05)}}
+.dhikr-station-main>i>em.marked-change::after{content:attr(data-change);position:absolute;z-index:4;top:-7px;inset-inline-start:-4px;display:grid;place-items:center;width:14px;height:14px;border:1px solid #fff;border-radius:50%;font-size:10px;font-style:normal;font-weight:900;line-height:1;box-shadow:0 2px 7px rgba(36,59,100,.16);animation:dhikr-bar-marker 5s ease-out both}
+.dhikr-station-main>i>em.marked-change.add::after{background:#e3f3e9;color:#438b62}
+.dhikr-station-main>i>em.marked-change.undo::after{background:#f8e7e9;color:#b7656d}
+@keyframes dhikr-bar-marker{0%,86%{opacity:1;transform:scale(1)}94%{opacity:.45;transform:scale(.8)}100%{opacity:0;transform:scale(.65)}}
+@media(prefers-reduced-motion:reduce){.gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback,.dhikr-round-submit>.counter-feedback,.dhikr-station-main>i>em.marked-change::after{animation:none!important}.dhikr-station-main>i>em.marked-change::after{opacity:1}}
