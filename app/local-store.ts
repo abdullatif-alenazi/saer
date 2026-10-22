@@ -21,7 +21,7 @@ export function readExecutionLog():ExecutionRecord[]{try{return JSON.parse(local
 export function saveExecution(record:ExecutionRecord){const records=readExecutionLog(),next=record.id?[record,...records.filter(item=>item.id!==record.id)].slice(0,500):[record,...records].slice(0,500);localStorage.setItem(key,JSON.stringify(next));notifyChange();return next.length}
 
 export type PlannedActivity={
- id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;updatedAt?:string;
+ id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;createdAt?:string;updatedAt?:string;
  nature?:TrackingNature;schedule:Schedule;
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
  activityKind?:string;trackingMode?:"time"|"distance";
@@ -33,8 +33,8 @@ export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"�
 const planKey="sair.plan.v1";
 const normalize=(item:PlannedActivity):PlannedActivity=>({...item,nature:item.nature??"commitment",schedule:{...item.schedule,days:item.schedule.days??[]}});
 export function readPlan():PlannedActivity[]{try{return (JSON.parse(localStorage.getItem(planKey)||"[]") as PlannedActivity[]).map(normalize)}catch{return[]}}
-export function savePlan(activity:PlannedActivity){const plan=readPlan();const next=[...plan,normalize({...activity,updatedAt:new Date().toISOString()})];localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
-export function updatePlan(activity:PlannedActivity){const next=readPlan().map(item=>item.id===activity.id?normalize({...activity,updatedAt:new Date().toISOString()}):item);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
+export function savePlan(activity:PlannedActivity){const plan=readPlan(),now=new Date().toISOString();const next=[...plan,normalize({...activity,createdAt:activity.createdAt??now,updatedAt:now})];localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
+export function updatePlan(activity:PlannedActivity){const next=readPlan().map(item=>item.id===activity.id?normalize({...activity,createdAt:activity.createdAt??item.createdAt,updatedAt:new Date().toISOString()}):item);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 export function deletePlan(id:string){const next=readPlan().filter(item=>item.id!==id);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 
 export type CounterEvent={id:string;periodId:string;delta:number;createdAt:string};
