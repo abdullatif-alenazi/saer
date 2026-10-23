@@ -13,7 +13,7 @@ import { counterValue, deleteAppointment, deletePlan, deleteTask, readAppointmen
 import WorkoutRunner from "./WorkoutRunner";
 import DhikrRunner from "./DhikrRunner";
 import TaskAchievements from "./TaskAchievements";
-import {AppointmentSheet as CalendarAppointmentSheet,AppointmentTypePicker,RecordEntryDialog,CalendarCategoryDialog} from "./CalendarRecords";
+import {AppointmentSheet as CalendarAppointmentSheet,AppointmentTypePicker,RecordEntryDialog,CalendarCategoryDialog,type CalendarAddKind} from "./CalendarRecords";
 import { calisthenicsCatalog } from "./workout-data";
 import {AppointmentCalendar,AuthScreen,TaskDialog,SettingsScreen} from "./SectionScreens";
 import AchievementOverview from "./AchievementOverview";
@@ -122,7 +122,7 @@ export default function Home(){
  const openDhikrSettings=(activity:PlannedActivity)=>{setEditingDhikr(activity);window.setTimeout(()=>$("dhikr-settings")?.showModal(),0)};
  const openQuickAdd=(preset:ActivityPreset)=>{ $("quick-add")?.close();openActivity(null,preset.nature,preset)};
  const showQuickAdd=()=>{setQuickAddScope(navView==="activities"?"activities":navView==="tasks"?"tasks":"general");window.setTimeout(()=>$('quick-add')?.showModal(),0)};
- const openUnifiedTask=()=>{$("quick-add")?.close();window.setTimeout(()=>openRecordEditor(null,null),0)};
+ const openUnifiedTask=()=>{$("quick-add")?.close();window.setTimeout(()=>$('calendar-type-picker')?.showModal(),0)};
  const saveActivity=(activity:PlannedActivity)=>{if(editingActivity){setPlan(updatePlan(activity));return}if(activity.nature==="goal"&&activity.supportingPlan){const commitmentId=`commitment-${activity.id}`;const goal={...activity,linkedCommitmentId:commitmentId,supportingPlan:{...activity.supportingPlan,enabled:false}};const commitment:PlannedActivity={id:commitmentId,nature:"commitment",parentGoalId:activity.id,name:activity.supportingPlan.actionName,template:activity.template,period:activity.supportingPlan.period,goal:`يقود إلى ${activity.name}`,expectedMinutes:activity.supportingPlan.expectedMinutes,schedule:activity.supportingPlan.schedule,quantity:activity.quantity,unit:activity.unit,measurements:activity.measurements,exercises:activity.exercises,reminder:{mode:"station",value:activity.supportingPlan.period}};savePlan(goal);setPlan(savePlan(commitment));return}setPlan(savePlan(activity))};
  const saveGaugeStyle=(style:GaugeStyle)=>{if(!activeDhikr?.unitTracking)return;const updated={...activeDhikr,unitTracking:{...activeDhikr.unitTracking,gaugeStyle:style}};setPlan(updatePlan(updated));setActiveDhikr(updated)};
  const openTask=(item:TaskItem|null,urgent=false)=>{setEditingTask(item);setNewTaskUrgent(item?.urgent??urgent);window.setTimeout(()=>$("task-sheet")?.showModal(),0)};
@@ -131,6 +131,7 @@ export default function Home(){
  const saveCategory=(name:string)=>{const category={id:`category-${globalThis.crypto?.randomUUID?.()??Date.now()}`,name,createdAt:new Date().toISOString()};setCalendarCategories(saveCalendarCategory(category))};
  const openAppointment=(item:Appointment|null)=>{setEditingAppointment(item);if(item){setCalendarAddKind(item.kind??"appointment");setCalendarFormKey(value=>value+1);window.setTimeout(()=>$("appointment-sheet")?.showModal(),0)}else window.setTimeout(()=>$("calendar-type-picker")?.showModal(),0)};
  const openCalendarForm=(kind:CalendarRecordKind)=>{setCalendarAddKind(kind);setEditingAppointment(null);setCalendarFormKey(value=>value+1);$("calendar-type-picker")?.close();window.setTimeout(()=>$("appointment-sheet")?.showModal(),0)};
+ const openRecordType=(kind:CalendarAddKind)=>{if(kind==="task"){$("calendar-type-picker")?.close();openRecordEditor(null,null);return}openCalendarForm(kind)};
  const openActivityAchievements=(activity:PlannedActivity)=>{const fromOverview=navView==="achievements"&&!achievementDetailOpen;setAchievementActivity(activity);setNavView("achievements");if(fromOverview){setAchievementTransition("out");window.setTimeout(()=>{setAchievementDetailOpen(true);setAchievementTransition("in");window.setTimeout(()=>setAchievementTransition(null),360)},190)}else{setAchievementDetailOpen(true);setAchievementTransition("in");window.setTimeout(()=>setAchievementTransition(null),360)}};
  const closeActivityAchievements=()=>{setAchievementTransition("back-out");window.setTimeout(()=>{setAchievementDetailOpen(false);setAchievementActivity(null);setAchievementTransition("back-in");window.setTimeout(()=>setAchievementTransition(null),360)},190)};
  const createLinkedTask=(title:string,date:string,time:string)=>{const id="task-"+(globalThis.crypto?.randomUUID?.()??Date.now());setTasks(saveTask({id,title,date,time:time||undefined}));return id};
@@ -155,7 +156,7 @@ export default function Home(){
   <AddActivitySheet editing={editingActivity} forcedNature={creationNature} initialTemplate={quickTemplate} initialPeriod={activityPeriod} onBackToTypes={()=>{setQuickTemplate(null);$("add-sheet")?.close();window.setTimeout(()=>$("quick-add")?.showModal(),0)}} onSave={saveActivity} onDelete={id=>{setPlan(deletePlan(id));setEditingActivity(null)}}/>
   <DhikrSettingsSheet editing={editingDhikr} onSave={activity=>{setPlan(updatePlan(activity));setActiveDhikr(activity);setEditingDhikr(null)}}/>
   <TaskDialog editing={editingTask} initialUrgent={newTaskUrgent} onSave={item=>setTasks(editingTask?updateTask(item):saveTask(item))} onArchive={item=>{archiveTask(item);setEditingTask(null)}} onRestore={item=>{restoreTask(item);setEditingTask(null)}} onDelete={id=>{setTasks(deleteTask(id));setEditingTask(null)}}/>
-  <AppointmentTypePicker onChoose={openCalendarForm}/>
+  <AppointmentTypePicker onChoose={openRecordType}/>
   <CalendarAppointmentSheet key={(editingAppointment?.id??"new")+"-"+calendarAddKind+"-"+calendarFormKey} editing={editingAppointment} kind={calendarAddKind} tasks={tasks} onCreateLinkedTask={createLinkedTask} onSave={item=>setAppointments(editingAppointment?updateAppointment(item):saveAppointment(item))} onDelete={id=>{setAppointments(deleteAppointment(id));setEditingAppointment(null)}}/>
   <QuickAddSheet scope={quickAddScope} onChooseActivity={openQuickAdd} onChooseTask={openUnifiedTask}/>
   <RecordEntryDialog key={recordEditorVersion} editingAppointment={recordEditorAppointment} editingTask={recordEditorTask} selectedDate={riyadhCalendarKey(tasksCalendarDate)} categories={calendarCategories} onSaveAppointment={item=>{setAppointments(recordEditorAppointment?updateAppointment(item):saveAppointment(item));if(recordEditorTask)setTasks(deleteTask(recordEditorTask.id))}} onSaveTask={item=>{setTasks(recordEditorTask?updateTask(item):saveTask(item));if(recordEditorAppointment)setAppointments(deleteAppointment(recordEditorAppointment.id))}} onDeleteAppointment={id=>setAppointments(deleteAppointment(id))} onDeleteTask={id=>setTasks(deleteTask(id))}/>

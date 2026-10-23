@@ -3,7 +3,9 @@
 import {useState} from "react";
 import type {Appointment, CalendarCategory, CalendarRecordKind, TaskItem} from "./local-store";
 
-const kinds:{id:CalendarRecordKind;title:string;description:string;examples:string;icon:string}[]=[
+export type CalendarAddKind=CalendarRecordKind|"task";
+const kinds:{id:CalendarAddKind;title:string;description:string;examples:string;icon:string}[]=[
+ {id:"task",title:"مهمة",description:"عمل محدد تريد إنجازه",examples:"شراء مستلزمات · إعداد تقرير",icon:"☷"},
  {id:"appointment",title:"موعد",description:"شيء تريد القيام به في وقت محدد",examples:"مقابلة · مكالمة · طبيب",icon:"◷"},
  {id:"occasion",title:"مناسبة",description:"مناسبة عامة أو متكررة",examples:"رمضان · الأعياد · الإجازات",icon:"✦"},
  {id:"event",title:"حدث",description:"حدث قادم يحتاج إلى متابعة أو تذكير",examples:"قسط · انتهاء تأمين · اشتراك",icon:"◇"},
@@ -15,7 +17,7 @@ function toGregorian(year:number,month:number,day:number,calendar:"gregory"|"isl
 function key(date:Date){return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0")}
 function monthLabel(year:number,month:number,calendar:"gregory"|"islamic"){const date=toGregorian(year,month,1,calendar);return new Intl.DateTimeFormat("ar-SA-u-ca-"+(calendar==="islamic"?"islamic-umalqura":"gregory"),{month:"long"}).format(new Date((date||todayKey())+"T12:00:00"))}
 
-export function AppointmentTypePicker({onChoose}:{onChoose:(kind:CalendarRecordKind)=>void}){return <dialog id="calendar-type-picker" className="sheet calendar-type-picker"><header className="calendar-type-head"><div><small>إضافة إلى سائر</small><h2>ماذا تريد أن تضيف؟</h2></div><button type="button" aria-label="إغلاق" onClick={event=>(event.currentTarget.closest("dialog") as HTMLDialogElement).close()}>×</button></header><div className="calendar-type-grid">{kinds.map((kind,index)=><button type="button" key={kind.id} className={"calendar-type-card pastel-"+index} onClick={()=>onChoose(kind.id)}><span className="calendar-type-icon">{kind.icon}</span><b>{kind.title}</b><small>{kind.description}</small><i>مثال: {kind.examples}</i></button>)}</div></dialog>}
+export function AppointmentTypePicker({onChoose}:{onChoose:(kind:CalendarAddKind)=>void}){return <dialog id="calendar-type-picker" className="sheet calendar-type-picker"><header className="calendar-type-head"><div><small>إضافة إلى سائر</small><h2>ماذا تريد أن تضيف؟</h2></div><button type="button" aria-label="إغلاق" onClick={event=>(event.currentTarget.closest("dialog") as HTMLDialogElement).close()}>×</button></header><div className="calendar-type-grid">{kinds.map((kind,index)=><button type="button" key={kind.id} className={"calendar-type-card pastel-"+index} onClick={()=>onChoose(kind.id)}><span className="calendar-type-icon">{kind.icon}</span><b>{kind.title}</b><small>{kind.description}</small><i>مثال: {kind.examples}</i></button>)}</div></dialog>}
 
 function CalendarDateField({label,date,calendar,onChange}:{label:string;date:string;calendar:"gregory"|"islamic";onChange:(value:string)=>void}){const p=dateParts(date,calendar),months=Array.from({length:12},(_,i)=>({value:i+1,label:monthLabel(p.year,i+1,calendar)}));const update=(next:Partial<typeof p>)=>{const value=toGregorian(next.year??p.year,next.month??p.month,next.day??p.day,calendar);if(value)onChange(value)};return <fieldset className="calendar-date-field"><legend>{label}</legend><div><input aria-label={label+" اليوم"} type="number" min="1" max="31" value={p.day} onChange={event=>update({day:Number(event.target.value)})}/><select aria-label={label+" الشهر"} value={p.month} onChange={event=>update({month:Number(event.target.value)})}>{months.map(month=><option key={month.value} value={month.value}>{month.label}</option>)}</select><input aria-label={label+" السنة"} type="number" min="1" value={p.year} onChange={event=>update({year:Number(event.target.value)})}/></div></fieldset>}
 
