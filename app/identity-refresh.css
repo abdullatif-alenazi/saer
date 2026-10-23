@@ -530,10 +530,9 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-day-screen .home-calendar-expanded{margin:0!important;padding:8px!important}
 .home-current-station{--station-line:#badbe9;display:grid;gap:7px;padding:11px 13px 9px;border:1px solid #dcecf3;border-radius:19px;background:linear-gradient(120deg,#edf7fb,#fff 76%);box-shadow:0 5px 16px rgba(52,91,116,.045)}
 .home-current-station header{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
-.home-current-station header>div:first-child{display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:7px;min-width:0}
+.home-current-station header>div:first-child{display:grid;grid-template-columns:minmax(0,1fr);align-items:baseline;min-width:0}
 .home-current-station header>div:first-child>span{grid-column:1/-1;color:#839bad;font-size:9px;font-weight:700}
 .home-current-station header>div:first-child>b{color:#4e6f87;font-size:17px;line-height:1.1}
-.home-current-station header>div:first-child>small{color:#8195a5;font-size:9px;direction:rtl;white-space:nowrap}
 .home-station-remaining{display:grid;justify-items:end;gap:1px;flex:none}
 .home-station-remaining small{color:#829bad;font-size:9px}
 .home-station-remaining b,.home-station-static{color:#53738b;font-size:12px;font-weight:800;white-space:nowrap}
