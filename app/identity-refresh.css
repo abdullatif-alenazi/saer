@@ -571,7 +571,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group-head>svg{width:15px;height:15px;flex:none;color:#8ca1af}
 .home-station-entries{display:grid;gap:7px;padding:2px 8px 9px;animation:home-entries-in .2s ease both}
 .home-day-entry{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;padding:5px 11px;border:1px solid #e7edf0;border-radius:999px!important;overflow:hidden;clip-path:inset(0 round 999px);background:#fff;transition:border-color .18s ease,background-color .18s ease}
-.home-day-entry.entry-activity::before{content:"";position:absolute;z-index:0;inset-block:0;inset-inline-start:0;width:var(--activity-progress,0%);border-radius:inherit;background:var(--activity-fill,#E5EEF5);transition:width .45s cubic-bezier(.22,1,.36,1)}
+.home-day-entry.entry-activity::before{content:"";position:absolute;z-index:0;inset-block:0;inset-inline-start:0;width:var(--activity-progress,0%);border-radius:0;background:var(--activity-fill,#E5EEF5);transition:width .45s cubic-bezier(.22,1,.36,1)}
 .home-day-entry>*{position:relative;z-index:1}
 .home-day-entry:active{border-color:#cfe4ee;background:#f7fbfd}
 .home-day-entry.is-done{opacity:.7}
