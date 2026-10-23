@@ -551,7 +551,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-groups{display:grid;gap:7px;min-width:0;overflow:visible;padding:0;background:transparent}
 .home-station-group{min-width:0;overflow:hidden;border:1px solid #e7edf0;border-radius:18px;background:#f0f4f6;transition:border-color .2s ease,box-shadow .2s ease}
 .home-station-group.open{border-color:#dce6eb;box-shadow:0 3px 10px rgba(52,91,116,.035)}
-.home-station-group-head{position:relative;display:flex;align-items:center;gap:8px;width:100%;min-height:45px;padding:6px 9px;border:0;border-radius:12px;background:transparent;color:#52728a;text-align:right;cursor:pointer;transition:background-color .18s ease}
+.home-station-group-head{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:45px;padding:6px 9px;border:0;border-radius:12px;background:transparent;color:#52728a;text-align:right;cursor:pointer;transition:background-color .18s ease}
 .home-station-group.is-current .home-group-name>b::before{content:"";display:inline-block;width:6px;height:6px;margin-inline-end:5px;border-radius:50%;background:#65a9c3;vertical-align:middle}
 .home-station-group.period-0{--activity-fill:#DCEEFF;--activity-ink:#548BB5;background:#DCEEFF}
 .home-station-group.period-1{--activity-fill:#FFF3C4;--activity-ink:#A98727;background:#FFF3C4}
@@ -564,7 +564,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-0 .home-group-icon,.home-station-group.period-1 .home-group-icon,.home-station-group.period-2 .home-group-icon,.home-station-group.period-3 .home-group-icon,.home-station-group.period-4 .home-group-icon{background:transparent;color:#fff;filter:drop-shadow(0 1px 1px rgba(35,55,75,.38))}
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
-.home-group-name{position:absolute;left:50%;display:grid;gap:1px;min-width:0;max-width:calc(100% - 86px);transform:translateX(-50%);text-align:center}
+.home-group-name{position:static;display:grid;gap:1px;min-width:0;max-width:calc(100% - 86px);transform:none;text-align:center}
 .home-group-name>b{font-size:12px;line-height:1.2}
 .home-group-name>small{color:#91a1ad;font-size:9px}
 .home-group-progress{margin-inline-start:auto;color:#8498a6;font-size:9px;white-space:nowrap}
