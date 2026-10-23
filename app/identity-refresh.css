@@ -562,7 +562,9 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-group-progress{margin-inline-start:auto;color:#8498a6;font-size:9px;white-space:nowrap}
 .home-station-group-head>svg{width:15px;height:15px;flex:none;color:#8ca1af}
 .home-station-entries{display:grid;gap:7px;padding:2px 8px 9px;animation:home-entries-in .2s ease both}
-.home-day-entry{display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;padding:5px 11px;border:1px solid #e7edf0;border-radius:999px;background:#fff;transition:border-color .18s ease,background-color .18s ease}
+.home-day-entry{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;padding:5px 11px;border:1px solid #e7edf0;border-radius:999px;background:#fff;transition:border-color .18s ease,background-color .18s ease}
+.home-day-entry.entry-activity::before{content:"";position:absolute;z-index:0;inset-block:0;inset-inline-start:0;width:var(--activity-progress,0%);border-radius:inherit;background:#d7ebf3;transition:width .45s cubic-bezier(.22,1,.36,1)}
+.home-day-entry>*{position:relative;z-index:1}
 .home-day-entry:active{border-color:#cfe4ee;background:#f7fbfd}
 .home-day-entry.is-done{opacity:.7}
 .home-entry-icon,.home-entry-check{display:grid;place-items:center;width:27px;height:27px;flex:none;border:0;border-radius:50%;background:#edf6f9;color:#6e9ab0}
@@ -572,6 +574,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-entry-main{display:grid;gap:2px;flex:1;min-width:0;padding:0;border:0;background:transparent;color:#47667d;text-align:right;cursor:pointer}
 .home-entry-main>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:750}
 .home-entry-main>small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8b9ca8;font-size:9px}
+.home-entry-target{flex:none;min-width:28px;color:#476a80;text-align:left;font-size:11px;font-weight:800;white-space:nowrap}
 .home-entry-state{flex:none;color:#8b9ca8;font-size:9px}
 .home-day-entry.is-done .home-entry-main>b{text-decoration:line-through}
 .home-entry-open{width:26px;height:26px;flex:none;border:1px solid #e4edf1;border-radius:50%;background:#fff;color:#8298a7;font-size:18px;line-height:1}
