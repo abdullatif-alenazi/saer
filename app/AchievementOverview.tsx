@@ -200,23 +200,25 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
   const weekDayOptions = weekdayHeaders.map(day => ({ day, name: weekdayNames[day] }));
 
   return <section className={`screen achievement-overview ${transitioningOut ? "is-transitioning-out" : ""} ${transitioningIn ? "is-transitioning-in" : ""}`} dir="rtl">
-    <nav className="achievement-range" aria-label="فترة الإنجازات">
-      {([['week', 'أسبوعي'], ['month', 'شهري'], ['year', 'سنوي']] as const).map(([id, label]) => <button type="button" aria-pressed={range === id} key={id} className={range === id ? "selected" : ""} onClick={() => changeRange(id)}>{label}</button>)}
-    </nav>
-
     <div className="achievement-period-nav">
-      <button type="button" aria-label="الفترة السابقة" onClick={() => shift(-1)}>‹</button>
+      <button type="button" aria-label="الفترة السابقة" onClick={() => shift(-1)}>→</button>
       <strong>{caption}</strong>
       {pastPeriod && <button type="button" className="achievement-current-period" onClick={goCurrent} aria-label="العودة إلى الفترة الحالية" title="العودة إلى الفترة الحالية"><CurrentPeriodIcon/></button>}
-      <button type="button" aria-label="الفترة التالية" onClick={() => shift(1)}>›</button>
+      <button type="button" aria-label="الفترة التالية" onClick={() => shift(1)}>←</button>
     </div>
 
-    {range === "week" && <div className="achievement-week-days" aria-label="تصفية أيام الأسبوع">
-      <button type="button" className={selectedWeekDay == null ? "selected" : ""} aria-pressed={selectedWeekDay == null} onClick={() => setSelectedWeekDay(null)}>الكل</button>
-      {weekDayOptions.map(({ day, name }) => {
-        const date = weekDates.find(item => item.getUTCDay() === day)!, current = isCurrentWeek && keyOf(date) === todayKey;
-        return <button type="button" key={day} className={`${selectedWeekDay === day ? "selected" : ""} ${current ? "today" : ""}`} aria-pressed={selectedWeekDay === day} onClick={() => setSelectedWeekDay(day)}><span>{name}</span>{current && <i aria-label="اليوم"/>}</button>;
-      })}
+    <nav className="achievement-range" aria-label="فترة الإنجازات">
+      {([['week', 'أسبوع'], ['month', 'شهر'], ['year', 'سنة']] as const).map(([id, label]) => <button type="button" aria-pressed={range === id} key={id} className={range === id ? "selected" : ""} onClick={() => changeRange(id)}>{label}</button>)}
+    </nav>
+
+    {range === "week" && <div className="achievement-week-picker">
+      <div className="achievement-week-days" aria-label="أيام الأسبوع">
+        {weekDayOptions.map(({ day }) => {
+          const date = weekDates.find(item => item.getUTCDay() === day)!, current = isCurrentWeek && keyOf(date) === todayKey;
+          return <button type="button" key={day} className={`${selectedWeekDay === day ? "selected" : ""} ${current ? "today" : ""}`} aria-pressed={selectedWeekDay === day} onClick={() => setSelectedWeekDay(selectedWeekDay === day ? null : day)}><span>{new Intl.DateTimeFormat(calendar === "islamic" ? "ar-SA-u-ca-islamic-umalqura" : "ar-SA-u-ca-gregory", { weekday: "short", timeZone: "Asia/Riyadh" }).format(date)}</span><b>{ar(calendarParts(date, calendar).day)}</b>{current && <i aria-label="اليوم"/>}</button>;
+        })}
+      </div>
+      <button type="button" className={`achievement-week-all ${selectedWeekDay == null ? "selected" : ""}`} aria-pressed={selectedWeekDay == null} onClick={() => setSelectedWeekDay(null)}>الأسبوع كاملًا</button>
     </div>}
 
     {range === "month" && <div className="achievement-month-grid" aria-label="تقويم الشهر" dir="rtl">

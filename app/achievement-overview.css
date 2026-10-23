@@ -22,27 +22,28 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
-  border-radius: 15px;
-  background: #edf5f8;
+  border: 1px solid #e5edf1;
+  border-radius: 21px;
+  background: #fff;
 }
 .achievement-range button {
   min-width: 0;
   border: 0;
-  border-radius: 11px;
+  border-radius: 15px;
   background: transparent;
   color: #8298a7;
   padding: 9px 5px;
   font: inherit;
   font-weight: 700;
 }
-.achievement-range button.selected { background: #fff; color: #4e7893; box-shadow: 0 2px 9px rgba(69, 109, 135, .08); }
+.achievement-range button.selected { background: #e4f2f9; color: #4e7893; box-shadow: inset 0 0 0 1px #c7e4f2; }
 
 .achievement-period-nav {
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr) auto 38px;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 42px;
 }
 .achievement-period-nav > button {
   display: grid;
@@ -63,10 +64,34 @@
 
 .achievement-week-days {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid #e5edf1;
+  border-radius: 21px;
+  background: #fff;
 }
-.achievement-week-days button,
+.achievement-week-days button {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: 58px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 1px;
+  border: 0;
+  border-radius: 15px;
+  background: transparent;
+  color: #8195a5;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease;
+}
+.achievement-week-days button span { overflow: hidden; max-width: 100%; color: #8195a5; font-size: 10px; font-weight: 700; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; }
+.achievement-week-days button b { color: #486a83; font-size: 15px; font-weight: 800; line-height: 1.15; }
 .achievement-month-grid button,
 .achievement-year-months button {
   position: relative;
@@ -81,11 +106,14 @@
   font-size: 11px;
   line-height: 1.2;
 }
-.achievement-week-days button.selected,
 .achievement-month-grid button.selected,
 .achievement-year-months button.selected { border-color: #b8dfee; background: #e2f2f8; color: #47718b; font-weight: 800; }
-.achievement-week-days button.today:not(.selected)::after { content: ""; position: absolute; bottom: 2px; right: 50%; width: 4px; height: 4px; border-radius: 50%; background: #4b9dbb; }
-.achievement-week-days button span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.achievement-week-days button.selected { background: #e4f2f9; box-shadow: inset 0 0 0 1px #c7e4f2; }
+.achievement-week-days button.today:not(.selected) b { color: #4385a5; }
+.achievement-week-days button i { position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: #4b9dbb; }
+.achievement-week-picker { display: grid; gap: 5px; }
+.achievement-week-all { justify-self: start; min-height: 25px; padding: 3px 9px; border: 1px solid #e2edf2; border-radius: 999px; background: #fff; color: #708b9c; font: inherit; font-size: 10px; font-weight: 700; }
+.achievement-week-all.selected { border-color: #b8dfee; background: #e4f2f9; color: #47718b; }
 
 .achievement-month-grid {
   display: grid;
@@ -170,7 +198,7 @@
 .achievement-empty p { margin: 0; }
 @media (min-width: 700px) {
   .achievement-overview { gap: 14px; }
-  .achievement-week-days { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .achievement-week-days { grid-template-columns: repeat(7, minmax(0, 1fr)); }
   .achievement-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 360px) {
