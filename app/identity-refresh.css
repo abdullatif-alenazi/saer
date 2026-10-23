@@ -556,7 +556,8 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-groups{display:grid;gap:7px;min-width:0;overflow:visible;padding:0;background:transparent}
 .home-station-group{min-width:0;overflow:hidden;border:1px solid #e7edf0;border-radius:18px;background:#f0f4f6;transition:border-color .2s ease,box-shadow .2s ease}
 .home-station-group.open{border-color:#dce6eb;box-shadow:0 3px 10px rgba(52,91,116,.035)}
-.home-station-group.is-current{border-color:color-mix(in srgb,var(--activity-fill,#9cc9e8) 76%,white);box-shadow:0 0 0 2px color-mix(in srgb,var(--activity-fill,#9cc9e8) 25%,transparent),0 5px 16px color-mix(in srgb,var(--activity-ink,#548bb5) 13%,transparent)}
+.home-station-group.is-current{border:2px solid var(--activity-ink,#548bb5);box-shadow:0 0 0 3px color-mix(in srgb,var(--activity-ink,#548bb5) 22%,transparent),0 6px 18px color-mix(in srgb,var(--activity-ink,#548bb5) 18%,transparent)}
+.home-station-group.period-4.is-current{border:2px solid #fff;box-shadow:0 0 0 4px #8798be,0 0 0 7px rgba(83,100,135,.34),0 7px 20px rgba(15,21,43,.24)}
 .home-station-group-head{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:45px;padding:6px 9px;border:0;border-radius:12px;background:transparent;color:#52728a;text-align:right;cursor:pointer;transition:background-color .18s ease}
 .home-station-group.period-0{--activity-icon-bg:#DCEEFF;--activity-fill:#9CC9E8;--activity-ink:#548BB5;background:#DCEEFF}
 .home-station-group.period-1{--activity-icon-bg:#FFF3C4;--activity-fill:#E6CF78;--activity-ink:#A98727;background:#FFF3C4}
