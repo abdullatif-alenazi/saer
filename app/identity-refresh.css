@@ -511,15 +511,22 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-day-screen .week-date-controls .home-date-toggle svg{width:14px;height:14px;flex:none}
 .home-day-screen .week-return-today{width:auto!important;min-width:36px;height:30px!important;padding:0 8px!important;border-radius:11px!important;color:#4f839f!important;font-size:10px!important;font-weight:800}
 .home-day-screen .home-week-days{margin:0!important;padding:0!important;border:1px solid #e5edf1;border-radius:21px;background:#fff;overflow:hidden;touch-action:pan-y}
+.home-day-screen .home-week-slider{position:relative;min-height:72px;overflow:hidden}
 .home-day-screen .home-week-days .week-strip{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px!important;margin:0!important;padding:7px!important;direction:rtl}
+.home-day-screen .home-week-days.is-sliding .week-strip{position:absolute;inset:0;width:100%;pointer-events:none}
+.home-day-screen .home-week-days.slide-next .week-strip-old{animation:home-week-exit-left .34s cubic-bezier(.22,1,.36,1) both}
+.home-day-screen .home-week-days.slide-next .week-strip-new{animation:home-week-enter-right .34s cubic-bezier(.22,1,.36,1) both}
+.home-day-screen .home-week-days.slide-previous .week-strip-old{animation:home-week-exit-right .34s cubic-bezier(.22,1,.36,1) both}
+.home-day-screen .home-week-days.slide-previous .week-strip-new{animation:home-week-enter-left .34s cubic-bezier(.22,1,.36,1) both}
+@keyframes home-week-exit-left{to{transform:translateX(-100%)}}
+@keyframes home-week-enter-right{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes home-week-exit-right{to{transform:translateX(100%)}}
+@keyframes home-week-enter-left{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 .home-day-screen .home-week-days .week-strip button{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px!important;height:58px!important;min-height:58px!important;padding:5px 2px!important;border:0!important;border-radius:15px!important;background:transparent!important;color:#8195a5!important;box-shadow:none!important}
 .home-day-screen .home-week-days .week-strip button b{font-size:10px!important;font-weight:700;line-height:1.15}
 .home-day-screen .home-week-days .week-strip button>span{color:#486a83!important;font-size:15px!important;font-weight:800;line-height:1.15}
 .home-day-screen .home-week-days .week-strip button.selected{background:#e4f2f9!important;color:#4f7892!important;box-shadow:inset 0 0 0 1px #c7e4f2!important}
 .home-day-screen .home-week-days .week-strip button.today:not(.selected){color:#4385a5!important}
-.home-day-screen .home-week-days .week-strip .home-today-marker{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:#4a9fc0}
-.home-day-screen .home-week-days .week-strip .day-indicator{position:absolute;top:3px;inset-inline-start:5px;width:7px;height:7px;border:0!important;background:#55a4bf!important;font-size:0!important}
-.home-day-screen .home-week-days .week-strip .day-indicator.done{background:#79af92!important}
 .home-day-screen .home-calendar-expanded{margin:0!important;padding:8px!important}
 .home-current-station{--station-line:#badbe9;display:grid;gap:7px;padding:11px 13px 9px;border:1px solid #dcecf3;border-radius:19px;background:linear-gradient(120deg,#edf7fb,#fff 76%);box-shadow:0 5px 16px rgba(52,91,116,.045)}
 .home-current-station header{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
@@ -536,7 +543,6 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-time-segment:nth-child(4n+2){background:#b6d9e6}.home-time-segment:nth-child(4n+3){background:#c1e0e9}.home-time-segment.completed{background:#b6d9c8;color:#3e7058}
 .home-time-segment>span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:800;direction:rtl}
 .home-time-segment.is-free{border:0;background:#e5edf1;color:#708593;cursor:default}
-.home-live-marker{position:absolute;z-index:2;top:50%;width:13px;height:13px;border:3px solid white;border-radius:50%;background:#6daeca;box-shadow:0 0 0 3px rgba(255,255,255,.48);transform:translate(-50%,-50%);pointer-events:none}
 .home-station-times{display:flex;justify-content:space-between;color:#8296a5;font-size:9px;direction:rtl}
 .home-station-overrun{color:#a84c59;font-size:10px;font-weight:750}
 .home-day-activities{display:grid;gap:6px;min-width:0}
@@ -592,8 +598,8 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-day-empty>button{padding:7px 11px;border:1px solid #dceaf0;border-radius:10px;background:#fff;color:#587d95;font-size:10px;font-weight:750}
 .home-day-filter-empty{padding:14px;border:1px dashed #e2ebef;border-radius:13px;color:#8497a4;text-align:center;font-size:10px}
 @keyframes home-entries-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:390px){.home-day-screen{gap:8px;padding-inline:10px}.home-day-screen .home-week-days .week-strip{gap:2px!important;padding:5px!important}.home-day-screen .home-week-days .week-strip button{height:53px!important;min-height:53px!important}.home-group-progress{max-width:90px;overflow:hidden;text-overflow:ellipsis}.home-station-group-head{gap:6px;padding-inline:6px}.home-station-entries{padding-inline:6px}.home-day-entry{gap:6px;padding-inline:6px}}
-@media(prefers-reduced-motion:reduce){.home-station-group,.home-station-entries{transition:none!important;animation:none!important}}
+@media(max-width:390px){.home-day-screen{gap:8px;padding-inline:10px}.home-day-screen .home-week-slider{min-height:63px}.home-day-screen .home-week-days .week-strip{gap:2px!important;padding:5px!important}.home-day-screen .home-week-days .week-strip button{height:53px!important;min-height:53px!important}.home-group-progress{max-width:90px;overflow:hidden;text-overflow:ellipsis}.home-station-group-head{gap:6px;padding-inline:6px}.home-station-entries{padding-inline:6px}.home-day-entry{gap:6px;padding-inline:6px}}
+@media(prefers-reduced-motion:reduce){.home-station-group,.home-station-entries{transition:none!important;animation:none!important}.home-day-screen .home-week-days .week-strip{animation:none!important}}
 
 /* تأثيرات عداد الذكر: الرقم وحده يتحرك، ونص «تم إنجاز» يبقى ثابتًا. */
 .gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback{transform-box:fill-box!important;transform-origin:center!important}
