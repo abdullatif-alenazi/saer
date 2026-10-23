@@ -552,8 +552,15 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group{min-width:0;overflow:hidden;border:1px solid #e7edf0;border-radius:18px;background:#f0f4f6;transition:border-color .2s ease,box-shadow .2s ease}
 .home-station-group.open{border-color:#dce6eb;box-shadow:0 3px 10px rgba(52,91,116,.035)}
 .home-station-group-head{display:flex;align-items:center;gap:8px;width:100%;min-height:45px;padding:6px 9px;border:0;border-radius:12px;background:transparent;color:#52728a;text-align:right;cursor:pointer;transition:background-color .18s ease}
-.home-station-group.is-current>.home-station-group-head{background:#edf7fb}
 .home-station-group.is-current .home-group-name>b::before{content:"";display:inline-block;width:6px;height:6px;margin-inline-end:5px;border-radius:50%;background:#65a9c3;vertical-align:middle}
+.home-station-group.period-0{background:#DCEEFF}
+.home-station-group.period-1{background:#FFF3C4}
+.home-station-group.period-2{background:#FFE0C2}
+.home-station-group.period-3{background:#AEBBD8}
+.home-station-group.period-4{background:#252A46}
+.home-station-group.period-4>.home-station-group-head{color:#F4F6FC}
+.home-station-group.period-4>.home-station-group-head>svg{color:#E5EAF6}
+.home-station-group.period-4.is-current .home-group-name>b::before{background:#F4F6FC}
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
 .home-group-name{display:grid;gap:1px;min-width:0}
