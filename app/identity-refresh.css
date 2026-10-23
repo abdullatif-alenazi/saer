@@ -561,6 +561,11 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-4>.home-station-group-head{color:#F4F6FC}
 .home-station-group.period-4>.home-station-group-head>svg{color:#E5EAF6}
 .home-station-group.period-4.is-current .home-group-name>b::before{background:#F4F6FC}
+.home-station-group.period-0 .home-group-icon{background:transparent;color:#548BB5}
+.home-station-group.period-1 .home-group-icon{background:transparent;color:#A98727}
+.home-station-group.period-2 .home-group-icon{background:transparent;color:#B87435}
+.home-station-group.period-3 .home-group-icon{background:transparent;color:#536487}
+.home-station-group.period-4 .home-group-icon{background:transparent;color:#D5DEF3}
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
 .home-group-name{display:grid;gap:1px;min-width:0}
@@ -569,7 +574,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-group-progress{margin-inline-start:auto;color:#8498a6;font-size:9px;white-space:nowrap}
 .home-station-group-head>svg{width:15px;height:15px;flex:none;color:#8ca1af}
 .home-station-entries{display:grid;gap:7px;padding:2px 8px 9px;animation:home-entries-in .2s ease both}
-.home-day-entry{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;padding:5px 11px;border:1px solid #e7edf0;border-radius:999px;background:#fff;transition:border-color .18s ease,background-color .18s ease}
+.home-day-entry{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;padding:5px 11px;border:1px solid #e7edf0;border-radius:999px!important;overflow:hidden;clip-path:inset(0 round 999px);background:#fff;transition:border-color .18s ease,background-color .18s ease}
 .home-day-entry.entry-activity::before{content:"";position:absolute;z-index:0;inset-block:0;inset-inline-start:0;width:var(--activity-progress,0%);border-radius:inherit;background:#d7ebf3;transition:width .45s cubic-bezier(.22,1,.36,1)}
 .home-day-entry>*{position:relative;z-index:1}
 .home-day-entry:active{border-color:#cfe4ee;background:#f7fbfd}
