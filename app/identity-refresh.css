@@ -557,7 +557,6 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group{min-width:0;overflow:hidden;border:1px solid #e7edf0;border-radius:18px;background:#f0f4f6;transition:border-color .2s ease,box-shadow .2s ease}
 .home-station-group.open{border-color:#dce6eb;box-shadow:0 3px 10px rgba(52,91,116,.035)}
 .home-station-group-head{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:45px;padding:6px 9px;border:0;border-radius:12px;background:transparent;color:#52728a;text-align:right;cursor:pointer;transition:background-color .18s ease}
-.home-station-group.is-current .home-group-name>b::before{content:"";display:inline-block;width:6px;height:6px;margin-inline-end:5px;border-radius:50%;background:#65a9c3;vertical-align:middle}
 .home-station-group.period-0{--activity-icon-bg:#DCEEFF;--activity-fill:#9CC9E8;--activity-ink:#548BB5;background:#DCEEFF}
 .home-station-group.period-1{--activity-icon-bg:#FFF3C4;--activity-fill:#E6CF78;--activity-ink:#A98727;background:#FFF3C4}
 .home-station-group.period-2{--activity-icon-bg:#FFE0C2;--activity-fill:#E8AD76;--activity-ink:#B87435;background:#FFE0C2}
@@ -566,8 +565,11 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-0>.home-station-group-head,.home-station-group.period-1>.home-station-group-head,.home-station-group.period-2>.home-station-group-head,.home-station-group.period-3>.home-station-group-head,.home-station-group.period-4>.home-station-group-head{color:var(--activity-fill);text-shadow:none}
 .home-station-group.period-0>.home-station-group-head>svg,.home-station-group.period-1>.home-station-group-head>svg,.home-station-group.period-2>.home-station-group-head>svg,.home-station-group.period-3>.home-station-group-head>svg,.home-station-group.period-4>.home-station-group-head>svg{color:var(--activity-fill);filter:none}
 .home-station-group.period-4>.home-station-group-head,.home-station-group.period-4 .home-group-name>b,.home-station-group.period-4 .home-group-icon,.home-station-group.period-4>.home-station-group-head>svg{color:#fff}
-.home-station-group.period-0.is-current .home-group-name>b::before,.home-station-group.period-1.is-current .home-group-name>b::before,.home-station-group.period-2.is-current .home-group-name>b::before,.home-station-group.period-3.is-current .home-group-name>b::before,.home-station-group.period-4.is-current .home-group-name>b::before{background:var(--activity-fill)}
 .home-station-group.period-0 .home-group-icon,.home-station-group.period-1 .home-group-icon,.home-station-group.period-2 .home-group-icon,.home-station-group.period-3 .home-group-icon,.home-station-group.period-4 .home-group-icon{background:transparent;color:var(--activity-fill);filter:none}
+.home-station-group.period-4 .home-group-icon,.home-station-group.period-4 .home-group-icon svg{color:#fff!important}
+.home-station-group.is-current>.home-station-group-head::before{content:"";position:absolute;left:12px;top:50%;width:7px;height:7px;border-radius:50%;background:var(--activity-fill,#65a9c3);transform:translateY(-50%);animation:station-current-pulse 1.8s ease-out infinite}
+.home-station-group.period-4.is-current>.home-station-group-head::before{background:#fff}
+@keyframes station-current-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--activity-fill,#65a9c3) 50%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
 .home-group-name{position:static;display:grid;gap:1px;min-width:0;max-width:calc(100% - 86px);transform:none;text-align:center}
@@ -601,6 +603,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 @keyframes home-entries-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:390px){.home-day-screen{gap:8px;padding-inline:10px}.home-day-screen .home-week-slider{min-height:63px}.home-day-screen .home-week-days .week-strip{gap:2px!important;padding:5px!important}.home-day-screen .home-week-days .week-strip button{height:53px!important;min-height:53px!important}.home-group-progress{max-width:90px;overflow:hidden;text-overflow:ellipsis}.home-station-group-head{gap:6px;padding-inline:6px}.home-station-entries{padding-inline:6px}.home-day-entry{gap:6px;padding-inline:6px}}
 @media(prefers-reduced-motion:reduce){.home-station-group,.home-station-entries{transition:none!important;animation:none!important}.home-day-screen .home-week-days .week-strip{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-station-group.is-current>.home-station-group-head::before{animation:none!important}}
 
 /* تأثيرات عداد الذكر: الرقم وحده يتحرك، ونص «تم إنجاز» يبقى ثابتًا. */
 .gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback{transform-box:fill-box!important;transform-origin:center!important}
