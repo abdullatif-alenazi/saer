@@ -570,7 +570,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
 .home-group-name{position:static;display:grid;gap:1px;min-width:0;max-width:calc(100% - 86px);transform:none;text-align:center}
-.home-group-name>b{font-size:12px;line-height:1.2}
+.home-group-name>b{color:var(--activity-ink,#52728a);font-size:12px;line-height:1.2}
 .home-group-name>small{color:#91a1ad;font-size:9px}
 .home-group-progress{margin-inline-start:auto;color:#8498a6;font-size:9px;white-space:nowrap}
 .home-station-group-head>svg{width:15px;height:15px;flex:none;color:#8ca1af}
