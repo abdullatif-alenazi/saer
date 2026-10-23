@@ -531,7 +531,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-remaining small{color:#829bad;font-size:9px}
 .home-station-remaining b,.home-station-static{color:#53738b;font-size:12px;font-weight:800;white-space:nowrap}
 .home-station-static{padding:5px 8px;border-radius:999px;background:#fff;color:#7890a0;font-size:9px}
-.home-station-timeline{position:relative;display:flex;direction:ltr;width:100%;height:24px;overflow:hidden;border-radius:999px;background:#e5edf1;isolation:isolate}
+.home-station-timeline{position:relative;display:flex;direction:rtl;width:100%;height:24px;overflow:hidden;border-radius:999px;background:#e5edf1;isolation:isolate}
 .home-time-segment{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;height:100%;padding:0 3px;border:0;border-inline-end:1px solid rgba(255,255,255,.75);background:#a9d4e5;color:#365c72;overflow:hidden;cursor:pointer}
 .home-time-segment:nth-child(4n+2){background:#b6d9e6}.home-time-segment:nth-child(4n+3){background:#c1e0e9}.home-time-segment.completed{background:#b6d9c8;color:#3e7058}
 .home-time-segment>span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:800;direction:rtl}
