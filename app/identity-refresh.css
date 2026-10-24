@@ -648,8 +648,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-0>.home-station-group-head>svg,.home-station-group.period-1>.home-station-group-head>svg,.home-station-group.period-2>.home-station-group-head>svg,.home-station-group.period-3>.home-station-group-head>svg{color:var(--station-ink)}
 .home-station-group.is-current>.home-station-group-head{background:var(--station-header)}
 .home-station-group.period-4.is-current>.home-station-group-head{background:var(--station-header)}
-.home-station-content .home-day-entry{min-height:40px;padding:5px 4px;padding-inline-start:16px;border:0;border-bottom:1px solid color-mix(in srgb,var(--activity-ink,#8ca1af) 12%,transparent);border-radius:0!important;clip-path:none;background:transparent}
-.home-station-content .home-day-entry:last-child{border-bottom:0}
+.home-station-content .home-day-entry{min-height:40px;padding:5px 4px;padding-inline-start:16px;border:0;border-radius:0!important;clip-path:none;background:transparent}
 .home-station-content .home-day-entry:active{background:rgba(255,255,255,.32)}
 .home-station-content .home-day-entry::after{content:"";position:absolute;z-index:1;inset-inline-start:11px;top:50%;width:11px;height:1px;background:color-mix(in srgb,var(--station-ink,#467797) 48%,transparent);pointer-events:none}
 .home-station-content .home-day-entry.is-done .home-entry-main>b{text-decoration:line-through}
