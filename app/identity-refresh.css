@@ -714,3 +714,4 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-time-segment.is-free::before{display:none}
 .home-time-bubbles{position:absolute;inset:0 0 auto;height:17px;pointer-events:none}
 .home-time-bubbles>small{position:absolute;top:0;width:clamp(38px,var(--bubble-segment-width,50%),70px);min-height:16px;padding:1px 5px;transform:translateX(50%);overflow:hidden;border:1px solid color-mix(in srgb,var(--station-progress,#9cc9e8) 32%,#fff);border-radius:999px;background:#fff;color:var(--station-ink,#4b718d);font-size:8px;font-weight:750;line-height:13px;text-align:center;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 6px rgba(45,72,91,.08)}
+.home-station-group.period-0 .home-station-timeline{border-right:0!important}
