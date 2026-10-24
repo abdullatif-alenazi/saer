@@ -719,3 +719,5 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-0 .home-station-timeline{border-right:0!important}
 .home-station-group.period-3 .home-time-segment::before{display:none}
 .home-station-group .home-station-timeline .home-time-segment.is-free{background:#fff!important}
+.home-station-group.period-4 .home-time-segment:not(.is-free){color:#536487!important}
+.home-station-group.period-4 .home-time-bubbles>small{border-color:#8798BE;background:#fff;color:#536487}
