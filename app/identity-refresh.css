@@ -710,6 +710,8 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-time-segment{position:relative;flex:0 0 auto!important;border:0!important;background:color-mix(in srgb,var(--station-progress,#c7e3f4) 27%,#fff)!important;color:var(--station-ink,#4b718d)!important;overflow:hidden;transition:width .3s ease}
 .home-time-segment::before{content:"";position:absolute;inset:0 0 0 auto;width:var(--time-progress,0%);background:var(--station-progress,#9cc9e8);transition:width .45s cubic-bezier(.22,1,.36,1);pointer-events:none}
 .home-time-segment>span{position:relative;z-index:1}
+.home-time-segment>.home-time-icon{display:grid;place-items:center;width:100%;height:100%;color:inherit}
+.home-time-icon svg{width:14px;height:14px;flex:none;stroke-width:2.2}
 .home-time-segment.is-free{border:0!important;background:#e9eff2!important;color:#71818c!important}
 .home-time-segment.is-free::before{display:none}
 .home-time-bubbles{position:absolute;inset:0 0 auto;height:17px;pointer-events:none}
