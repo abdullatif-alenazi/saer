@@ -12,6 +12,7 @@ import { estimateActivityTime, formatDuration } from "./activity-time-engine";
 import { counterValue, deleteAppointment, deletePlan, deleteTask, readAppointments, readCalendarCategories, readExecutionLog, readPlan, readTasks, readUnitProgress, readWeekStartsOn, saveCalendarCategory, saveWeekStartsOn, saveAppointment, saveExecution, savePlan, saveTask, saveUnitProgress, updateAppointment, updatePlan, updateTask, type Appointment, type CalendarCategory, type CalendarRecordKind, type ExecutionRecord, type GaugeStyle, type PlannedActivity, type TaskItem, type UnitPeriod, type UnitProgress, type WorkoutExercise, type WeekStartsOn } from "./local-store";
 import WorkoutRunner from "./WorkoutRunner";
 import DhikrRunner from "./DhikrRunner";
+import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import TaskAchievements from "./TaskAchievements";
 import {AppointmentSheet as CalendarAppointmentSheet,AppointmentTypePicker,RecordEntryDialog,CalendarCategoryDialog,type CalendarAddKind} from "./CalendarRecords";
 import { calisthenicsCatalog } from "./workout-data";
@@ -192,7 +193,7 @@ export function LegacyAppointmentSheet({editing,onSave,onDelete}:{editing:Appoin
 }
 function QuickAddSheet({scope,onChooseActivity,onChooseTask}:{scope:"activities"|"tasks"|"general";onChooseActivity:(preset:ActivityPreset)=>void;onChooseTask:()=>void}){
  const [activitiesOpen,setActivitiesOpen]=useState(false);
- const icons=[BookOpen,Dumbbell,BookText,Repeat,HeartPulse,Timer,Moon,Repeat,Brain,Sparkles];
+ const icons=[BookOpen,Dumbbell,BookText,PrayerBeadsIcon,HeartPulse,Timer,Moon,Repeat,Brain,Sparkles];
  const close=()=>$("quick-add")?.close();
  const card=(id:string,title:string,description:string,index:number,Icon:typeof BookOpen,onClick:()=>void)=><button type="button" key={id} className={`quick-add-card pastel-${index%6}`} onClick={onClick}><Icon size={23} strokeWidth={1.8} aria-hidden="true"/><b>{title}</b><span>{description}</span></button>;
  const activityCards=activityPresets.map((preset,index)=>{const Icon=icons[index];return <button type="button" key={preset.id} className={`quick-add-card pastel-${index%6}`} onClick={()=>onChooseActivity(preset)}><Icon size={23} strokeWidth={1.8} aria-hidden="true"/><b>{preset.label}</b></button>});
@@ -304,7 +305,7 @@ function HomeDayOverview({activitiesOnly=false,journey,currentJourney,current,to
  const toggleStation=(index:number)=>{manualStations.current=true;setOpenStations(open=>open.includes(index)?open.filter(item=>item!==index):[...open,index].sort((a,b)=>a-b))};
  const allOpenable=[...entriesByStation.map(group=>group.index),...(unassigned.length?[-1]:[])],allExpanded=allOpenable.length>0&&allOpenable.every(index=>openStations.includes(index));
  const toggleAll=()=>{manualStations.current=true;setOpenStations(allExpanded?[]:allOpenable)};
- const entryIcon=(entry:HomeEntry)=>{if(entry.kind==="activity"){const template=entry.activity?.template??"";if(template.includes("ذكر"))return <Repeat/>;if(template.includes("قراءة")||template.includes("قرآن"))return <BookOpen/>;if(template.includes("رياضة"))return <Dumbbell/>;if(template.includes("صلاة"))return <HeartPulse/>;if(template.includes("نوم"))return <Moon/>;return <Sparkles/>}if(entry.kind==="task")return <Check/>;if(entry.kind==="appointment")return <CalendarClock/>;if(entry.kind==="occasion")return <PartyPopper/>;if(entry.kind==="memory")return <Cake/>;return <CalendarCheck/>};
+ const entryIcon=(entry:HomeEntry)=>{if(entry.kind==="activity"){const template=entry.activity?.template??"";if(/ذكر|استغفار|تسبيح/.test(`${template} ${entry.activity?.name??entry.title}`))return <PrayerBeadsIcon/>;if(template.includes("قراءة")||template.includes("قرآن"))return <BookOpen/>;if(template.includes("رياضة"))return <Dumbbell/>;if(template.includes("صلاة"))return <HeartPulse/>;if(template.includes("نوم"))return <Moon/>;return <Sparkles/>}if(entry.kind==="task")return <Check/>;if(entry.kind==="appointment")return <CalendarClock/>;if(entry.kind==="occasion")return <PartyPopper/>;if(entry.kind==="memory")return <Cake/>;return <CalendarCheck/>};
  const openEntry=(entry:HomeEntry)=>{if(entry.appointment)onEditAppointment(entry.appointment);else if(entry.task)onEditTask(entry.task);else if(entry.activity)onOpenActivity({name:entry.title,meta:entry.meta,done:Boolean(entry.done),kind:entry.activity.nature==="goal"?"goals":"commitments",activity:entry.activity,period:entry.period})};
  const renderEntry=(entry:HomeEntry)=><article key={entry.id} className={`home-day-entry entry-${entry.kind} ${entry.done?"is-done":""}`}>
   {entry.task?<button type="button" className="home-entry-check" aria-label={entry.done?`إلغاء إنجاز ${entry.title}`:`إنجاز ${entry.title}`} aria-pressed={entry.done} onClick={()=>onCompleteTask(entry.task!)}>{entry.done?<Check/>:null}</button>:<span className="home-entry-icon" aria-hidden="true">{entryIcon(entry)}</span>}

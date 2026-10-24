@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, BookText, Brain, Dumbbell, HeartPulse, Moon, Repeat, Sparkles, Timer } from "lucide-react";
+import { BookOpen, BookText, Brain, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
+import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
 
 type Range = "week" | "month" | "year";
@@ -42,7 +43,7 @@ const activityIcon = (activity: PlannedActivity) => {
   const template = `${activity.template} ${activity.name}`;
   if (/رياض|تمرين|رياضة/.test(template)) return Dumbbell;
   if (/قرآن|قراءة|كتاب/.test(template)) return BookOpen;
-  if (/ذكر|استغفار|تسبيح/.test(template)) return Repeat;
+  if (/ذكر|استغفار|تسبيح/.test(template)) return PrayerBeadsIcon;
   if (/صلاة/.test(template)) return Sparkles;
   if (/نوم/.test(template)) return Moon;
   if (/صيام/.test(template)) return Timer;
