@@ -619,9 +619,10 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-4 .home-group-icon,.home-station-group.period-4 .home-group-icon svg{color:var(--station-header-ink)!important}
 .home-group-icon{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#f0f6f8;color:#7398ad}
 .home-group-icon svg{width:16px;height:16px;stroke-width:1.9}
-.home-group-name{position:static;display:grid;gap:1px;min-width:0;width:100%;transform:none;text-align:right}
+.home-group-name{position:static;display:flex;align-items:baseline;gap:5px;min-width:0;width:100%;transform:none;text-align:right}
 .home-group-name>b{color:var(--station-header-ink,var(--station-ink,#52728a));font-size:12px;line-height:1.2}
 .home-group-name>small{color:color-mix(in srgb,var(--station-header-ink,var(--station-ink,#467797)) 72%,transparent);font-size:9px}
+.home-group-name>.home-period-duration{flex:none;color:var(--station-header-ink,var(--station-ink,#52728a));font-size:10px;font-weight:750;white-space:nowrap}
 .home-group-times{display:grid;justify-items:end;gap:2px;min-width:0;color:var(--station-header-ink,var(--station-ink,#52728a));text-align:left;direction:rtl}
 .home-group-times>b{font-size:10px;font-weight:750;white-space:nowrap}
 .home-group-times>.home-group-remaining{display:inline-flex;align-items:center;gap:3px;color:var(--station-header-ink,var(--station-ink,#52728a));font-size:9px;font-weight:800;white-space:nowrap;opacity:1}
