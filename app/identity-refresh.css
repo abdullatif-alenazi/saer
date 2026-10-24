@@ -672,8 +672,12 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-entry-main{display:grid;gap:2px;flex:1;min-width:0;padding:0;border:0;background:transparent;color:#47667d;text-align:right;cursor:pointer}
 .home-day-entry.entry-activity .home-entry-main,.home-day-entry.entry-activity .home-entry-target{color:var(--activity-ink,#5B7890)}
 .home-entry-main>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:750}
+.home-entry-main>.home-entry-title-with-count{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:visible;text-overflow:clip}
+.home-entry-title-with-count>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-entry-title-with-count>.home-dhikr-target{flex:none;overflow:visible;color:inherit!important;font-size:10px;font-weight:450;opacity:.78}
 .home-entry-main>small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8b9ca8;font-size:9px}
 .home-entry-target{flex:none;min-width:28px;color:#476a80;text-align:left;font-size:11px;font-weight:800;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.home-entry-duration{flex:none;min-width:28px;color:var(--activity-ink,#5B7890);text-align:left;font-size:10px;font-weight:700;white-space:nowrap;direction:rtl;unicode-bidi:isolate}
 .home-entry-state{flex:none;color:#8b9ca8;font-size:9px}
 .home-day-entry.is-done .home-entry-main>b{text-decoration:line-through}
 .home-entry-open{width:26px;height:26px;flex:none;border:1px solid #e4edf1;border-radius:50%;background:#fff;color:#8298a7;font-size:18px;line-height:1}
