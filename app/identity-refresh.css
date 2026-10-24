@@ -630,7 +630,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group-head>svg{width:15px;height:15px;flex:none;color:#8ca1af}
 .home-station-content{display:grid;gap:8px;padding:0 9px 10px;animation:home-entries-in .2s ease both}
 .home-station-entries{position:relative;display:grid;gap:0;padding:0 4px;animation:home-entries-in .2s ease both}
-.home-station-entries.has-entries::before{content:"";position:absolute;z-index:0;inset-block:0;inset-inline-start:15px;width:1px;background:color-mix(in srgb,var(--station-ink,#467797) 35%,transparent);pointer-events:none}
+.home-station-entries.has-entries::before{content:"";position:absolute;z-index:0;inset-block:0 20px;inset-inline-start:15px;width:1px;background:color-mix(in srgb,var(--station-ink,#467797) 35%,transparent);pointer-events:none}
 .home-station-empty{padding:8px 5px;color:var(--activity-ink,#71899a);font-size:10px;text-align:center}
 .home-station-allocation{display:grid;gap:5px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--station-ink,#8ca1af) 20%,transparent)}
 .home-station-allocation-caption{display:flex;justify-content:flex-start;min-width:0;color:var(--station-ink,#71899a);font-size:9px;font-weight:650}
