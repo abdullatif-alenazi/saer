@@ -12,6 +12,8 @@ type Metric = { done: number; target: number; unit: string; percent: number | nu
 const weekdays = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 const compactWeekdays = ["سبت", "أحد", "اثن", "ثلا", "أرب", "خمي", "جمع"];
 const ar = (value: number, maximumFractionDigits = 0) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits, useGrouping: false }).format(value);
+const arGrouped = (value: number) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits: 1, useGrouping: true }).format(value).replace(/[٬,]/g, ".").replace("٫", ".");
+const durationMinutes = (seconds: number) => arGrouped(Math.round(seconds / 6) / 10);
 const riyadhDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh", year: "numeric", month: "2-digit", day: "2-digit" });
 const keyOf = (date: Date) => riyadhDate.format(date);
 const dateFromKey = (key: string) => { const [year, month, day] = key.split("-").map(Number); return new Date(Date.UTC(year, month - 1, day, 12)); };
@@ -252,9 +254,27 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
         <section className="achievement-daily-list" aria-label="إنجازات اليوم">
           {plan.map((activity, index) => {
             const status = statusForDay(activity, selectedDay), target = targetForDay(activity, selectedDay), done = keyOf(selectedDay) > todayKey ? 0 : dayDone(activity, selectedDay), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : 0, Icon = activityIcon(activity);
-            return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => setDayDetail({ activity, date: selectedDay })} aria-label={`${activity.name}، ${statusLabel(status)}${target > 0 ? `، ${ar(done, 1)} من ${ar(target, 1)} ${unitFor(activity)}` : ""}`}>
-              <span className="achievement-daily-fill" style={{ width: `${percent}%` }}/>
-              <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><b>{activity.name || "نشاط بلا اسم"}</b><small>{status === "future" || status === "unscheduled" ? statusLabel(status) : target > 0 ? `${ar(done, 1)} / ${ar(target, 1)} ${unitFor(activity)}` : statusLabel(status)}</small></span><strong>{status === "future" || status === "unscheduled" ? "—" : `${ar(percent)}٪`}</strong></span>
+            const dayRecords = activityRecords(activity).filter(record => recordDate(record) === keyOf(selectedDay));
+            const workout = Boolean(activity.exercises?.length);
+            const recordedExercises = dayRecords.flatMap(record => record.exerciseResults ?? []);
+            const workoutTargetSets = recordedExercises.reduce((sum, result) => sum + result.targetSets, 0);
+            const workoutDoneSets = recordedExercises.reduce((sum, result) => sum + result.completedSets, 0);
+            const cardPercent = workout && workoutTargetSets ? Math.min(100, Math.round(workoutDoneSets / workoutTargetSets * 100)) : percent;
+            const primaryValue = status === "future" || status === "unscheduled" ? statusLabel(status) : workout ? `${ar(cardPercent)}٪` : target > 0 ? `(${arGrouped(done)} ${unitFor(activity)})` : statusLabel(status);
+            const legacyWorkoutRecord = workout && dayRecords.length > 0 && dayRecords.some(record => !record.exerciseResults?.length);
+            const workoutDetails = workout ? (activity.exercises ?? []).map(exercise => {
+              const results = recordedExercises.filter(result => result.exerciseId === exercise.id || (!result.exerciseId && result.name === exercise.name));
+              if (!results.length) return null;
+              const count = results.reduce((sum, result) => sum + result.repetitions, 0);
+              const seconds = results.reduce((sum, result) => sum + result.durationSeconds, 0);
+              return exercise.measurement === "repetitions" ? `(${arGrouped(count)} عدة ${exercise.name})` : `(${durationMinutes(seconds)} د ${exercise.name})`;
+            }).filter((value): value is string => Boolean(value)) : [];
+            const secondaryValue = workout
+              ? workoutDetails.length ? workoutDetails.join("  ") : legacyWorkoutRecord ? "تفاصيل الجلسة السابقة غير محفوظة" : "لا توجد تفاصيل جلسة مسجلة"
+              : target > 0 ? `${arGrouped(target)} ${unitFor(activity)}` : status === "future" || status === "unscheduled" ? "" : statusLabel(status);
+            return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => setDayDetail({ activity, date: selectedDay })} aria-label={`${activity.name}، ${statusLabel(status)}${target > 0 ? `، ${arGrouped(done)} من ${arGrouped(target)} ${unitFor(activity)}` : ""}`}>
+              <span className="achievement-daily-fill" style={{ width: `${cardPercent}%` }}/>
+              <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><span className="achievement-daily-heading"><b>{activity.name || "نشاط بلا اسم"}</b><i aria-hidden="true"/><strong>{primaryValue}</strong></span>{secondaryValue && <small className={workout ? "achievement-daily-exercise-details" : ""}>{workout && workoutDetails.length ? workoutDetails.map((detail, detailIndex) => <span key={`${activity.id}-${detailIndex}`}>{detail}</span>) : secondaryValue}</small>}</span></span>
             </button>;
           })}
         </section>

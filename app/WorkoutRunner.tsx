@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { PlannedActivity } from "./local-store";
+import type { PlannedActivity, WorkoutExerciseResult } from "./local-store";
 import WeekStrip from "./WeekStrip";
 
 const ar=(value:number,pad=1)=>value.toLocaleString("ar-SA",{minimumIntegerDigits:pad,useGrouping:false});
 const clock=(seconds:number)=>`${ar(Math.floor(seconds/60),2)}:${ar(seconds%60,2)}`;
 type Mode="ready"|"prepare"|"work"|"rest"|"paused"|"exerciseDone"|"sessionDone";
 
-export default function WorkoutRunner({activity,date,today,calendarMode,weekStartsOn,onDateChange,onExit,onFinish,onOpenAchievements}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";weekStartsOn:"saturday"|"sunday";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number,durationSeconds?:number)=>void;onOpenAchievements:()=>void}){
+export default function WorkoutRunner({activity,date,today,calendarMode,weekStartsOn,onDateChange,onExit,onFinish,onOpenAchievements}:{activity:PlannedActivity;date:string;today:string;calendarMode:"islamic"|"gregory"|"mixed";weekStartsOn:"saturday"|"sunday";onDateChange:(date:string)=>void;onExit:()=>void;onFinish:(minutes:number,repetitions:number,durationSeconds?:number,exerciseResults?:WorkoutExerciseResult[])=>void;onOpenAchievements:()=>void}){
  const exercises=activity.exercises??[];
  const [exerciseIndex,setExerciseIndex]=useState(0),[setIndex,setSetIndex]=useState(1),[mode,setMode]=useState<Mode>("ready"),[pausedMode,setPausedMode]=useState<"prepare"|"work"|"rest">("work"),[seconds,setSeconds]=useState(0),[workTotal,setWorkTotal]=useState(0),[restTotal,setRestTotal]=useState(0),[repetitions,setRepetitions]=useState(0);
- const modeRef=useRef<Mode>(mode),phaseAnchor=useRef(0),phaseElapsedBase=useRef(0),phaseTarget=useRef(0),workElapsedMs=useRef(0),restElapsedMs=useRef(0);
+ const modeRef=useRef<Mode>(mode),phaseAnchor=useRef(0),phaseElapsedBase=useRef(0),phaseTarget=useRef(0),workElapsedMs=useRef(0),restElapsedMs=useRef(0),exerciseResults=useRef<Record<string,WorkoutExerciseResult>>({});
  const exercise=exercises[exerciseIndex];
  const target=exercise?.measurement==="duration"?(exercise.durationSeconds??30):0;
  useEffect(()=>{modeRef.current=mode},[mode]);
@@ -19,12 +19,12 @@ export default function WorkoutRunner({activity,date,today,calendarMode,weekStar
  if(!exercise)return <section className="workout-runner"><h1>لا توجد تمارين بعد.</h1><button className="primary" onClick={onExit}>عودة</button></section>;
  function startPhase(next:"prepare"|"work"|"rest",durationSeconds:number){phaseElapsedBase.current=0;phaseAnchor.current=performance.now();phaseTarget.current=durationSeconds;modeRef.current=next;setSeconds(next==="work"&&exercise?.measurement==="repetitions"?0:durationSeconds);setMode(next)}
  function elapsedInPhase(){return phaseElapsedBase.current+Math.max(0,performance.now()-phaseAnchor.current)}
- function commitPhase(clockMode:"prepare"|"work"|"rest"){if(!phaseAnchor.current)return;const elapsed=elapsedInPhase();phaseElapsedBase.current=elapsed;phaseAnchor.current=0;if(clockMode==="work"){workElapsedMs.current+=elapsed;setWorkTotal(Math.floor(workElapsedMs.current/1000))}if(clockMode==="rest"){restElapsedMs.current+=elapsed;setRestTotal(Math.floor(restElapsedMs.current/1000))}}
+ function commitPhase(clockMode:"prepare"|"work"|"rest"){if(!phaseAnchor.current)return;const elapsed=elapsedInPhase();phaseElapsedBase.current=elapsed;phaseAnchor.current=0;if(clockMode==="work"){workElapsedMs.current+=elapsed;setWorkTotal(Math.floor(workElapsedMs.current/1000));if(exercise){const current=exerciseResults.current[exercise.id]??{exerciseId:exercise.id,name:exercise.name,measurement:exercise.measurement,completedSets:0,targetSets:exercise.sets,repetitions:0,durationSeconds:0};current.durationSeconds+=elapsed/1000;exerciseResults.current[exercise.id]=current}}if(clockMode==="rest"){restElapsedMs.current+=elapsed;setRestTotal(Math.floor(restElapsedMs.current/1000))}}
  function pauseClock(){if(modeRef.current!=="prepare"&&modeRef.current!=="work"&&modeRef.current!=="rest")return;setPausedMode(modeRef.current);phaseElapsedBase.current=elapsedInPhase();phaseAnchor.current=0;modeRef.current="paused";setMode("paused")}
  function resumeClock(){phaseAnchor.current=performance.now();modeRef.current=pausedMode;setMode(pausedMode)}
  function completeSet(alreadyCommitted=false){
   if(!alreadyCommitted)commitPhase("work");
-  if(exercise.measurement==="repetitions")setRepetitions(value=>value+(exercise.reps??0));
+  const result=exerciseResults.current[exercise.id]??{exerciseId:exercise.id,name:exercise.name,measurement:exercise.measurement,completedSets:0,targetSets:exercise.sets,repetitions:0,durationSeconds:0};result.completedSets+=1;if(exercise.measurement==="repetitions"){result.repetitions+=exercise.reps??0;setRepetitions(value=>value+(exercise.reps??0))}exerciseResults.current[exercise.id]=result;
   if(setIndex>=exercise.sets){phaseAnchor.current=0;modeRef.current="exerciseDone";setMode("exerciseDone");setSeconds(0)}else{setSetIndex(value=>value+1);startPhase("rest",exercise.restSeconds)}
  }
  function beginWork(alreadyCommitted=false){if(!alreadyCommitted&&(modeRef.current==="rest"||modeRef.current==="prepare"))commitPhase(modeRef.current);startPhase("work",exercise.measurement==="duration"?(exercise.durationSeconds??30):0)}
@@ -48,6 +48,6 @@ export default function WorkoutRunner({activity,date,today,calendarMode,weekStar
    {mode==="paused"&&<div className="rest-actions"><p>أوقفنا القياس عند مغادرة الصفحة، ولم نحتسب وقت الغياب.</p><button className="primary" onClick={resumeClock}>استئناف المؤقت</button></div>}
    {mode==="rest"&&<div className="rest-actions"><button onClick={()=>{phaseTarget.current+=30;setSeconds(value=>value+30)}}>+ ٣٠ ثانية</button><button onClick={()=>beginWork()}>تخطي الراحة</button></div>}
    {mode==="exerciseDone"&&<div className="exercise-finish"><span>✓</span><h2>تم {exercise.name}.</h2><p>{ar(exercise.sets)} جولات{exercise.measurement==="repetitions"?` · ${ar(exercise.sets*(exercise.reps??0))} عدة`:""}</p><button className="primary" onClick={nextExercise}>{exerciseIndex<exercises.length-1?"التمرين التالي":"عرض ملخص الجلسة"}</button></div>}
-  </>:<div className="session-finish"><span>✓</span><p>تمت الجلسة.</p><h1>{ar(exercises.length)} تمارين</h1><div><b>{clock(workTotal)}</b><small>وقت الأداء</small><b>{clock(restTotal)}</b><small>وقت الراحة</small><b>{ar(repetitions)}</b><small>عدة</small></div><button className="primary" onClick={()=>{const seconds=(workElapsedMs.current+restElapsedMs.current)/1000;onFinish(Math.max(1,seconds/60),repetitions,seconds)}}>إنهاء الجلسة</button><p>أحسنت. انتهيت. استمتع بوقتك.</p></div>}
+  </>:<div className="session-finish"><span>✓</span><p>تمت الجلسة.</p><h1>{ar(exercises.length)} تمارين</h1><div><b>{clock(workTotal)}</b><small>وقت الأداء</small><b>{clock(restTotal)}</b><small>وقت الراحة</small><b>{ar(repetitions)}</b><small>عدة</small></div><button className="primary" onClick={()=>{const seconds=(workElapsedMs.current+restElapsedMs.current)/1000;onFinish(Math.max(1,seconds/60),repetitions,seconds,Object.values(exerciseResults.current))}}>إنهاء الجلسة</button><p>أحسنت. انتهيت. استمتع بوقتك.</p></div>}
  </section>
 }
