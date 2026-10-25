@@ -22,6 +22,19 @@ const calendarParts = (date: Date, kind: CalendarKind) => {
   return { day: read("day"), month: read("month"), year: read("year") };
 };
 const formatDate = (date: Date, kind: CalendarKind, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(kind === "islamic" ? "ar-SA-u-ca-islamic-umalqura" : "ar-SA-u-ca-gregory", { ...options, timeZone: "Asia/Riyadh" }).format(date);
+const compactDateRange = (start: Date, end: Date, kind: CalendarKind) => {
+  const first = calendarParts(start, kind), last = calendarParts(end, kind);
+  const monthName = (date: Date) => formatDate(date, kind, { month: "long" });
+  const dayNumber = (value: number) => kind === "islamic" ? ar(value) : String(value);
+  const yearNumber = (value: number) => kind === "islamic" ? ar(value) : String(value);
+  const suffix = kind === "islamic" ? "هـ" : "م";
+  if (first.year === last.year && first.month === last.month) {
+    return `${dayNumber(first.day)}–${dayNumber(last.day)} ${monthName(start)} ${yearNumber(first.year)}${suffix}`;
+  }
+  const firstLabel = `${dayNumber(first.day)} ${monthName(start)}${first.year !== last.year ? ` ${yearNumber(first.year)}` : ""}`;
+  const lastLabel = `${dayNumber(last.day)} ${monthName(end)} ${yearNumber(last.year)}${suffix}`;
+  return `${firstLabel} – ${lastLabel}`;
+};
 const activityIcon = (activity: PlannedActivity) => {
   const text = `${activity.template} ${activity.name}`;
   if (/رياض|تمرين|كاليستنس/.test(text)) return Dumbbell;
@@ -93,7 +106,8 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     return addDays(today, -((todayDay - firstDay + 7) % 7) + weekOffset * 7);
   }, [todayKey, firstDay, weekOffset]);
   const weekDates = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
-  const weekCaption = `${formatDate(weekDates[0], calendar, { day: "numeric", month: "long" })} – ${formatDate(weekDates[6], calendar, { day: "numeric", month: "long", year: "numeric" })}`;
+  const hijriWeekCaption = compactDateRange(weekDates[0], weekDates[6], "islamic");
+  const gregorianWeekCaption = compactDateRange(weekDates[0], weekDates[6], "gregory");
   const monthDates = useMemo(() => {
     const focus = calendarParts(viewDate, calendar), dates: Date[] = [];
     for (let offset = -40; offset <= 40; offset++) {
@@ -221,7 +235,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     {range === "week" && <>
       <div className="achievement-period-nav">
         <button type="button" aria-label="الأسبوع السابق" onClick={() => setWeekOffset(value => value - 1)}>→</button>
-        <strong>{weekCaption}{calendarMode === "mixed" && <small>{new Intl.DateTimeFormat("ar-SA-u-ca-gregory", { timeZone: "Asia/Riyadh", day: "numeric", month: "short", year: "numeric" }).format(weekDates[0])} – {new Intl.DateTimeFormat("ar-SA-u-ca-gregory", { timeZone: "Asia/Riyadh", day: "numeric", month: "short", year: "numeric" }).format(weekDates[6])}</small>}</strong>
+        <strong className="achievement-week-caption"><span>{hijriWeekCaption}</span><small>{gregorianWeekCaption}</small></strong>
         {weekOffset !== 0 && <button className="achievement-current-period" type="button" aria-label="العودة للأسبوع الحالي" onClick={() => setWeekOffset(0)}><CurrentPeriodIcon/></button>}
         <button type="button" aria-label="الأسبوع التالي" onClick={() => setWeekOffset(value => value + 1)}>←</button>
       </div>
