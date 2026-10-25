@@ -81,12 +81,13 @@ const hasProgress = (activity: PlannedActivity, date: string, records: Execution
   ));
 };
 
-export default function AchievementOverview({ plan, records, unitProgress, calendarMode, transitioningOut = false, transitioningIn = false }: {
+export default function AchievementOverview({ plan, records, unitProgress, calendarMode, onStartActivity, transitioningOut = false, transitioningIn = false }: {
   plan: PlannedActivity[];
   records: ExecutionRecord[];
   unitProgress: UnitProgress[];
   weekStartsOn: WeekStartsOn;
   calendarMode: "islamic" | "gregory" | "mixed";
+  onStartActivity: (activity: PlannedActivity, date: Date) => void;
   transitioningOut?: boolean;
   transitioningIn?: boolean;
 }) {
@@ -272,7 +273,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
             const secondaryValue = workout
               ? workoutDetails.length ? workoutDetails.join("  ") : legacyWorkoutRecord ? "تفاصيل الجلسة السابقة غير محفوظة" : "لا توجد تفاصيل جلسة مسجلة"
               : target > 0 ? `${arGrouped(target)} ${unitFor(activity)}` : status === "future" || status === "unscheduled" ? "" : statusLabel(status);
-            return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => setDayDetail({ activity, date: selectedDay })} aria-label={`${activity.name}، ${statusLabel(status)}${target > 0 ? `، ${arGrouped(done)} من ${arGrouped(target)} ${unitFor(activity)}` : ""}`}>
+            return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => onStartActivity(activity, selectedDay)} aria-label={`بدء تنفيذ ${activity.name} في ${compactDate(selectedDay, calendar)}`}>
               <span className="achievement-daily-fill" style={{ width: `${cardPercent}%` }}/>
               <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><span className="achievement-daily-heading"><b>{activity.name || "نشاط بلا اسم"}</b><strong>{primaryValue}</strong></span>{secondaryValue && <small className={workout ? "achievement-daily-exercise-details" : ""}>{workout && workoutDetails.length ? workoutDetails.map((detail, detailIndex) => <span key={`${activity.id}-${detailIndex}`}>{detail}</span>) : secondaryValue}</small>}</span></span>
             </button>;
