@@ -227,11 +227,12 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       </div>
       <div className="achievement-table-clip" role="region" aria-label="جدول الإنجازات الأسبوعية" tabIndex={0}>
         <table className="achievement-table">
+          <colgroup><col className="activity-col"/>{weekDates.map(date => <col key={keyOf(date)} className="day-col"/>)}<col className="total-col"/><col className="percent-col"/></colgroup>
           <thead><tr><th className="activity-sticky">النشاط</th>{weekDates.map((date, index) => <th key={keyOf(date)} className={keyOf(date) === todayKey ? "today" : ""} aria-label={weekdays[date.getUTCDay()]}><span>{compactWeekdays[index]}</span><small>{ar(calendarParts(date, calendar).day)}</small></th>)}<th>المجموع</th><th>النسبة</th></tr></thead>
           <tbody>{plan.map((activity, activityIndex) => {
             const Icon = activityIcon(activity), summary = metricFor(activity, weekDates);
             return <tr key={activity.id} className={`achievement-row pastel-${activityIndex % 6}`}>
-              <th scope="row" className="activity-sticky"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><b>{activity.name || "نشاط بلا اسم"}</b></th>
+              <th scope="row" className="activity-sticky"><span className="activity-sticky-content"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><b>{activity.name || "نشاط بلا اسم"}</b></span></th>
               {weekDates.map(date => {
                 const status = statusForDay(activity, date), done = dayDone(activity, date), target = targetForDay(activity, date), percent = target ? Math.min(100, Math.round(done / target * 100)) : 0;
                 return <td key={keyOf(date)} className={`achievement-day-cell ${status} ${keyOf(date) === todayKey ? "today" : ""}`}><button type="button" aria-label={`${activity.name}، ${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}`} onClick={() => setDayDetail({ activity, date })} title={status === "unscheduled" ? "غير مجدول" : status === "future" ? "يوم مستقبلي" : `${ar(done, 1)} / ${ar(target, 1)} ${unitFor(activity)}`}>{status === "future" || status === "unscheduled" ? "—" : ar(done, 1)}{target > 0 && <i style={{ width: `${percent}%` }}/>}</button></td>;
