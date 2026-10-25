@@ -10,6 +10,7 @@ type CalendarKind = "gregory" | "islamic";
 type Status = "future" | "complete" | "partial" | "missed" | "unscheduled";
 type Metric = { done: number; target: number; unit: string; percent: number | null; dueDays: number; achievedDays: number };
 const weekdays = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+const compactWeekdays = ["سبت", "أحد", "اثن", "ثلا", "أرب", "خمي", "جمع"];
 const ar = (value: number, maximumFractionDigits = 0) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits, useGrouping: false }).format(value);
 const riyadhDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh", year: "numeric", month: "2-digit", day: "2-digit" });
 const keyOf = (date: Date) => riyadhDate.format(date);
@@ -226,7 +227,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       </div>
       <div className="achievement-table-clip" role="region" aria-label="جدول الإنجازات الأسبوعية" tabIndex={0}>
         <table className="achievement-table">
-          <thead><tr><th className="activity-sticky">النشاط</th>{weekDayLabels.map((label, index) => { const date = weekDates.find(item => weekdays[item.getUTCDay()] === label)!; return <th key={label} className={keyOf(date) === todayKey ? "today" : ""}><span>{label}</span><small>{ar(calendarParts(date, calendar).day)}</small></th>; })}<th>المجموع</th><th>النسبة</th></tr></thead>
+          <thead><tr><th className="activity-sticky">النشاط</th>{weekDates.map((date, index) => <th key={keyOf(date)} className={keyOf(date) === todayKey ? "today" : ""} aria-label={weekdays[date.getUTCDay()]}><span>{compactWeekdays[index]}</span><small>{ar(calendarParts(date, calendar).day)}</small></th>)}<th>المجموع</th><th>النسبة</th></tr></thead>
           <tbody>{plan.map((activity, activityIndex) => {
             const Icon = activityIcon(activity), summary = metricFor(activity, weekDates);
             return <tr key={activity.id} className={`achievement-row pastel-${activityIndex % 6}`}>
@@ -235,7 +236,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
                 const status = statusForDay(activity, date), done = dayDone(activity, date), target = targetForDay(activity, date), percent = target ? Math.min(100, Math.round(done / target * 100)) : 0;
                 return <td key={keyOf(date)} className={`achievement-day-cell ${status} ${keyOf(date) === todayKey ? "today" : ""}`}><button type="button" aria-label={`${activity.name}، ${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}`} onClick={() => setDayDetail({ activity, date })} title={status === "unscheduled" ? "غير مجدول" : status === "future" ? "يوم مستقبلي" : `${ar(done, 1)} / ${ar(target, 1)} ${unitFor(activity)}`}>{status === "future" || status === "unscheduled" ? "—" : ar(done, 1)}{target > 0 && <i style={{ width: `${percent}%` }}/>}</button></td>;
               })}
-              <td className="achievement-total-cell">{summary.target > 0 ? <><b>{ar(summary.done, 1)}</b><small> / {ar(summary.target, 1)} {summary.unit}</small></> : "—"}</td>
+              <td className="achievement-total-cell">{summary.target > 0 ? <><b>{ar(summary.done, 1)}</b><small>{summary.unit}</small></> : "—"}</td>
               <td className="achievement-percent-cell">{summary.percent == null ? "—" : `${ar(summary.percent)}٪`}</td>
             </tr>;
           })}</tbody>
