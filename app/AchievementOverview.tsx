@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, BookText, Brain, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
+import { BookOpen, BookText, Brain, Calendar, CalendarDays, CalendarRange, Clock3, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
 import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
 
-type Range = "week" | "month" | "year";
+type Range = "day" | "week" | "month" | "year";
 type CalendarKind = "gregory" | "islamic";
 type Status = "future" | "complete" | "partial" | "missed" | "unscheduled";
 type Metric = { done: number; target: number; unit: string; percent: number | null; dueDays: number; achievedDays: number };
@@ -34,6 +34,10 @@ const compactDateRange = (start: Date, end: Date, kind: CalendarKind) => {
   const firstLabel = `${dayNumber(first.day)} ${monthName(start)}${first.year !== last.year ? ` ${yearNumber(first.year)}` : ""}`;
   const lastLabel = `${dayNumber(last.day)} ${monthName(end)} ${yearNumber(last.year)}${suffix}`;
   return `${firstLabel} – ${lastLabel}`;
+};
+const compactDate = (date: Date, kind: CalendarKind) => {
+  const parts = calendarParts(date, kind), day = kind === "islamic" ? ar(parts.day) : String(parts.day), year = kind === "islamic" ? ar(parts.year) : String(parts.year);
+  return `${day} ${formatDate(date, kind, { month: "long" })} ${year}${kind === "islamic" ? "هـ" : "م"}`;
 };
 const activityIcon = (activity: PlannedActivity) => {
   const text = `${activity.template} ${activity.name}`;
@@ -85,6 +89,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   transitioningIn?: boolean;
 }) {
   const [range, setRange] = useState<Range>("week");
+  const [dayOffset, setDayOffset] = useState(0);
   const [weekOffset, setWeekOffset] = useState(0);
   const [viewDate, setViewDate] = useState(() => new Date());
   const [activityId, setActivityId] = useState(plan[0]?.id ?? "");
@@ -106,6 +111,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     return addDays(today, -((todayDay - firstDay + 7) % 7) + weekOffset * 7);
   }, [todayKey, firstDay, weekOffset]);
   const weekDates = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
+  const selectedDay = addDays(today, dayOffset);
   const hijriWeekCaption = compactDateRange(weekDates[0], weekDates[6], "islamic");
   const gregorianWeekCaption = compactDateRange(weekDates[0], weekDates[6], "gregory");
   const monthDates = useMemo(() => {
@@ -183,6 +189,8 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const weeklyDue = weekMetrics.filter(item => item.metric.target > 0);
   const weeklyAchieved = weeklyDue.filter(item => item.metric.done >= item.metric.target).length;
   const weeklyAverage = weeklyDue.length ? Math.round(weeklyDue.reduce((sum, item) => sum + Math.min(100, item.metric.done / item.metric.target * 100), 0) / weeklyDue.length) : null;
+  const dailyDue = plan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay)));
+  const dailyAchieved = dailyDue.filter(activity => statusForDay(activity, selectedDay) === "complete").length;
 
   const moveCalendar = (amount: number, period: "month" | "year") => {
     const start = calendarParts(viewDate, calendar), direction = Math.sign(amount);
@@ -229,8 +237,30 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
 
   return <section className={`screen achievement-overview ${transitioningOut ? "is-transitioning-out" : ""} ${transitioningIn ? "is-transitioning-in" : ""}`} dir="rtl">
     <nav className="achievement-range" aria-label="فترة الإنجازات" role="tablist">
-      {([["week", "أسبوعي"], ["month", "شهري"], ["year", "سنوي"]] as const).map(([id, label]) => <button type="button" role="tab" aria-selected={range === id} key={id} className={range === id ? "selected" : ""} onClick={() => setRange(id)}>{label}</button>)}
+      <button type="button" role="tab" aria-selected={range === "day"} className={range === "day" ? "selected" : ""} onClick={() => setRange("day")}><Clock3 aria-hidden="true"/><span>يومي</span></button>
+      {([["week", "أسبوعي", CalendarDays], ["month", "شهري", CalendarRange], ["year", "سنوي", Calendar]] as const).map(([id, label, Icon]) => <button type="button" role="tab" aria-selected={range === id} key={id} className={range === id ? "selected" : ""} onClick={() => setRange(id)}><Icon aria-hidden="true"/><span>{label}</span></button>)}
     </nav>
+
+    {range === "day" && <>
+      <div className="achievement-period-nav">
+        <button type="button" aria-label="اليوم السابق" onClick={() => setDayOffset(value => value - 1)}>→</button>
+        <strong className="achievement-week-caption"><span>{compactDate(selectedDay, "islamic")}</span><small>{compactDate(selectedDay, "gregory")}</small></strong>
+        {dayOffset !== 0 && <button className="achievement-current-period" type="button" aria-label="العودة إلى اليوم" onClick={() => setDayOffset(0)}><CurrentPeriodIcon/></button>}
+        <button type="button" aria-label="اليوم التالي" onClick={() => setDayOffset(value => value + 1)}>←</button>
+      </div>
+      {plan.length ? <>
+        <section className="achievement-daily-list" aria-label="إنجازات اليوم">
+          {plan.map((activity, index) => {
+            const status = statusForDay(activity, selectedDay), target = targetForDay(activity, selectedDay), done = keyOf(selectedDay) > todayKey ? 0 : dayDone(activity, selectedDay), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : 0, Icon = activityIcon(activity);
+            return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => setDayDetail({ activity, date: selectedDay })} aria-label={`${activity.name}، ${statusLabel(status)}${target > 0 ? `، ${ar(done, 1)} من ${ar(target, 1)} ${unitFor(activity)}` : ""}`}>
+              <span className="achievement-daily-fill" style={{ width: `${percent}%` }}/>
+              <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><b>{activity.name || "نشاط بلا اسم"}</b><small>{status === "future" || status === "unscheduled" ? statusLabel(status) : target > 0 ? `${ar(done, 1)} / ${ar(target, 1)} ${unitFor(activity)}` : statusLabel(status)}</small></span><strong>{status === "future" || status === "unscheduled" ? "—" : `${ar(percent)}٪`}</strong></span>
+            </button>;
+          })}
+        </section>
+        <section className="achievement-week-summary" aria-label="ملخص اليوم"><div><small>أنشطة مستحقة</small><b>{ar(dailyDue.length)}</b></div><div><small>حققت المستهدف</small><b>{ar(dailyAchieved)}<span> / {ar(dailyDue.length)}</span></b></div><div><small>متوسط الإنجاز</small><b>{dailyDue.length ? `${ar(Math.round(dailyDue.reduce((sum, activity) => sum + Math.min(100, dayDone(activity, selectedDay) / Math.max(1, targetForDay(activity, selectedDay)) * 100), 0) / dailyDue.length))}٪` : "—"}</b></div></section>
+      </> : <EmptyState/>}
+    </>}
 
     {range === "week" && <>
       <div className="achievement-period-nav">
