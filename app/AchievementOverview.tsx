@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookOpen, BookText, Brain, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
 import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
@@ -77,7 +77,16 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
   const [selectedWeekDay, setSelectedWeekDay] = useState<number | null>(null);
   const [selectedMonthDay, setSelectedMonthDay] = useState<string | null>(null);
   const [selectedYearMonth, setSelectedYearMonth] = useState<number | null>(null);
-  const calendar: CalendarKind = calendarMode === "gregory" || calendarMode === "mixed" ? "gregory" : "islamic";
+  const [mixedFace, setMixedFace] = useState<CalendarKind>("islamic");
+  useEffect(() => {
+    if (calendarMode !== "mixed") {
+      setMixedFace(calendarMode);
+      return;
+    }
+    const timer = window.setInterval(() => setMixedFace(face => face === "islamic" ? "gregory" : "islamic"), 3000);
+    return () => window.clearInterval(timer);
+  }, [calendarMode]);
+  const calendar: CalendarKind = calendarMode === "mixed" ? mixedFace : calendarMode;
   const todayKey = keyOf(new Date());
   const today = fromKey(todayKey);
   const firstDay = weekStartsOn === "saturday" ? 6 : 0;
@@ -135,13 +144,24 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
     const isBeforeCreation = Boolean(startKey && selectedDates.length && selectedDates.every(date => keyOf(date) < startKey));
     const scheduled = activeDates.filter(date => {
       if (schedule.mode === "daily") return true;
-      if (schedule.mode === "flexible") return named.length ? named.includes(weekdayNames[date.getUTCDay()]) : selectedDates.length > 1;
+      if (schedule.mode === "flexible") {
+        if (named.length) return named.includes(weekdayNames[date.getUTCDay()]);
+        if (selectedDates.length > 1) return true;
+        const key = keyOf(date);
+        const hasExecution = activityRecords.some(record => recordKey(record) === key);
+        const hasUnitProgress = activityProgress.some(progress => progress.date === key && (
+          Object.values(progress.counterByPeriod).some(value => value > 0) ||
+          Object.values(progress.completedUnitsByPeriod).some(units => units.length > 0) ||
+          (progress.timedSessions?.some(session => session.rounds.some(round => round.status === "completed")) ?? false)
+        ));
+        return hasExecution || hasUnitProgress;
+      }
       if (named.length) return named.includes(weekdayNames[date.getUTCDay()]);
       return false;
     });
     const fixedCount = scheduled.length;
     const flexibleTarget = schedule.mode === "flexible" && !named.length
-      ? selectedDates.length === 1 ? 0 : sessionsPerWeek(activity) * activeDates.length / 7
+      ? selectedDates.length === 1 ? scheduled.length : sessionsPerWeek(activity) * activeDates.length / 7
       : 0;
     const occurrences = schedule.mode === "flexible" && !named.length ? flexibleTarget : fixedCount;
     const targetByDay = new Map<string, number>();
@@ -219,7 +239,7 @@ export default function AchievementOverview({ plan, records, unitProgress, weekS
           return <button type="button" key={day} className={`${selectedWeekDay === day ? "selected" : ""} ${current ? "today" : ""}`} aria-pressed={selectedWeekDay === day} onClick={() => setSelectedWeekDay(selectedWeekDay === day ? null : day)}><span>{new Intl.DateTimeFormat(calendar === "islamic" ? "ar-SA-u-ca-islamic-umalqura" : "ar-SA-u-ca-gregory", { weekday: "short", timeZone: "Asia/Riyadh" }).format(date)}</span><b>{ar(calendarParts(date, calendar).day)}</b>{current && <i aria-label="اليوم"/>}</button>;
         })}
       </div>
-      <button type="button" className={`achievement-week-all ${selectedWeekDay == null ? "selected" : ""}`} aria-pressed={selectedWeekDay == null} onClick={() => setSelectedWeekDay(null)}>الأسبوع كاملًا</button>
+      <button type="button" className={`achievement-week-all ${selectedWeekDay == null ? "selected" : ""}`} aria-pressed={selectedWeekDay == null} onClick={() => setSelectedWeekDay(null)}>الكل</button>
     </div>}
 
     {range === "month" && <div className="achievement-month-grid" aria-label="تقويم الشهر" dir="rtl">
