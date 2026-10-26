@@ -731,3 +731,9 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group .home-time-segment.is-wasted::before{display:none!important}
 .home-station-group .home-time-segment.is-wasted>span,.home-station-group .home-time-segment.is-free>span{font-size:8px;font-weight:800}
 .home-station-group .home-time-segment.is-wasted+.home-time-segment,.home-station-group .home-time-segment+.home-time-segment.is-free{border-inline-start:2px solid rgba(255,255,255,.98)!important}
+/* الأخضر يبيّن المقدار المنجز داخل مقطع النشاط، والأحمر ما بقي عند انتهاء المحطة. */
+.home-station-group .home-station-timeline .home-time-segment:not(.is-free):not(.is-wasted)::before{display:block!important;background:#70b982!important}
+.home-station-group .home-station-timeline .home-time-segment.is-complete{background:#b9dfc2!important;color:#39764c!important}
+.home-station-group .home-station-timeline .home-time-segment.is-complete::before{width:100%!important;background:#70b982!important}
+.home-station-group .home-station-timeline .home-time-segment.is-past-incomplete{background:#f4c4c8!important;color:#9d4651!important}
+.home-station-group .home-station-timeline .home-time-segment.is-past-incomplete::before{background:#70b982!important}
