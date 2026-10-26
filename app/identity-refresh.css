@@ -719,5 +719,10 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.period-0 .home-station-timeline{border-right:0!important}
 .home-station-group.period-3 .home-time-segment::before{display:none}
 .home-station-group .home-station-timeline .home-time-segment.is-free{background:#fff!important}
+/* فاصل بصري واضح بين مقاطع الأنشطة دون تغيير نسب عرضها. */
+.home-station-group .home-station-timeline>.home-time-segment+.home-time-segment{border-inline-start:2px solid rgba(255,255,255,.98)!important}
+.home-station-group .home-station-timeline>.home-time-segment:first-child{border-inline-start:0!important}
+.day-screen .period-rail.timeline-rail>.timeline-segment+.timeline-segment{border-inline-start:2px solid rgba(255,255,255,.98)}
+.day-screen .period-rail.timeline-rail>.timeline-segment:first-child{border-inline-start:0}
 .home-station-group.period-4 .home-time-segment:not(.is-free){color:#536487!important}
 .home-station-group.period-4 .home-time-bubbles>small{border-color:#8798BE;background:#fff;color:#536487}
