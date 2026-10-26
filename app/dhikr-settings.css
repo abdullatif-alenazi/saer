@@ -50,6 +50,11 @@ dialog[open].dhikr-settings-sheet::backdrop{background:rgba(39,56,69,.28);backdr
 .dhikr-switch.on .dhikr-switch-track{background:#9fcfdf}
 .dhikr-switch.on .dhikr-switch-track i{transform:translateX(-18px)}
 .dhikr-switch-copy{display:grid;gap:3px}.dhikr-switch-copy b{font-size:11px}.dhikr-switch-copy small{color:#91a5b2;font-size:9px;font-weight:500}
+.dhikr-sahar-toggle{min-height:52px!important;margin:0 0 10px;padding:4px 0!important;border-top:1px solid #edf2f5!important;border-bottom:1px solid #edf2f5!important}
+.dhikr-sahar-icon{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:11px;background:#f0f5f8;color:#7b91a0;transition:background .2s ease,color .2s ease}
+.dhikr-sahar-toggle.on .dhikr-sahar-icon{background:#e7f3f8;color:#527f98}
+.dhikr-sahar-toggle .dhikr-switch-copy{flex:1}
+.sahar-period-row .dhikr-station-name{color:#577c95}
 .quick-sheet button.urgent-check{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:5px 0;border:0;background:transparent;color:var(--ink);text-align:right;font:inherit;cursor:pointer}
 .dhikr-timer-style{display:grid;gap:7px;color:#6e8493;font-size:11px;font-weight:750}
 .dhikr-timer-style>div{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:3px;border:1px solid #e1ebef;border-radius:12px;background:#f4f8fa}

@@ -2,6 +2,7 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent,type TouchEvent} from "react";
 import {Pencil,Pause,Play,Square} from "lucide-react";
 import {counterValue,setCounterValue,type GaugeStyle,type PlannedActivity,type TimedSession,type UnitPeriod,type UnitProgress} from "./local-store";
+import {isSaharActive} from "./time-engine";
 import {activeSeconds,checkpointSession,completePendingRound,createTimedSession,finishSession as finishTimedSession,formatStopwatch as fmt,pauseSession,removeTimedAmount,resumeSession,summarizeSession,undoTimedRound,undoTimedUnit} from "./activity-time-engine";
 import WeekStrip from "./WeekStrip";
 
@@ -62,7 +63,7 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const timingEnabled=Boolean(config.timing)&&config.timing?.enabled!==false,showTimer=config.timing?.showTimer!==false;
  const configuredPeriods=config.periods.length?config.periods:[{id:"daily",label:activity.period,period:activity.period,target:config.target,unitCount:Math.max(1,Math.ceil(config.target/Math.max(1,config.pressValue))),unitValue:config.pressValue}];
  const basePeriods=configuredPeriods.filter((period,index,all)=>all.findIndex(item=>item.period===period.period)===index);
- const [selected,setSelected]=useState(()=>basePeriods.find(period=>period.period===initialPeriod)?.id??basePeriods[0].id);
+ const [selected,setSelected]=useState(()=>{const saharNow=date===today&&basePeriods.some(period=>period.period==="الأسحار")&&isSaharActive(new Date(`${date}T12:00:00+03:00`));const preferred=saharNow?"الأسحار":initialPeriod;return basePeriods.find(period=>period.period===preferred)?.id??basePeriods[0].id});
  const [progress,setProgress]=useState<UnitProgress>(initial??{activityId:activity.id,date,counterByPeriod:{},completedUnitsByPeriod:{},updatedAt:new Date().toISOString()});
  const [operationHistory,setOperationHistory]=useState<{periodId:string;counter:number;units:number[];roundId?:string;session?:TimedSession}[]>([]),[feedback,setFeedback]=useState<{amount:number;kind:"add"|"undo";id:number;periodId?:string}|null>(null),[counterFloat,setCounterFloat]=useState<{amount:number;kind:"add"|"undo";id:number}|null>(null),[barMarker,setBarMarker]=useState<{amount:number;kind:"add"|"undo";id:number;periodId:string}|null>(null);
  const [decrementMode,setDecrementMode]=useState(false),holdTimer=useRef<number|null>(null),longPressTriggered=useRef(false);
@@ -75,11 +76,11 @@ export default function DhikrRunner({activity,date,today,currentPeriodIndex,cale
  const active=periods.find(period=>period.id===selected)??periods[0];
  const doneFor=(period:UnitPeriod,source=progress)=>Math.max(counterValue(source,period.id),(source.completedUnitsByPeriod[period.id]?.length??0)*period.unitValue);
  const showFeedback=(amount:number,kind:"add"|"undo",periodId:string,float=false)=>{const id=++feedbackSequence.current,event={amount,kind,id,periodId};setFeedback(event);setBarMarker(event);if(float)setCounterFloat({amount,kind,id})};
- const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل"];
+ const periodOrder=["الصباح","الظهر","العصر","المغرب","الليل","الأسحار"];
  const isMissed=(period:UnitPeriod)=>date<today||(date===today&&periodOrder.indexOf(period.period)<currentPeriodIndex);
  const gaugeStyle=config.gaugeStyle??"ring";
  const totalTarget=periods.reduce((sum,period)=>sum+period.target,0),totalDone=periods.reduce((sum,period)=>sum+doneFor(period),0);
- const periodMarkers=periods.reduce<{ratio:number;label:string;state:string}[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0),labels:Record<string,string>={الصباح:"ص",الظهر:"ظ",العصر:"ع",المغرب:"م",الليل:"ل"},done=doneFor(period),state=done>=period.target?"complete":isMissed(period)?"missed":period.id===active.id?"selected":"";if(totalTarget>0)markers.push({ratio:boundary/totalTarget,label:labels[period.period]??period.period.slice(0,1),state});return markers},[]);
+ const periodMarkers=periods.reduce<{ratio:number;label:string;state:string}[]>((markers,period,index)=>{const boundary=periods.slice(0,index+1).reduce((sum,item)=>sum+item.target,0),labels:Record<string,string>={الصباح:"ص",الظهر:"ظ",العصر:"ع",المغرب:"م",الليل:"ل",الأسحار:"س"},done=doneFor(period),state=done>=period.target?"complete":isMissed(period)?"missed":period.id===active.id?"selected":"";if(totalTarget>0)markers.push({ratio:boundary/totalTarget,label:labels[period.period]??period.period.slice(0,1),state});return markers},[]);
  const dailyRemaining=Math.max(0,totalTarget-totalDone);
  const roundRemaining=decrementMode?doneFor(active):Number.POSITIVE_INFINITY;
  const configuredRoundAmount=Math.max(1,Math.floor(config.timing?.roundSize??100));
