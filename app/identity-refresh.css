@@ -726,3 +726,9 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .day-screen .period-rail.timeline-rail>.timeline-segment:first-child{border-inline-start:0}
 .home-station-group.period-4 .home-time-segment:not(.is-free){color:#536487!important}
 .home-station-group.period-4 .home-time-bubbles>small{border-color:#8798BE;background:#fff;color:#536487}
+/* الوقت الذي مضى بلا تنفيذ يظهر أول الشريط، ثم وقت الممارسة، فالمهام، فالمتاح المتناقص. */
+.home-station-group .home-time-segment.is-wasted{background:#f7dadd!important;color:#a34f5d!important;cursor:default!important}
+.home-station-group .home-time-segment.is-wasted::before,.home-station-group .home-time-segment.is-practiced::before{display:none!important}
+.home-station-group .home-time-segment.is-wasted>span,.home-station-group .home-time-segment.is-free>span{font-size:8px;font-weight:800}
+.home-station-group .home-time-segment.is-practiced{background:#dcefe3!important;color:#4c8060!important;cursor:default!important}
+.home-station-group .home-time-segment.is-wasted+.home-time-segment,.home-station-group .home-time-segment.is-practiced+.home-time-segment,.home-station-group .home-time-segment+.home-time-segment.is-free{border-inline-start:2px solid rgba(255,255,255,.98)!important}
