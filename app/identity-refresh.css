@@ -741,3 +741,6 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group .home-station-timeline-wrap .home-time-bubbles>small{width:max-content;min-width:28px;max-width:96px;padding:1px 6px;border:1px solid #dce8ed!important;background:#fff!important;color:#58758a!important;font-size:8px;line-height:14px;box-shadow:0 2px 6px rgba(45,72,91,.1)}
 .home-station-group .home-station-timeline-wrap .home-time-bubbles>small.is-wasted{border-color:#e9b9c0!important;background:#f7dadd!important;color:#9d4651!important}
 .home-station-group .home-station-timeline-wrap .home-time-bubbles>small.is-free{border-color:#badfc4!important;background:#e3f3e7!important;color:#39764c!important}
+.home-station-group .home-station-timeline-wrap{padding-top:calc(19px + var(--bubble-extra-space,0px))}
+.home-station-group .home-time-bubbles{height:calc(17px + var(--bubble-extra-space,0px))}
+.home-station-group .home-station-timeline-wrap .home-time-bubbles>small{width:clamp(34px,11%,92px);min-width:0;max-width:92px;padding:1px 4px}
