@@ -118,15 +118,17 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const hijriWeekCaption = compactDateRange(weekDates[0], weekDates[6], "islamic");
   const gregorianWeekCaption = compactDateRange(weekDates[0], weekDates[6], "gregory");
   const monthDates = useMemo(() => {
+    if (range !== "month") return [];
     const focus = calendarParts(viewDate, calendar), dates: Date[] = [];
     for (let offset = -40; offset <= 40; offset++) {
       const date = addDays(viewDate, offset), parts = calendarParts(date, calendar);
       if (parts.year === focus.year && parts.month === focus.month) dates.push(date);
     }
     return dates;
-  }, [viewDate, calendar]);
+  }, [viewDate, calendar, range]);
   const monthTitle = formatDate(monthDates[0] ?? viewDate, calendar, { month: "long", year: "numeric" });
   const yearDates = useMemo(() => {
+    if (range !== "year") return [];
     const year = calendarParts(viewDate, calendar).year;
     if (calendar === "gregory") {
       const first = new Date(Date.UTC(year, 0, 1, 12)), length = (Date.UTC(year + 1, 0, 1) - Date.UTC(year, 0, 1)) / 86400000;
@@ -135,12 +137,12 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     const dates: Date[] = [];
     for (let offset = -190; offset <= 190; offset++) { const date = addDays(viewDate, offset); if (calendarParts(date, calendar).year === year) dates.push(date); }
     return dates;
-  }, [viewDate, calendar]);
+  }, [viewDate, calendar, range]);
   const yearTitle = formatDate(viewDate, calendar, { year: "numeric" });
-  const monthGroups = Array.from({ length: 12 }, (_, index) => {
+  const monthGroups = range === "year" ? Array.from({ length: 12 }, (_, index) => {
     const dates = yearDates.filter(date => calendarParts(date, calendar).month === index + 1);
     return dates.length ? { month: index + 1, dates, label: formatDate(dates[0], calendar, { month: "long" }) } : null;
-  }).filter((item): item is { month: number; dates: Date[]; label: string } => Boolean(item));
+  }).filter((item): item is { month: number; dates: Date[]; label: string } => Boolean(item)) : [];
 
   const activityProgress = (activity: PlannedActivity) => unitProgress.filter(item => item.activityId === activity.id);
   const activityRecords = (activity: PlannedActivity) => validActivityRecords(activity, records);
@@ -188,12 +190,12 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     return done >= target ? "complete" : "partial";
   };
   const metricFor = (activity: PlannedActivity, dates: Date[]) => metric(activity, dates);
-  const weekMetrics = plan.map(activity => ({ activity, metric: metricFor(activity, weekDates) }));
+  const weekMetrics = range === "week" ? plan.map(activity => ({ activity, metric: metricFor(activity, weekDates) })) : [];
   const weeklyDue = weekMetrics.filter(item => item.metric.target > 0);
   const weeklyAchieved = weeklyDue.filter(item => item.metric.done >= item.metric.target).length;
   const weeklyAverage = weeklyDue.length ? Math.round(weeklyDue.reduce((sum, item) => sum + Math.min(100, item.metric.done / item.metric.target * 100), 0) / weeklyDue.length) : null;
-  const dailyDue = plan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay)));
-  const dailyAchieved = dailyDue.filter(activity => statusForDay(activity, selectedDay) === "complete").length;
+  const dailyDue = range === "day" ? plan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay))) : [];
+  const dailyAchieved = range === "day" ? dailyDue.filter(activity => statusForDay(activity, selectedDay) === "complete").length : 0;
 
   const moveCalendar = (amount: number, period: "month" | "year") => {
     const start = calendarParts(viewDate, calendar), direction = Math.sign(amount);
@@ -206,15 +208,15 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   };
   const goMonth = (dates: Date[]) => { if (!dates[0]) return; setViewDate(dates[0]); setRange("month"); };
 
-  const monthlyMetric = selectedActivity ? metricFor(selectedActivity, monthDates) : null;
-  const monthDaysDue = selectedActivity ? monthDates.filter(date => isPastOrToday(date) && scheduledOn(selectedActivity, date)) : [];
+  const monthlyMetric = range === "month" && selectedActivity ? metricFor(selectedActivity, monthDates) : null;
+  const monthDaysDue = range === "month" && selectedActivity ? monthDates.filter(date => isPastOrToday(date) && scheduledOn(selectedActivity, date)) : [];
   const monthAchievedDays = selectedActivity ? monthDaysDue.filter(date => statusForDay(selectedActivity, date) === "complete").length : 0;
   const dailyAverages = selectedActivity ? monthDaysDue.map(date => {
     const target = targetForDay(selectedActivity, date);
     return target > 0 ? Math.min(100, dayDone(selectedActivity, date) / target * 100) : 0;
   }) : [];
   const bestDate = selectedActivity ? monthDaysDue.reduce<Date | null>((best, date) => !best || dayDone(selectedActivity, date) > dayDone(selectedActivity, best) ? date : best, null) : null;
-  const streak = selectedActivity ? (() => {
+  const streak = range === "month" && selectedActivity ? (() => {
     let current = 0, longest = 0;
     for (const date of monthDates) {
       if (keyOf(date) > todayKey) break;
@@ -223,16 +225,16 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     }
     return longest;
   })() : 0;
-  const previousMonthDates = selectedActivity && monthDates.length ? (() => {
+  const previousMonthDates = range === "month" && selectedActivity && monthDates.length ? (() => {
     const previous = addDays(monthDates[0], -1), parts = calendarParts(previous, calendar), dates: Date[] = [];
     for (let offset = -40; offset <= 40; offset++) { const date = addDays(previous, offset), item = calendarParts(date, calendar); if (item.year === parts.year && item.month === parts.month) dates.push(date); }
     return dates;
   })() : [];
-  const previousMonthMetric = selectedActivity ? metricFor(selectedActivity, previousMonthDates) : null;
+  const previousMonthMetric = range === "month" && selectedActivity ? metricFor(selectedActivity, previousMonthDates) : null;
   const comparison = monthlyMetric?.percent != null && previousMonthMetric?.percent != null ? monthlyMetric.percent - previousMonthMetric.percent : null;
 
-  const annualMetrics = selectedActivity ? monthGroups.map(group => ({ ...group, metric: metricFor(selectedActivity, group.dates) })) : [];
-  const annualMetric = selectedActivity ? metricFor(selectedActivity, yearDates) : null;
+  const annualMetrics = range === "year" && selectedActivity ? monthGroups.map(group => ({ ...group, metric: metricFor(selectedActivity, group.dates) })) : [];
+  const annualMetric = range === "year" && selectedActivity ? metricFor(selectedActivity, yearDates) : null;
   const averageMonthly = annualMetrics.filter(item => item.metric.target > 0);
   const bestMonth = averageMonthly.reduce<(typeof averageMonthly)[number] | null>((best, item) => !best || (item.metric.percent ?? 0) > (best.metric.percent ?? 0) ? item : best, null);
   const monthOffset = monthDates.length ? (monthDates[0].getUTCDay() - firstDay + 7) % 7 : 0;
