@@ -565,6 +565,12 @@
 .settings-drawer-header>button{width:38px;height:38px;display:grid;place-items:center;border:1px solid #dce9ef;border-radius:13px;background:white;color:#587a91;cursor:pointer}
 .settings-drawer-panel>.settings-screen{flex:1 1 auto;min-height:0;width:100%;margin:0!important;padding:4px 0 0!important;overflow:auto;overscroll-behavior:contain;animation:none!important}
 .settings-drawer-panel>.settings-screen>header{display:none!important}
+/* أزرار إعدادات الحساب وبداية الأسبوع تتبع ألوان سائر الباستيلية. */
+.settings-screen .sync-signout{border:1px solid #c9e1ec!important;background:linear-gradient(135deg,#e8f4f9,#dceef6)!important;color:#4b6e84!important;box-shadow:0 3px 9px rgba(85,113,135,.08)!important}
+.settings-screen .week-start-switch{padding:4px!important;gap:4px!important;border:1px solid #deebf1!important;border-radius:14px!important;background:#f3f8fb!important}
+.settings-screen .week-start-switch button{min-width:0!important;border:1px solid transparent!important;border-radius:11px!important;background:transparent!important;color:#839bab!important;box-shadow:none!important;transition:background .18s ease,color .18s ease,border-color .18s ease!important}
+.settings-screen .week-start-switch button.selected{border-color:#d2e7f0!important;background:linear-gradient(135deg,#edf7fb,#e2f1f8)!important;color:#52748a!important;box-shadow:0 2px 7px rgba(85,113,135,.08)!important}
+.settings-screen .week-start-switch button:focus-visible{outline:2px solid #b8d8e6!important;outline-offset:1px!important}
 @keyframes settings-drawer-in{from{translate:28px 0;opacity:.72}to{translate:0 0;opacity:1}}
 @media(prefers-reduced-motion:reduce){.settings-drawer[open]{animation:none!important}}
 
