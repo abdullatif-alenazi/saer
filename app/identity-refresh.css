@@ -379,10 +379,11 @@
 .saer-calendar .calendar-weekdays b{padding:2px;color:var(--muted);font-size:10px}
 .saer-calendar .calendar-days>i{height:34px}
 .saer-calendar .calendar-days button{position:relative;justify-self:center;width:min(100%,34px);height:34px;min-height:0;padding:0;border:1px solid transparent;border-radius:50%;background:transparent;color:var(--ink);font-size:12px;display:grid;place-items:center}
-.saer-calendar .calendar-days button.today{border-color:#6eabc6;background:transparent;color:#345d77;font-weight:850}
-.saer-calendar .calendar-days button.selected-day{border-color:#557187;background:#557187;color:#fff;font-weight:850}
-.saer-calendar .calendar-days button.today.selected-day{outline:2px solid #a9cde3;outline-offset:2px}
+.saer-calendar .calendar-days button.today{border-color:#c5e4f1;background:#dff1f8;color:#456f89;font-weight:850}
+.saer-calendar .calendar-days button.selected-day{border-color:#557f9c;background:#557f9c;color:#fff;font-weight:850}
+.saer-calendar .calendar-days button.today.selected-day{border-color:#8fbcd2;background:#dff1f8;color:#456f89;outline:2px solid #557f9c;outline-offset:2px}
 .saer-calendar .calendar-days button.record-related-day::after{content:"";position:absolute;inset:-4px;border:1.5px dashed #7895a9;border-radius:50%;pointer-events:none}
+.saer-calendar .calendar-days button.record-related-day.selected-day:not(.today){border-color:transparent;background:transparent;color:var(--ink)}
 .section-screen:has(.saer-calendar) .section-head .section-add{background:#c7e3f4!important;border:1px solid #b9dced!important;color:#4b718d!important;box-shadow:0 7px 17px rgba(111,150,173,.12)!important}
 .saer-calendar .calendar-days button.has-appointment:not(.selected-day):not(.today){background:transparent;color:var(--ink)}
 .saer-calendar .calendar-days button>i{left:50%;bottom:2px;translate:-50% 0;min-width:4px;width:4px;height:4px;padding:0;border-radius:50%;background:#d38b53;box-shadow:none}
