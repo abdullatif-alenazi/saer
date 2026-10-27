@@ -569,8 +569,6 @@
 @keyframes bottom-nav-icon-hop-b{0%{transform:translateY(0) scale(1)}32%{transform:translateY(-7px) scale(1.12)}62%{transform:translateY(1px) scale(.96)}100%{transform:translateY(0) scale(1)}}
 .tasks-calendar-screen{padding-top:0!important}
 .tasks-calendar-screen .saer-calendar{margin-top:0}
-.calendar-period .calendar-no-date{width:auto;padding:0 8px!important;border-radius:10px!important;background:#edf6fa!important;color:#567a93!important;font-size:9px!important;font-weight:800!important;white-space:nowrap}
-.calendar-period .calendar-no-date.selected{background:#d9edf7!important;color:#3f708d!important;box-shadow:inset 0 0 0 1px #b9dbea!important}
 .calendar-filters{overflow-x:auto!important;overscroll-behavior-inline:contain;scrollbar-width:none}
 .calendar-filters::-webkit-scrollbar{display:none}
 .calendar-filters .calendar-add-category{flex:0 0 34px!important;width:34px!important;min-width:34px!important;height:34px!important;border:1px dashed #b8d7e6!important;border-radius:12px!important;background:#f4fafc!important;color:#5485a0!important;font-size:20px!important;font-weight:600!important}
