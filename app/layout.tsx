@@ -13,6 +13,8 @@ import "./progress-overrides.css";
 import "./pastel-overrides.css";
 import "./identity-refresh.css";
 import "./dhikr-settings.css";
+import "./action-feedback.css";
+import ActionFeedback from "./ActionFeedback";
 
 export const metadata: Metadata = {
   title: "سائر — ماذا تفعل الآن؟",
@@ -37,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body>{children}</body>
+      <body>{children}<ActionFeedback/></body>
     </html>
   );
 }
