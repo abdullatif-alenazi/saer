@@ -410,9 +410,10 @@
 .calendar-record-actions>button:first-child{border-radius:0 10px 10px 0}
 .calendar-record-actions>button:last-child{border-radius:10px 0 0 10px}
 .calendar-record-actions>button.delete{background:#f8e8e9;color:#a85c67}
-.records-month-scheduled .calendar-record-line{grid-template-columns:minmax(0,1fr) auto minmax(0,88px);gap:8px;padding:5px 2px}
-.records-month-scheduled .calendar-record-line>.record-date-distance{display:block;min-width:88px;white-space:nowrap;overflow:visible}
-.records-month-scheduled .calendar-record-main{flex-direction:row}
+.records-month-scheduled .calendar-record-main{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(84px,max-content);direction:rtl;align-items:center;gap:8px;padding:0 3px}
+.records-month-scheduled .calendar-record-line{grid-column:1;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:5px 2px}
+.records-month-scheduled .calendar-record-main>.records-task-check{grid-column:2;justify-self:center}
+.records-month-scheduled .calendar-record-main>.record-date-distance{grid-column:3;min-width:84px;justify-self:start;color:#8298a7;font-size:9px;font-weight:650;text-align:left;direction:rtl;white-space:nowrap}
 .calendar-record-main>.records-task-check{flex:0 0 24px}
 .record-type{width:23px;height:23px;display:grid;place-items:center;border-radius:8px;background:#e9f4f8;color:#4a829d;font-style:normal;font-size:13px}
 .record-occasion{background:#f8f0df;color:#a88650}.record-event{background:#f4e8ea;color:#ab6b78}.record-memory{background:#eee9f6;color:#78649c}
