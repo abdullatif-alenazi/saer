@@ -519,6 +519,17 @@
 .notification-center-empty{min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;color:#92a7b4;text-align:center}
 .notification-center-empty b{color:#617f94;font-size:14px}
 .notification-center-empty span{font-size:11px;line-height:1.6}
+.settings-drawer[open]{position:fixed!important;inset:0 0 0 auto!important;transform:none!important;width:min(88vw,420px)!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;border-inline-start:1px solid #d9e8ef!important;border-radius:24px 0 0 24px!important;background:linear-gradient(155deg,#fff,#f5fafc)!important;color:#4f6d87!important;box-shadow:-16px 0 50px rgba(36,61,79,.18)!important;direction:rtl!important;animation:settings-drawer-in .24s cubic-bezier(.22,1,.36,1) both}
+.settings-drawer::backdrop{background:rgba(25,40,54,.32);backdrop-filter:blur(5px)}
+.settings-drawer-panel{height:100%;display:flex;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 17px calc(16px + env(safe-area-inset-bottom));overflow:hidden}
+.settings-drawer-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 12px;border-bottom:1px solid #e3edf2}
+.settings-drawer-header small{display:block;margin-bottom:3px;color:#8ba1b0;font-size:10px;font-weight:750}
+.settings-drawer-header h2{margin:0;color:#4f6d87;font-size:21px}
+.settings-drawer-header>button{width:38px;height:38px;display:grid;place-items:center;border:1px solid #dce9ef;border-radius:13px;background:white;color:#587a91;cursor:pointer}
+.settings-drawer-panel>.settings-screen{flex:1 1 auto;min-height:0;width:100%;margin:0!important;padding:4px 0 0!important;overflow:auto;overscroll-behavior:contain;animation:none!important}
+.settings-drawer-panel>.settings-screen>header{display:none!important}
+@keyframes settings-drawer-in{from{translate:28px 0;opacity:.72}to{translate:0 0;opacity:1}}
+@media(prefers-reduced-motion:reduce){.settings-drawer[open]{animation:none!important}}
 
 /* شريط التنقل بخمس نقاط: أربع وجهات وزر إضافة مركزي. */
 .bottom-navigation.bottom-nav-five{position:fixed!important;z-index:40!important;left:50%!important;right:auto!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;width:min(520px,calc(100% - 20px))!important;height:76px!important;min-height:76px!important;padding:5px 8px!important;display:grid!important;grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)!important;align-items:stretch!important;gap:2px!important;direction:rtl!important;border:1px solid rgba(220,226,237,.92)!important;border-radius:999px!important;background:rgba(255,255,255,.91)!important;box-shadow:0 10px 28px rgba(92,105,139,.13)!important;backdrop-filter:blur(18px)!important;overflow:visible!important}
