@@ -429,8 +429,8 @@
 .calendar-type-head small,.calendar-form-head small{color:#74a5bd;font-size:11px;font-weight:750}
 .calendar-type-head h2,.calendar-form-head h2{margin:3px 0 0;color:#3d5e76;font-size:21px}
 .calendar-type-head>button,.calendar-form-head>div>button:last-child{flex:0 0 34px;width:34px;height:34px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#58758b;font-size:20px}
-.calendar-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.calendar-type-card{min-width:0;min-height:112px;display:grid;grid-template-columns:24px 1fr;align-content:center;align-items:center;column-gap:7px;row-gap:3px;padding:10px;border:1px solid #dcebf1;border-radius:16px;color:#405f76;text-align:right}
+.calendar-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;flex:none}
+.calendar-type-card{min-width:0;min-height:124px;display:grid;grid-template-columns:24px 1fr;align-content:center;align-items:center;column-gap:9px;row-gap:5px;padding:14px;border:1px solid #dcebf1;border-radius:18px;color:#405f76;text-align:right}
 .calendar-type-card.pastel-0{background:#e8f5fb}.calendar-type-card.pastel-1{background:#eaf5ed}.calendar-type-card.pastel-2{background:#faf0e8}.calendar-type-card.pastel-3{background:#f1ecf8}.calendar-type-card.pastel-4{background:#fbf0f2}
 .calendar-type-card.pastel-0{color:#456f86}.calendar-type-card.pastel-1{color:#4d7858}.calendar-type-card.pastel-2{color:#88583e}.calendar-type-card.pastel-3{color:#6f5a91}.calendar-type-card.pastel-4{color:#8f5668}
 .calendar-type-card:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 4px);justify-self:center}
@@ -623,6 +623,11 @@
 .quick-add-sheet[open]{inset:auto 50% calc(env(safe-area-inset-bottom)) auto!important;left:50%!important;right:auto!important;bottom:env(safe-area-inset-bottom)!important;transform:translateX(-50%)!important;margin:0!important;width:min(100%,520px)!important;max-height:min(78dvh,720px)!important;padding:20px 18px 22px!important;border-radius:25px 25px 0 0!important;animation:quick-sheet-rise .24s cubic-bezier(.22,1,.36,1) both}
 .quick-add-sheet.quick-add-choice-sheet[open]{position:fixed!important;top:auto!important;bottom:env(safe-area-inset-bottom)!important;height:fit-content!important;max-height:min(48dvh,420px)!important;min-height:0!important;overflow-y:auto!important}.quick-add-choice-sheet .unified-add-groups{flex:none!important}.quick-add-choice-sheet .quick-add-grid{grid-template-rows:minmax(82px,auto)!important;flex:none!important;overflow:visible!important}
 .calendar-type-picker[open]{position:fixed!important;top:auto!important;bottom:env(safe-area-inset-bottom)!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;margin:0!important;width:min(100%,520px)!important;max-height:min(78dvh,720px)!important;border-radius:25px 25px 0 0!important;animation:quick-sheet-rise .24s cubic-bezier(.22,1,.36,1) both}
+.calendar-type-picker[open]{max-height:min(90dvh,780px)!important;padding:20px 18px calc(22px + env(safe-area-inset-bottom))!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin}
+.calendar-type-picker .calendar-type-head{flex:0 0 auto;margin-bottom:17px}
+.calendar-type-picker .calendar-type-grid{gap:12px}
+.calendar-type-picker .calendar-type-card{min-height:124px;padding:14px}
+@media(max-height:680px){.calendar-type-picker[open]{max-height:94dvh!important;padding:14px 14px calc(18px + env(safe-area-inset-bottom))!important}.calendar-type-picker .calendar-type-grid{gap:10px}.calendar-type-picker .calendar-type-card{min-height:104px;padding:10px}}
 @keyframes quick-sheet-rise{from{opacity:.7;translate:0 20px}to{opacity:1;translate:0 0}}
 @media(min-width:700px){.quick-add-sheet[open]{inset:auto auto env(safe-area-inset-bottom)!important;left:50%!important;right:auto!important;bottom:env(safe-area-inset-bottom)!important;transform:translateX(-50%)!important;width:min(calc(100% - 40px),520px)!important;max-height:min(78dvh,720px)!important;border-radius:25px 25px 0 0!important}}
 @media(max-width:360px){.bottom-nav-five .bottom-nav-item small{font-size:8px!important}.bottom-nav-five{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)!important}.bottom-nav-five .bottom-add{width:42px!important;height:42px!important;min-height:42px!important;flex-basis:42px!important}.calendar-period{flex-wrap:wrap}}
