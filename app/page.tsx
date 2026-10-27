@@ -130,7 +130,7 @@ export default function Home(){
  const openActivity=(activity:PlannedActivity|null,nature:"goal"|"commitment"=activity?.nature??"commitment",preset:ActivityPreset|null=null,period?:string)=>{setCreationNature(nature);setQuickTemplate(preset);setActivityPeriod(period);setEditingActivity(activity);window.setTimeout(()=>$("add-sheet")?.showModal(),0)};
  const openDhikrSettings=(activity:PlannedActivity)=>{setEditingDhikr(activity);window.setTimeout(()=>$("dhikr-settings")?.showModal(),0)};
  const openQuickAdd=(preset:ActivityPreset)=>{ $("quick-add")?.close();openActivity(null,preset.nature,preset)};
- const showQuickAdd=()=>{setQuickAddScope(navView==="my-activities"?"activities":navView==="tasks"?"tasks":"general");window.setTimeout(()=>$('quick-add')?.showModal(),0)};
+ const showQuickAdd=()=>{if(navView==="tasks"){window.setTimeout(()=>$('calendar-type-picker')?.showModal(),0);return}setQuickAddScope(navView==="my-activities"?"activities":"general");window.setTimeout(()=>$('quick-add')?.showModal(),0)};
  const openUnifiedTask=()=>{$("quick-add")?.close();window.setTimeout(()=>$('calendar-type-picker')?.showModal(),0)};
  const navigateTo=(view:NavView)=>{if(activeDhikr||activeWorkout)returnToJourney();setAchievementActivity(null);setAchievementDetailOpen(false);setNavView(view);setTab(view==="achievements"?"goals":"now");if(view==="activities"){setLeavingJourney(false);setViewMotion(null);setJourneyDate(null);setDayPeriod(windowNow.index)}};
  const openSettings=()=>{window.setTimeout(()=>$('settings-drawer')?.showModal(),0)};
