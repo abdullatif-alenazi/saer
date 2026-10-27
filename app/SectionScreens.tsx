@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useState} from "react";
+import {ChevronDown} from "lucide-react";
 import type {User} from "@supabase/supabase-js";
 import {templates} from "./data";
 import {durationLabel} from "./time-engine";
@@ -87,6 +88,8 @@ export function AppointmentCalendar({items,tasks,weekStartsOn,onEdit,onEditTask,
  const taskEntries=tasks.filter(task=>Boolean(task.date)&&!task.archivedAt).flatMap(task=>monthDates.filter(date=>calendarDateKey(date)===task.date).map(date=>({entity:"task" as const,kind:task.categoryId?`custom:${task.categoryId}`:"task",id:task.id,date:calendarDateKey(date),time:task.time??"",title:task.title,item:task})));
  const allEntries=[...entries,...taskEntries].sort((a,b)=>(a.date+(a.time||"99:99")).localeCompare(b.date+(b.time||"99:99")));
  const noDateEntries=[...items.filter(item=>!item.date).map(item=>({entity:"appointment" as const,kind:item.customCategoryId?`custom:${item.customCategoryId}`:(item.kind??"appointment") as string,id:item.id,date:"",time:item.timeEnabled===false?"":item.time,title:item.title,item})),...tasks.filter(task=>!task.date&&!task.archivedAt).map(item=>({entity:"task" as const,kind:item.categoryId?`custom:${item.categoryId}`:"task",id:item.id,date:"",time:item.time??"",title:item.title,item}))].sort((a,b)=>a.title.localeCompare(b.title,"ar"));
+ const unscheduledTasks=tasks.filter(task=>!task.date&&!task.completedAt&&!task.archivedAt);
+ const completedTasks=tasks.filter(task=>Boolean(task.completedAt)&&!task.archivedAt);
  const activeEntries=noDate?noDateEntries:allEntries,dayEntries=activeEntries.filter(entry=>(noDate||entry.date===selected)&&(filter==="all"||entry.kind===filter));
  const title=new Intl.DateTimeFormat("ar-SA-u-ca-"+(calendar==="islamic"?"islamic-umalqura":"gregory"),{month:"long",year:"numeric"}).format(anchor);
  const leading=(first.getDay()-(weekStartsOn==="saturday"?6:0)+7)%7,months=Array.from({length:12},(_,i)=>({value:i+1,label:new Intl.DateTimeFormat("ar-SA-u-ca-"+(calendar==="islamic"?"islamic-umalqura":"gregory"),{month:"long"}).format(calendarDateForParts(monthYear,i+1,1,calendar)??anchor)}));
@@ -98,12 +101,29 @@ export function AppointmentCalendar({items,tasks,weekStartsOn,onEdit,onEditTask,
  return <div className={`saer-calendar ${integrated?"integrated-calendar":""}`}>
   <div className="calendar-workspace-switch" role="tablist" aria-label="إدارة التقويم والمهام"><button type="button" role="tab" aria-selected={view==="calendar"} className={view==="calendar"?"selected":""} onClick={()=>setView("calendar")}>التقويم</button><button type="button" role="tab" aria-selected={view==="inbox"} className={view==="inbox"?"selected":""} onClick={()=>setView("inbox")}>صندوق المهام <span>{ar(tasks.filter(task=>!task.completedAt&&!task.archivedAt&&!task.date).length)}</span></button></div>
   {view==="inbox"?<TaskInbox tasks={tasks} onAddTask={onAddTask} onEditTask={onEditTask} onUpdateTask={onUpdateTask} onCompleteTask={onCompleteTask}/>:<>
+  <UnscheduledTasks tasks={unscheduledTasks} onEditTask={onEditTask} onCompleteTask={onCompleteTask}/>
   <div className="calendar-toolbar"><div className="calendar-kind-switch" role="group" aria-label="نوع التقويم"><button className={calendar==="gregory"?"selected":""} onClick={()=>setCalendar("gregory")}>ميلادي</button><button className={calendar==="islamic"?"selected":""} onClick={()=>setCalendar("islamic")}>هجري</button></div><div className="calendar-period"><button type="button" aria-label="الشهر السابق" onClick={()=>moveMonth(-1)}>‹</button><select aria-label="الشهر" value={monthValue} onChange={event=>setMonth(Number(event.target.value))}>{months.map(month=><option key={month.value} value={month.value}>{month.label}</option>)}</select><input aria-label="السنة" type="number" value={monthYear} onChange={event=>setYear(Number(event.target.value))}/><button type="button" aria-label="الشهر التالي" onClick={()=>moveMonth(1)}>›</button><button type="button" className="calendar-today" onClick={()=>{const now=new Date();setAnchor(now);chooseDate(now)}}>اليوم</button><button type="button" className={`calendar-no-date ${noDate?"selected":""}`} aria-pressed={noDate} onClick={()=>setNoDate(value=>!value)}>بدون تاريخ</button></div></div>
   {!noDate&&<section className="month-calendar"><div className="calendar-weekdays">{(weekStartsOn==="saturday"?["س","ح","ن","ث","ر","خ","ج"]:["ح","ن","ث","ر","خ","ج","س"]).map(day=><b key={day}>{day}</b>)}</div><div className="calendar-days">{Array.from({length:leading},(_,index)=><i key={`blank-${index}`}/>)}{monthDates.map(date=>{const key=calendarDateKey(date),count=allEntries.filter(item=>item.date===key).length;return <button type="button" key={key} className={`${key===today?"today":""} ${key===selected?"selected-day":""} ${count?"has-appointment":""}`} onClick={()=>chooseDate(date)} aria-label={`${new Intl.DateTimeFormat("ar-SA",{weekday:"long"}).format(date)} ${ar(parts(date).day)}${count?`, ${ar(count)} سجلات`:""}`}><span>{ar(parts(date).day)}</span>{count>0&&<i/>}</button>})}</div></section>}
   <div className="calendar-filters" role="group" aria-label="تصفية السجلات">{filters.map(([id,label,icon])=><button type="button" key={id} className={filter===id?"active":""} onClick={()=>setFilter(id)}><span aria-hidden="true">{icon}</span>{label}</button>)}{onAddCategory&&<button type="button" className="calendar-add-category" aria-label="إضافة تصنيف" onClick={onAddCategory}>+</button>}</div>
   <section className="calendar-records"><header><h2>{noDate?"سجلات بدون تاريخ":`سجلات ${new Intl.DateTimeFormat("ar-SA-u-ca-"+(calendar==="islamic"?"islamic-umalqura":"gregory"),{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(selectedDate)}`}</h2><span>{ar(dayEntries.length)}</span></header>{dayEntries.length?<div className="calendar-record-list">{dayEntries.map(entry=><button type="button" key={`${entry.kind}-${entry.id}-${entry.date}`} onClick={()=>entry.entity==="task"?onEditTask(entry.item as TaskItem):onEdit(entry.item as Appointment)}><i className={`record-type record-${entry.kind.startsWith("custom:")?"custom":entry.kind}`}>{filters.find(item=>item[0]===entry.kind)?.[2]??"•"}</i><b>{entry.title}</b>{entry.time&&entry.date&&<time>{new Intl.DateTimeFormat("ar-SA",{hour:"numeric",minute:"2-digit",hour12:true}).format(new Date(`${entry.date}T${entry.time}`))}</time>}<span aria-hidden="true">‹</span></button>)}</div>:<div className="calendar-empty"><span>{noDate?"لا توجد سجلات بدون تاريخ.":"لا توجد سجلات في هذا اليوم."}</span><button type="button" onClick={()=>onAddRecord?onAddRecord():onEdit(null)}>+ إضافة سجل</button></div>}</section>
+  <CompletedTasks tasks={completedTasks} onEditTask={onEditTask} onCompleteTask={onCompleteTask}/>
   </>}
  </div>
+}
+
+function UnscheduledTasks({tasks,onEditTask,onCompleteTask}:{tasks:TaskItem[];onEditTask:(item:TaskItem|null)=>void;onCompleteTask:(item:TaskItem)=>void}){
+ const [open,setOpen]=useState(false);
+ return <section className="records-task-section records-unscheduled">
+  <button type="button" className="records-task-accordion" aria-expanded={open} onClick={()=>setOpen(value=>!value)}><span className="records-task-heading"><b>مهام غير مجدولة</b><small>{ar(tasks.length)}</small></span><ChevronDown size={19} aria-hidden="true"/></button>
+  {open&&<div className="records-task-list">{tasks.length?tasks.map(task=><article className="records-task-row" key={task.id}><button type="button" className="records-task-check" aria-label={`إنجاز ${task.title}`} onClick={()=>onCompleteTask(task)}/><button type="button" className="records-task-copy" onClick={()=>onEditTask(task)}><b>{task.title}</b><small>{task.urgent?"مهمة عاجلة":"دون تاريخ"}</small></button></article>):<p className="records-task-empty">لا توجد مهام غير مجدولة.</p>}</div>}
+ </section>
+}
+
+function CompletedTasks({tasks,onEditTask,onCompleteTask}:{tasks:TaskItem[];onEditTask:(item:TaskItem|null)=>void;onCompleteTask:(item:TaskItem)=>void}){
+ return <section className="records-task-section records-completed">
+  <header><b>المهام المنجزة</b><small>{ar(tasks.length)}</small></header>
+  {tasks.length?<div className="records-task-list">{tasks.map(task=><article className="records-task-row" key={task.id}><button type="button" className="records-task-check completed" aria-label={`إعادة فتح ${task.title}`} onClick={()=>onCompleteTask(task)}>✓</button><button type="button" className="records-task-copy completed" onClick={()=>onEditTask(task)}><b>{task.title}</b><small>مكتملة</small></button></article>)}</div>:<p className="records-task-empty">لا توجد مهام منجزة بعد.</p>}
+ </section>
 }
 
 function TaskInbox({tasks,onAddTask,onEditTask,onUpdateTask,onCompleteTask}:{tasks:TaskItem[];onAddTask:(urgent:boolean)=>void;onEditTask:(item:TaskItem|null)=>void;onUpdateTask:(item:TaskItem)=>void;onCompleteTask:(item:TaskItem)=>void}){
