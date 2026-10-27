@@ -426,7 +426,7 @@
 .calendar-type-picker[open]{display:flex;flex-direction:column}
 .calendar-type-picker::backdrop,.calendar-record-sheet::backdrop{background:#26374655;backdrop-filter:blur(3px)}
 .calendar-type-head,.calendar-form-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
-.calendar-type-head small,.calendar-form-head small{color:#74a5bd;font-size:11px;font-weight:750}
+.calendar-type-head small,.calendar-form-head small{color:#8a9aa5;font-size:11px;font-weight:750}
 .calendar-type-head h2,.calendar-form-head h2{margin:3px 0 0;color:#3d5e76;font-size:21px}
 .calendar-type-head>button,.calendar-form-head>div>button:last-child{flex:0 0 34px;width:34px;height:34px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#58758b;font-size:20px}
 .calendar-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;flex:none}
@@ -622,6 +622,7 @@
 .calendar-category-sheet>label{margin-bottom:12px}
 .quick-add-sheet[open]{inset:auto 50% calc(env(safe-area-inset-bottom)) auto!important;left:50%!important;right:auto!important;bottom:env(safe-area-inset-bottom)!important;transform:translateX(-50%)!important;margin:0!important;width:min(100%,520px)!important;max-height:min(78dvh,720px)!important;padding:32px 18px 22px!important;border-radius:25px 25px 0 0!important;animation:quick-sheet-rise .24s cubic-bezier(.22,1,.36,1) both}
 .quick-add-sheet .quick-add-header{padding:0 0 28px!important}
+.quick-add-header small{display:block;margin-bottom:4px;color:#8a9aa5;font-size:11px;font-weight:750}
 .quick-add-sheet.quick-add-choice-sheet[open]{position:fixed!important;top:auto!important;bottom:env(safe-area-inset-bottom)!important;height:fit-content!important;max-height:min(48dvh,420px)!important;min-height:0!important;overflow-y:auto!important}.quick-add-choice-sheet .unified-add-groups{flex:none!important}.quick-add-choice-sheet .quick-add-grid{grid-template-rows:minmax(82px,auto)!important;flex:none!important;overflow:visible!important}
 .calendar-type-picker[open]{position:fixed!important;top:auto!important;bottom:env(safe-area-inset-bottom)!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;margin:0!important;width:min(100%,520px)!important;max-height:min(78dvh,720px)!important;border-radius:25px 25px 0 0!important;animation:quick-sheet-rise .24s cubic-bezier(.22,1,.36,1) both}
 .calendar-type-picker[open]{height:auto!important;min-height:min(58dvh,580px)!important;max-height:min(90dvh,780px)!important;padding:28px 18px calc(22px + env(safe-area-inset-bottom))!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin}
