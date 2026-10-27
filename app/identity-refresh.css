@@ -461,13 +461,27 @@
 .calendar-form-body.wizard-body input,.calendar-form-body.wizard-body select,.calendar-form-body.wizard-body textarea{height:40px;margin-top:5px;border-radius:11px;font-size:12px}
 .calendar-form-body.wizard-body textarea{height:auto;min-height:58px;padding:9px 11px}
 .calendar-form-body .split-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.calendar-date-field,.calendar-alerts{min-width:0;margin:0;padding:0;border:0}
-.calendar-date-field legend,.calendar-alerts legend{margin-bottom:4px;color:var(--ink);font-size:12px;font-weight:750}
-.calendar-date-field>div{display:grid;grid-template-columns:65px 1fr 80px;gap:6px}
-.calendar-date-field input,.calendar-date-field select{height:40px;margin:0!important;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);padding:0 8px;font:inherit;font-size:12px;text-align:center}
-.calendar-alerts>div{display:flex;flex-wrap:wrap;gap:5px}
-.calendar-alerts label,.calendar-form-body.wizard-body label.calendar-inline-check{display:flex;align-items:center;gap:5px;width:max-content;padding:6px 8px;border-radius:9px;background:#f1f7fa;color:#526f81;font-size:10px}
-.calendar-alerts input,.calendar-form-body.wizard-body label.calendar-inline-check input{width:14px;height:14px;margin:0}
+.calendar-date-picker{min-width:0;margin:0;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.calendar-date-picker legend{padding:0 4px;color:var(--ink);font-size:12px;font-weight:750}
+.calendar-date-picker-head{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:6px;margin-bottom:8px;text-align:center;color:#496e85;font-size:12px}
+.calendar-date-picker-head button{height:30px;border:1px solid #dce9ef;border-radius:9px;background:#f4f9fb;color:#527891;font:inherit;font-size:19px;line-height:1}
+.calendar-date-picker-weekdays,.calendar-date-picker-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.calendar-date-picker-weekdays{margin-bottom:4px;color:#8098a8;font-size:10px;font-weight:750}
+.calendar-date-picker-weekdays span{padding:3px 0}
+.calendar-date-picker-days button,.calendar-date-picker-days>span{display:grid;place-items:center;min-width:0;height:32px;border:1px solid transparent;border-radius:9px;background:transparent;color:#496e85;font:inherit;font-size:11px}
+.calendar-date-picker-days button:hover{background:#eff7fa}
+.calendar-date-picker-days button.selected{border-color:#c6e3ef;background:#dff0f7;color:#3e6e88;font-weight:800}
+.calendar-reminder-select{display:grid;gap:4px;min-width:0;color:var(--ink);font-size:12px;font-weight:750}
+.calendar-reminder-select select{width:100%;height:40px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);padding:0 10px;font:inherit;font-size:12px}
+.task-date-choice{margin:0;padding:0;border:0}
+.task-date-choice legend{margin-bottom:5px;color:var(--ink);font-size:12px;font-weight:750}
+.task-date-choice>div{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:4px;border-radius:12px;background:#edf5f8}
+.task-date-choice button{min-height:38px;border:1px solid transparent;border-radius:9px;background:transparent;color:#7892a3;font:inherit;font-size:12px;font-weight:700}
+.task-date-choice button.selected{border-color:#c6e3ef;background:#fff;color:#496e85;box-shadow:0 2px 8px #31536d12}
+.quick-sheet{max-height:min(88dvh,780px);overflow:auto;overscroll-behavior:contain}
+.quick-sheet .calendar-date-picker{margin:8px 0}
+.calendar-form-body.wizard-body label.calendar-inline-check{display:flex;align-items:center;gap:5px;width:max-content;padding:6px 8px;border-radius:9px;background:#f1f7fa;color:#526f81;font-size:10px}
+.calendar-form-body.wizard-body label.calendar-inline-check input{width:14px;height:14px;margin:0}
 .calendar-record-sheet .wizard-actions{padding-top:9px}.calendar-record-sheet .wizard-actions .primary{min-height:44px;border-radius:13px;font-size:14px}
 .calendar-record-sheet .delete-activity{margin-top:8px}
 @media(max-width:390px){.calendar-type-card{min-height:104px;padding:8px}.calendar-type-card small{font-size:8px}.calendar-period{gap:3px}.calendar-period select{max-width:105px}.calendar-record-list>button{grid-template-columns:23px minmax(0,1fr) auto 10px;gap:6px}}
