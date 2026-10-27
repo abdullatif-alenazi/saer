@@ -363,7 +363,16 @@
 .calendar-period button{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--accent);font-size:20px}
 .calendar-period select,.calendar-period input{height:32px;min-width:0;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);padding:0 7px;font:inherit;font-size:11px}
 .calendar-period select{max-width:118px}.calendar-period input{width:72px;text-align:center}
-.calendar-period .calendar-today{width:auto;padding:0 9px;font-size:10px}
+.calendar-kind-switch{width:max-content;min-width:194px;margin:0 auto 2px;padding:4px;border:1px solid #deebf1;border-radius:14px;background:#f3f8fb;box-shadow:inset 0 1px 2px rgba(85,113,135,.035)}
+.calendar-kind-switch button{min-width:72px;padding:7px 15px;color:#839bab;transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.calendar-kind-switch button.selected{background:linear-gradient(135deg,#edf7fb,#e2f1f8);color:#52748a;box-shadow:0 2px 7px rgba(85,113,135,.09)}
+.calendar-kind-switch button.calendar-kind-swap{flex:0 0 30px;min-width:30px;width:30px;height:30px;display:grid;place-items:center;padding:0;border:1px solid #d9e9f0;border-radius:9px;background:#eaf5fa;color:#6b91a7;box-shadow:none}
+.calendar-kind-switch button.calendar-kind-swap:active{background:#dceef6;transform:scale(.94)}
+.calendar-kind-switch button:focus-visible,.calendar-period button:focus-visible,.calendar-period select:focus-visible,.calendar-period input:focus-visible{outline:2px solid #b8d8e6;outline-offset:1px}
+.calendar-period{position:relative;display:flex;justify-content:center;min-height:36px;overflow:visible}
+.calendar-period-controls{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}
+.calendar-period .calendar-today{position:absolute;left:0;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid #d6e8f0;border-radius:12px;background:#edf7fb;color:#5b8198;box-shadow:0 2px 7px rgba(85,113,135,.07);cursor:pointer;transition:background .18s ease,transform .18s ease}
+.calendar-period .calendar-today:active{background:#dceef6;transform:translateY(-50%) scale(.95)}
 .saer-calendar .month-calendar{padding:8px 9px 9px;border-radius:16px;background:rgba(255,255,255,.8);box-shadow:none}
 .saer-calendar .calendar-weekdays,.saer-calendar .calendar-days{gap:2px}
 .saer-calendar .calendar-weekdays{margin-bottom:3px}
