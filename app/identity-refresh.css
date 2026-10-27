@@ -378,11 +378,12 @@
 .saer-calendar .calendar-weekdays{margin-bottom:3px}
 .saer-calendar .calendar-weekdays b{padding:2px;color:var(--muted);font-size:10px}
 .saer-calendar .calendar-days>i{height:34px}
-.saer-calendar .calendar-days button{height:34px;border:1px solid transparent;border-radius:10px;font-size:12px}
-.saer-calendar .calendar-days button.today{background:#dceef7;color:#345d77}
-.saer-calendar .calendar-days button.selected-day{border-color:#b9dced;background:#c7e3f4;color:#4b718d;font-weight:850}
+.saer-calendar .calendar-days button{position:relative;justify-self:center;width:min(100%,34px);height:34px;min-height:0;padding:0;border:1px solid transparent;border-radius:50%;background:transparent;color:var(--ink);font-size:12px;display:grid;place-items:center}
+.saer-calendar .calendar-days button.today{border-color:#6eabc6;background:transparent;color:#345d77;font-weight:850}
+.saer-calendar .calendar-days button.selected-day{border-color:#557187;background:#557187;color:#fff;font-weight:850}
+.saer-calendar .calendar-days button.today.selected-day{outline:2px solid #a9cde3;outline-offset:2px}
 .section-screen:has(.saer-calendar) .section-head .section-add{background:#c7e3f4!important;border:1px solid #b9dced!important;color:#4b718d!important;box-shadow:0 7px 17px rgba(111,150,173,.12)!important}
-.saer-calendar .calendar-days button.has-appointment:not(.selected-day):not(.today){background:#edf7fb;color:#345d77}
+.saer-calendar .calendar-days button.has-appointment:not(.selected-day):not(.today){background:transparent;color:var(--ink)}
 .saer-calendar .calendar-days button>i{left:50%;bottom:2px;translate:-50% 0;min-width:4px;width:4px;height:4px;padding:0;border-radius:50%;background:#d38b53;box-shadow:none}
 .calendar-filters{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:1px 0}
 .calendar-filters::-webkit-scrollbar{display:none}
@@ -393,10 +394,11 @@
 .calendar-records h2{margin:0;color:#56768e;font-size:13px;font-weight:750}
 .calendar-records>header>span{min-width:22px;height:22px;display:grid;place-items:center;border-radius:99px;background:#e6f3f8;color:#4d829d;font-size:10px}
 .calendar-record-list{display:grid}
-.calendar-record-list>button{min-width:0;display:grid;grid-template-columns:25px minmax(0,1fr) auto 14px;align-items:center;gap:8px;padding:8px 3px;border:0;border-bottom:1px solid #dce8ee;background:transparent;color:var(--ink);text-align:right}
+.calendar-record-list>button{min-width:0;display:grid;grid-template-columns:25px minmax(0,1fr) auto 14px auto;align-items:center;gap:8px;padding:8px 3px;border:0;border-bottom:1px solid #dce8ee;background:transparent;color:var(--ink);text-align:right}
 .calendar-record-list>button>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700}
 .calendar-record-list time{color:#70899b;font-size:10px;white-space:nowrap}
-.calendar-record-list>button>span:last-child{color:#7995a8}
+.calendar-record-list>button>.record-row-chevron{color:#7995a8}
+.calendar-record-list>button>.record-date-distance{justify-self:start;color:#8298a7;font-size:9px;font-weight:650;white-space:nowrap}
 .record-type{width:23px;height:23px;display:grid;place-items:center;border-radius:8px;background:#e9f4f8;color:#4a829d;font-style:normal;font-size:13px}
 .record-occasion{background:#f8f0df;color:#a88650}.record-event{background:#f4e8ea;color:#ab6b78}.record-memory{background:#eee9f6;color:#78649c}
 .calendar-empty{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 2px;color:#8798a3;font-size:11px}
@@ -484,7 +486,7 @@
 .calendar-form-body.wizard-body label.calendar-inline-check input{width:14px;height:14px;margin:0}
 .calendar-record-sheet .wizard-actions{padding-top:9px}.calendar-record-sheet .wizard-actions .primary{min-height:44px;border-radius:13px;font-size:14px}
 .calendar-record-sheet .delete-activity{margin-top:8px}
-@media(max-width:390px){.calendar-type-card{min-height:104px;padding:8px}.calendar-type-card small{font-size:8px}.calendar-period{gap:3px}.calendar-period select{max-width:105px}.calendar-record-list>button{grid-template-columns:23px minmax(0,1fr) auto 10px;gap:6px}}
+@media(max-width:390px){.calendar-type-card{min-height:104px;padding:8px}.calendar-type-card small{font-size:8px}.calendar-period{gap:3px}.calendar-period select{max-width:105px}.calendar-record-list>button{grid-template-columns:23px minmax(0,1fr) auto 10px auto;gap:5px}.calendar-record-list>button>.record-date-distance{font-size:8px}}
 @media(max-height:680px){.calendar-type-picker[open]{max-height:94dvh;padding:12px}.calendar-type-card{min-height:88px}.calendar-record-sheet[open]{max-height:94dvh}.calendar-form-head{margin-bottom:8px}.calendar-form-head h2{font-size:18px}.calendar-form-body.wizard-body{gap:6px}.calendar-form-body.wizard-body input,.calendar-form-body.wizard-body select{height:36px}}
 .now-filter-results{margin-top:0;opacity:0;transform:translateY(5px);transition:opacity .18s ease,transform .18s ease}
 .now-filter-results.is-visible{opacity:1;transform:translateY(0)}
