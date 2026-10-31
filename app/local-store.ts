@@ -26,7 +26,7 @@ export type PlannedActivity={
  id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;createdAt?:string;updatedAt?:string;
  nature?:TrackingNature;schedule:Schedule;
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
- activityKind?:string;trackingMode?:"time"|"distance";
+ activityKind?:string;trackingMode?:"time"|"distance";workoutStartMode?:"manual"|"automatic";
  exercises?:WorkoutExercise[];goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
  parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;
 };
