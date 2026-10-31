@@ -359,7 +359,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           {exercise.measurement === "repetitions" && targetReps === null && <p className="workout-plan-notice">لم يحدد هدف العدّات في الخطة. سجّل ما أنجزته أثناء الراحة.</p>}
           {exercise.measurement === "duration" && targetDuration === null && <p className="workout-plan-notice">لم تحدد مدة لهذه الجولة. سيعمل المؤقت تصاعديًا حتى تنهيها.</p>}
           {!sets && <p className="workout-plan-notice">لم يحدد عدد الجولات لهذا التمرين في الخطة. عدّل الخطة قبل البدء.</p>}
-          <details className="workout-session-details"><summary>تفاصيل الجلسة <span>{ar(exercises.length)} تمارين · {ar(totalRounds)} جولات · {ar(totalBreaks)} راحات</span></summary><div>{exercises.map(item => <article key={item.id}><b>{item.name}</b><span>{ar(item.sets)} جولات × {item.measurement === "duration" ? `${ar(item.durationSeconds ?? 0)} ثانية` : `${ar(item.reps ?? 0)} تكرار`}</span><small>راحة {clock(Math.max(0, item.restSeconds))}</small></article>)}</div></details>
+          <details className="workout-session-details" open><summary>تفاصيل الجلسة <span>{ar(exercises.length)} تمارين · {ar(totalRounds)} جولات · {ar(totalBreaks)} راحات</span></summary><div>{exercises.map(item => <article key={item.id}><b>{item.name}</b><span>{ar(item.sets)} جولات × {item.measurement === "duration" ? `${ar(item.durationSeconds ?? 0)} ثانية` : `${ar(item.reps ?? 0)} تكرار`}</span><small>راحة {clock(Math.max(0, item.restSeconds))}</small></article>)}</div></details>
         </>}
       </section>
 
