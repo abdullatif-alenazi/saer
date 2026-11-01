@@ -896,14 +896,15 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-entry-duration{font-variant-numeric:tabular-nums}
 .activity-header-control{display:flex;flex-direction:column;align-items:center;gap:1px;max-width:100%;padding:0;border:0;background:transparent;color:inherit;cursor:pointer}
 .activity-header-control .activity-shared-title{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.activity-header-control>small{color:#879db1;font-size:9px;font-weight:700;line-height:1.2}
+.activity-header-control>small{color:#879db1;font-size:9px;font-weight:700;line-height:1.2;opacity:0;clip-path:inset(0 100% 0 0);animation:activity-header-hint .5s cubic-bezier(.22,1,.36,1) .64s forwards}
+@keyframes activity-header-hint{from{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(-3px)}to{opacity:1;clip-path:inset(0);transform:translateY(0)}}
 .activity-page.activity-shared-container,.home-day-entry.activity-shared-container{view-transition-name:activity-container}
 .activity-shared-title{view-transition-name:activity-title}
 ::view-transition-group(root){animation-duration:.48s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
 ::view-transition-group(activity-container){animation-duration:.62s;animation-timing-function:cubic-bezier(.2,.85,.25,1)}
 ::view-transition-group(activity-title){animation-duration:.56s;animation-timing-function:cubic-bezier(.2,.85,.25,1)}
 ::view-transition-old(activity-container),::view-transition-new(activity-container),::view-transition-old(activity-title),::view-transition-new(activity-title){animation-duration:.28s}
-@media(prefers-reduced-motion:reduce){::view-transition-group(root),::view-transition-group(activity-container),::view-transition-group(activity-title){animation-duration:.01ms!important}.activity-header-control>small{display:none}}
+@media(prefers-reduced-motion:reduce){::view-transition-group(root),::view-transition-group(activity-container),::view-transition-group(activity-title){animation-duration:.01ms!important}.activity-header-control>small{animation:none!important;opacity:1;clip-path:none;transform:none}}
 .home-entry-main>b.has-progress-ring{display:flex!important;align-items:center;gap:7px;min-width:0;overflow:visible!important;text-overflow:clip!important;white-space:normal!important}
 .home-entry-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .home-progress-ring{position:relative;display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;color:#438b62;direction:ltr}
