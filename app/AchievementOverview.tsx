@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BookOpen, BookText, Brain, Calendar, CalendarDays, CalendarRange, Clock3, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
 import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
+import { PRAYER_NAMES, PRAYER_STATUS_OPTIONS, prayerRecordFor } from "./PrayerTracker";
 
 type Range = "day" | "week" | "month" | "year";
 type CalendarKind = "gregory" | "islamic";
@@ -68,6 +69,7 @@ const progressFor = (activity: PlannedActivity, progress?: UnitProgress) => acti
   : activity.quantity && activity.quantity > 0 ? activity.quantity
     : activity.expectedMinutes > 0 ? activity.expectedMinutes : 1;
 const unitFor = (activity: PlannedActivity) => activity.unitTracking ? activity.unit ?? "ذكر"
+  : activity.template === "صلاة" ? "صلوات"
   : activity.quantity && activity.quantity > 0 ? activity.unit ?? "وحدة"
     : activity.expectedMinutes > 0 ? "دقيقة" : activity.goalDefinition?.unit ?? "مرة";
 const validActivityRecords = (activity: PlannedActivity, records: ExecutionRecord[]) => records.filter(record => (record.activityId === activity.id || (!record.activityId && record.activity === activity.name)) && record.status !== "missed");
@@ -101,6 +103,20 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const todayKey = keyOf(new Date()), today = dateFromKey(todayKey);
   const firstDay = 6;
   const selectedActivity = plan.find(activity => activity.id === activityId) ?? plan[0];
+  const prayerActivities = plan.filter(activity => activity.template === "صلاة");
+  const ordinaryPlan = plan.filter(activity => activity.template !== "صلاة");
+  const prayerStateCounts = (activity: PlannedActivity, dates: Date[]) => {
+    const counts = Object.fromEntries(PRAYER_STATUS_OPTIONS.map(item => [item.id, 0])) as Record<(typeof PRAYER_STATUS_OPTIONS)[number]["id"], number>;
+    let registered = 0;
+    for (const date of dates) {
+      const key = keyOf(date);
+      for (const name of PRAYER_NAMES) {
+        const record = prayerRecordFor(records, activity.id, key, name);
+        if (record?.prayerStatus) { counts[record.prayerStatus]++; registered++; }
+      }
+    }
+    return { counts, registered };
+  };
 
   useEffect(() => {
     if (!plan.some(activity => activity.id === activityId)) setActivityId(plan[0]?.id ?? "");
@@ -148,6 +164,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const activityRecords = (activity: PlannedActivity) => validActivityRecords(activity, records);
   const dayDone = (activity: PlannedActivity, date: Date) => {
     const key = keyOf(date), relevant = activityRecords(activity).filter(record => recordDate(record) === key);
+    if (activity.template === "صلاة") return new Set(relevant.filter(record => record.prayerName && record.prayerStatus).map(record => record.prayerName)).size;
     if (activity.unitTracking) {
       const progress = activityProgress(activity).find(item => item.date === key);
       const tracked = progress ? activity.unitTracking.periods.reduce((sum, period) => sum + Math.max(counterValue(progress, period.id), (progress.completedUnitsByPeriod[period.id]?.length ?? 0) * period.unitValue), 0) : 0;
@@ -160,6 +177,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const startKey = (activity: PlannedActivity) => activity.createdAt ? keyOf(new Date(activity.createdAt)) : null;
   const targetForDay = (activity: PlannedActivity, date: Date) => {
     const key = keyOf(date), progress = activityProgress(activity).find(item => item.date === key);
+    if (activity.template === "صلاة") return PRAYER_NAMES.length;
     return progressFor(activity, progress);
   };
   const isPastOrToday = (date: Date) => keyOf(date) <= todayKey;
@@ -190,11 +208,11 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     return done >= target ? "complete" : "partial";
   };
   const metricFor = (activity: PlannedActivity, dates: Date[]) => metric(activity, dates);
-  const weekMetrics = range === "week" ? plan.map(activity => ({ activity, metric: metricFor(activity, weekDates) })) : [];
+  const weekMetrics = range === "week" ? ordinaryPlan.map(activity => ({ activity, metric: metricFor(activity, weekDates) })) : [];
   const weeklyDue = weekMetrics.filter(item => item.metric.target > 0);
   const weeklyAchieved = weeklyDue.filter(item => item.metric.done >= item.metric.target).length;
   const weeklyAverage = weeklyDue.length ? Math.round(weeklyDue.reduce((sum, item) => sum + Math.min(100, item.metric.done / item.metric.target * 100), 0) / weeklyDue.length) : null;
-  const dailyDue = range === "day" ? plan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay))) : [];
+  const dailyDue = range === "day" ? ordinaryPlan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay))) : [];
   const dailyAchieved = range === "day" ? dailyDue.filter(activity => statusForDay(activity, selectedDay) === "complete").length : 0;
 
   const moveCalendar = (amount: number, period: "month" | "year") => {
@@ -234,6 +252,9 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const comparison = monthlyMetric?.percent != null && previousMonthMetric?.percent != null ? monthlyMetric.percent - previousMonthMetric.percent : null;
 
   const annualMetrics = range === "year" && selectedActivity ? monthGroups.map(group => ({ ...group, metric: metricFor(selectedActivity, group.dates) })) : [];
+  const monthlyPrayerStats = range === "month" && selectedActivity?.template === "صلاة" ? prayerStateCounts(selectedActivity, monthDates) : null;
+  const annualPrayerStats = range === "year" && selectedActivity?.template === "صلاة" ? prayerStateCounts(selectedActivity, yearDates) : null;
+  const annualPrayerMonths = range === "year" && selectedActivity?.template === "صلاة" ? monthGroups.map(group => ({ ...group, ...prayerStateCounts(selectedActivity, group.dates) })) : [];
   const annualMetric = range === "year" && selectedActivity ? metricFor(selectedActivity, yearDates) : null;
   const averageMonthly = annualMetrics.filter(item => item.metric.target > 0);
   const bestMonth = averageMonthly.reduce<(typeof averageMonthly)[number] | null>((best, item) => !best || (item.metric.percent ?? 0) > (best.metric.percent ?? 0) ? item : best, null);
@@ -292,11 +313,12 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
         {weekOffset !== 0 && <button className="achievement-current-period" type="button" aria-label="العودة للأسبوع الحالي" onClick={() => setWeekOffset(0)}><CurrentPeriodIcon/></button>}
         <button type="button" aria-label="الأسبوع التالي" onClick={() => setWeekOffset(value => value + 1)}>←</button>
       </div>
-      <div className="achievement-table-clip" role="region" aria-label="جدول الإنجازات الأسبوعية" tabIndex={0}>
+      {prayerActivities.map((activity, activityIndex) => {const stats=prayerStateCounts(activity,weekDates);return <section className="prayer-achievement-week" key={activity.id} aria-label={`حالات الصلوات الأسبوعية: ${activity.name}`}><h2>{activity.name}</h2><div className="achievement-table-clip" role="region" aria-label="جدول حالات الصلوات الأسبوعية" tabIndex={0}><table className="achievement-table prayer-week-table"><thead><tr><th className="activity-sticky">الصلاة</th>{weekDates.map((date,index)=><th key={keyOf(date)} className={keyOf(date)===todayKey?"today":""}><span>{compactWeekdays[index]}</span><small>{ar(calendarParts(date,calendar).day)}</small></th>)}</tr></thead><tbody>{PRAYER_NAMES.map((name,rowIndex)=><tr key={name} className={`pastel-${(activityIndex+rowIndex)%6}`}><th scope="row" className="activity-sticky">{name}</th>{weekDates.map(date=>{const state=prayerRecordFor(records,activity.id,keyOf(date),name),label=PRAYER_STATUS_OPTIONS.find(item=>item.id===state?.prayerStatus)?.label;return <td key={keyOf(date)} className={`prayer-week-cell ${keyOf(date)===todayKey?"today":""}`}><span className={state?.prayerStatus?`prayer-state-${state.prayerStatus}`:""}>{label??(keyOf(date)>todayKey?"—":"·")}</span></td>})}</tr>)}</tbody></table></div><section className="prayer-week-stats"><b>{ar(stats.registered)} مسجلة</b>{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id}>{item.label} <strong>{ar(stats.counts[item.id])}</strong><i>{stats.registered?`${ar(Math.round(stats.counts[item.id]/stats.registered*100))}٪`:"—"}</i></span>)}</section></section>})}
+      {ordinaryPlan.length > 0 && <div className="achievement-table-clip" role="region" aria-label="جدول الإنجازات الأسبوعية" tabIndex={0}>
         <table className="achievement-table">
           <colgroup><col className="activity-col"/>{weekDates.map(date => <col key={keyOf(date)} className="day-col"/>)}<col className="total-col"/><col className="percent-col"/></colgroup>
           <thead><tr><th className="activity-sticky">النشاط</th>{weekDates.map((date, index) => <th key={keyOf(date)} className={keyOf(date) === todayKey ? "today" : ""} aria-label={weekdays[date.getUTCDay()]}><span>{compactWeekdays[index]}</span><small>{ar(calendarParts(date, calendar).day)}</small></th>)}<th>المجموع</th><th>النسبة</th></tr></thead>
-          <tbody>{plan.map((activity, activityIndex) => {
+          <tbody>{ordinaryPlan.map((activity, activityIndex) => {
             const Icon = activityIcon(activity), summary = metricFor(activity, weekDates);
             return <tr key={activity.id} className={`achievement-row pastel-${activityIndex % 6}`}>
               <th scope="row" className="activity-sticky"><span className="activity-sticky-content"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><b>{activity.name || "نشاط بلا اسم"}</b></span></th>
@@ -309,7 +331,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
             </tr>;
           })}</tbody>
         </table>
-      </div>
+      </div>}
       {plan.length === 0 ? <EmptyState/> : <section className="achievement-week-summary" aria-label="ملخص الأسبوع">
         <div><small>أنشطة مستحقة</small><b>{ar(weeklyDue.length)}</b></div>
         <div><small>حققت المستهدف</small><b>{ar(weeklyAchieved)}<span> / {ar(weeklyDue.length)}</span></b></div>
@@ -327,18 +349,28 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
             {weekDayLabels.map(label => <b className="weekday-label" key={label}>{label}</b>)}
             {Array.from({ length: monthOffset }, (_, index) => <i className="calendar-blank" key={`blank-${index}`} aria-hidden="true"/>)}
             {monthDates.map(date => {
+              if (selectedActivity.template === "صلاة") {
+                const states = PRAYER_NAMES.map(name => prayerRecordFor(records, selectedActivity.id, keyOf(date), name)?.prayerStatus).filter(Boolean);
+                const valid = keyOf(date) <= todayKey;
+                return <button type="button" key={keyOf(date)} className={`achievement-calendar-day ${valid && states.length === 5 ? "complete" : valid && states.length ? "partial" : valid ? "missed" : "future"} ${keyOf(date) === todayKey ? "today" : ""}`} onClick={() => setDayDetail({ activity: selectedActivity, date })} aria-label={`${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}: ${ar(states.length)} صلوات مسجلة`}><b>{ar(calendarParts(date, calendar).day)}</b>{valid && <small>{states.length ? `${ar(states.length)} / ٥` : "—"}</small>}{states.length > 0 && <i style={{ width: `${states.length / 5 * 100}%` }}/>}</button>;
+              }
               const status = statusForDay(selectedActivity, date), done = dayDone(selectedActivity, date), target = targetForDay(selectedActivity, date);
               return <button type="button" key={keyOf(date)} className={`achievement-calendar-day ${status} ${keyOf(date) === todayKey ? "today" : ""}`} onClick={() => setDayDetail({ activity: selectedActivity, date })} aria-label={`${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}: ${statusLabel(status)}`}><b>{ar(calendarParts(date, calendar).day)}</b>{done > 0 && <small>{ar(done, 1)}</small>}{target > 0 && <i style={{ width: `${Math.min(100, done / target * 100)}%` }}/>}</button>;
             })}
           </div>
         </section>
         <section className="achievement-analysis" aria-label="تحليل الشهر">
+          {selectedActivity.template === "صلاة" && monthlyPrayerStats ? <>
+            <AnalysisCard title="الصلوات المسجلة" value={`${ar(monthlyPrayerStats.registered)} صلاة`} foot="من إجمالي الصلوات" tone="blue"/>
+            {PRAYER_STATUS_OPTIONS.map((item,index)=><AnalysisCard key={item.id} title={item.label} value={`${ar(monthlyPrayerStats.counts[item.id])} صلاة`} foot={monthlyPrayerStats.registered ? `${ar(Math.round(monthlyPrayerStats.counts[item.id]/monthlyPrayerStats.registered*100))}٪ من المسجل` : "لا توجد سجلات"} tone={(["green","green","gold","orange","pink","purple"] as const)[index]}/>)}
+          </> : <>
           <AnalysisCard title="الإنجاز الشهري" value={monthlyMetric?.target ? `${ar(monthlyMetric.done, 1)} / ${ar(monthlyMetric.target, 1)} ${monthlyMetric.unit}` : "لا يوجد مستهدف"} foot={monthlyMetric?.percent == null ? "—" : `${ar(monthlyMetric.percent)}٪`} tone="blue"/>
           <AnalysisCard title="أيام الالتزام" value={`${ar(monthAchievedDays)} / ${ar(monthDaysDue.length)} يوم`} foot="أيام مستحقة" tone="green"/>
           <AnalysisCard title="متوسط الإنجاز" value={dailyAverages.length ? `${ar(dailyAverages.reduce((sum, value) => sum + value, 0) / dailyAverages.length)}٪` : "—"} foot="لكل يوم مستحق" tone="purple"/>
           <AnalysisCard title="أفضل يوم" value={bestDate ? formatDate(bestDate, calendar, { weekday: "short", day: "numeric", month: "short" }) : "—"} foot={bestDate ? `${ar(dayDone(selectedActivity, bestDate), 1)} ${unitFor(selectedActivity)}` : "لا توجد إنجازات"} tone="orange"/>
           <AnalysisCard title="الاستمرارية" value={`${ar(streak)} يوم`} foot="أطول سلسلة مكتملة" tone="pink"/>
           <AnalysisCard title="مقارنة بالشهر السابق" value={comparison == null ? "—" : `${comparison > 0 ? "+" : ""}${ar(comparison)} نقطة`} foot={comparison == null ? "لا تتوفر مقارنة" : comparison > 0 ? "تحسن" : comparison < 0 ? "تراجع" : "دون تغيير"} tone="gold"/>
+          </>}
         </section>
       </>}
     </>}
@@ -347,12 +379,12 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       <div className="achievement-controls"><label htmlFor="achievement-year-activity">النشاط</label><select id="achievement-year-activity" value={selectedActivity?.id ?? ""} onChange={event => setActivityId(event.target.value)}>{plan.map(activity => <option key={activity.id} value={activity.id}>{activity.name || "نشاط بلا اسم"}</option>)}</select></div>
       <CalendarToolbar title={yearTitle} calendarMode={calendarMode} calendar={calendar} onCalendar={setCalendar} onPrevious={() => moveCalendar(-1, "year")} onNext={() => moveCalendar(1, "year")} />
       {selectedActivity ? <>
-        <div className="achievement-month-cards">{annualMetrics.map((item, index) => <button type="button" className={`achievement-annual-card pastel-${index % 6}`} key={item.month} onClick={() => goMonth(item.dates)}><header><b>{item.label}</b><strong>{item.metric.percent == null ? "—" : `${ar(item.metric.percent)}٪`}</strong></header><span>{ar(item.metric.done, 1)} / {ar(item.metric.target, 1)} {item.metric.unit}</span><i><b style={{ width: `${item.metric.percent ?? 0}%` }}/></i></button>)}</div>
-        <section className="achievement-year-summary" aria-label="ملخص السنة"><header><b>الإجمالي السنوي</b><strong>{annualMetric?.percent == null ? "—" : `${ar(annualMetric.percent)}٪`}</strong></header><div className="year-summary-values"><span><small>المنجز</small><b>{ar(annualMetric?.done ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>المستهدف</small><b>{ar(annualMetric?.target ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>متوسط شهري</small><b>{averageMonthly.length ? `${ar(averageMonthly.reduce((sum, item) => sum + item.metric.done, 0) / averageMonthly.length, 1)} ${unitFor(selectedActivity)}` : "—"}</b></span><span><small>أفضل شهر</small><b>{bestMonth?.label ?? "—"}</b></span></div><i><b style={{ width: `${annualMetric?.percent ?? 0}%` }}/></i></section>
+        <div className="achievement-month-cards">{selectedActivity.template === "صلاة" ? annualPrayerMonths.map((item,index)=>{const early=item.counts["very-early"]+item.counts.early,percent=item.registered?Math.round(early/item.registered*100):null;return <button type="button" className={`achievement-annual-card pastel-${index%6}`} key={item.month} onClick={()=>goMonth(item.dates)}><header><b>{item.label}</b><strong>{percent==null?"—":`${ar(percent)}٪`}</strong></header><span>{ar(item.registered)} صلاة مسجلة</span><i><b style={{width:`${percent??0}%`}}/></i></button>}) : annualMetrics.map((item, index) => <button type="button" className={`achievement-annual-card pastel-${index % 6}`} key={item.month} onClick={() => goMonth(item.dates)}><header><b>{item.label}</b><strong>{item.metric.percent == null ? "—" : `${ar(item.metric.percent)}٪`}</strong></header><span>{ar(item.metric.done, 1)} / {ar(item.metric.target, 1)} {item.metric.unit}</span><i><b style={{ width: `${item.metric.percent ?? 0}%` }}/></i></button>)}</div>
+        {selectedActivity.template === "صلاة" && annualPrayerStats ? <section className="achievement-year-summary"><header><b>ملخص الصلوات السنوي</b><strong>{annualPrayerStats.registered ? `${ar(annualPrayerStats.registered)} صلاة` : "لا توجد سجلات"}</strong></header><div className="prayer-year-stats">{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id}><small>{item.label}</small><b>{ar(annualPrayerStats.counts[item.id])} <i>{annualPrayerStats.registered?`${ar(Math.round(annualPrayerStats.counts[item.id]/annualPrayerStats.registered*100))}٪`:"—"}</i></b></span>)}</div></section> : <section className="achievement-year-summary" aria-label="ملخص السنة"><header><b>الإجمالي السنوي</b><strong>{annualMetric?.percent == null ? "—" : `${ar(annualMetric.percent)}٪`}</strong></header><div className="year-summary-values"><span><small>المنجز</small><b>{ar(annualMetric?.done ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>المستهدف</small><b>{ar(annualMetric?.target ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>متوسط شهري</small><b>{averageMonthly.length ? `${ar(averageMonthly.reduce((sum, item) => sum + item.metric.done, 0) / averageMonthly.length, 1)} ${unitFor(selectedActivity)}` : "—"}</b></span><span><small>أفضل شهر</small><b>{bestMonth?.label ?? "—"}</b></span></div><i><b style={{ width: `${annualMetric?.percent ?? 0}%` }}/></i></section>}
       </> : <EmptyState/>}
     </>}
 
-    {dayDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setDayDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="achievement-day-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setDayDetail(null)}>×</button><small>{formatDate(dayDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="achievement-day-title">{dayDetail.activity.name}</h2>{(() => { const status = statusForDay(dayDetail.activity, dayDetail.date), done = dayDone(dayDetail.activity, dayDetail.date), target = targetForDay(dayDetail.activity, dayDetail.date), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : null; return <><p className="day-status">{statusLabel(status)}</p><div className="day-detail-values"><span><small>المستهدف اليومي</small><b>{target > 0 ? `${ar(target, 1)} ${unitFor(dayDetail.activity)}` : "—"}</b></span><span><small>المنجز الفعلي</small><b>{keyOf(dayDetail.date) > todayKey ? "—" : `${ar(done, 1)} ${unitFor(dayDetail.activity)}`}</b></span><span><small>نسبة الإنجاز</small><b>{percent == null || keyOf(dayDetail.date) > todayKey ? "—" : `${ar(percent)}٪`}</b></span></div></>; })()}</section></div>}
+    {dayDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setDayDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="achievement-day-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setDayDetail(null)}>×</button><small>{formatDate(dayDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="achievement-day-title">{dayDetail.activity.name}</h2>{dayDetail.activity.template === "صلاة" ? <div className="prayer-day-detail">{PRAYER_NAMES.map(name=>{const record=prayerRecordFor(records,dayDetail.activity.id,keyOf(dayDetail.date),name),status=PRAYER_STATUS_OPTIONS.find(item=>item.id===record?.prayerStatus);return <div key={name}><b>{name}</b><span className={status?`prayer-state-${status.id}`:""}>{status?.label??"لم تُسجل"}</span></div>})}</div> : (() => { const status = statusForDay(dayDetail.activity, dayDetail.date), done = dayDone(dayDetail.activity, dayDetail.date), target = targetForDay(dayDetail.activity, dayDetail.date), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : null; return <><p className="day-status">{statusLabel(status)}</p><div className="day-detail-values"><span><small>المستهدف اليومي</small><b>{target > 0 ? `${ar(target, 1)} ${unitFor(dayDetail.activity)}` : "—"}</b></span><span><small>المنجز الفعلي</small><b>{keyOf(dayDetail.date) > todayKey ? "—" : `${ar(done, 1)} ${unitFor(dayDetail.activity)}`}</b></span><span><small>نسبة الإنجاز</small><b>{percent == null || keyOf(dayDetail.date) > todayKey ? "—" : `${ar(percent)}٪`}</b></span></div></>; })()}</section></div>}
   </section>;
 }
 
