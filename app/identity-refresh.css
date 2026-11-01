@@ -840,6 +840,53 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 @media(max-width:390px){.home-day-screen{gap:8px;padding-inline:10px}.home-day-screen .home-week-slider{min-height:63px}.home-day-screen .home-week-days .week-strip{gap:2px!important;padding:5px!important}.home-day-screen .home-week-days .week-strip button{height:53px!important;min-height:53px!important}.home-group-progress{max-width:90px;overflow:hidden;text-overflow:ellipsis}.home-station-group-head{gap:6px;padding-inline:6px}.home-station-entries{padding-inline:6px}.home-day-entry{gap:6px;padding-inline:6px}}
 @media(prefers-reduced-motion:reduce){.home-station-group,.home-station-entries{transition:none!important;animation:none!important}.home-day-screen .home-week-days .week-strip{animation:none!important}}
 
+/* محطات اليوم: توقيت دائري، صفوف نشاط خفيفة، وملخص وقت بدل الشريط الزمني */
+.home-station-group{background:#fff!important;border-color:#e2ebf0!important;box-shadow:none!important}
+.home-station-group.is-current{--station-surface:#f0f8fb!important;--station-header:#e2f1f7!important;--station-header-ink:#476c84!important;background:#f0f8fb!important;border-color:#bddbe7!important;box-shadow:0 3px 12px rgba(68,112,137,.07)!important}
+.home-station-group.period-4{--station-surface:#fff!important;--station-header:#fff!important;--station-header-ink:#476c84!important;--station-ink:#667f9e!important;background:#fff!important}
+.home-station-group.period-4.is-current{--station-surface:#f0f8fb!important;--station-header:#e2f1f7!important;background:#f0f8fb!important}
+.home-station-group-head{display:flex!important;align-items:center;justify-content:space-between;gap:8px;min-height:68px;padding:6px 9px!important;border-radius:14px!important;background:#fff!important;color:#476b82!important;cursor:default!important}
+.home-station-group.is-current>.home-station-group-head{background:#e2f1f7!important}
+.home-station-toggle{display:flex;align-items:center;gap:9px;flex:1;min-width:0;min-height:54px;padding:4px 3px;border:0;background:transparent;color:#476b82;text-align:right;cursor:pointer}
+.home-station-toggle>.home-group-icon{width:30px;height:30px;background:color-mix(in srgb,var(--station-ink,#7298ac) 12%,#fff)!important;color:var(--station-ink,#7298ac)!important}
+.home-station-toggle>.home-group-icon svg{width:18px;height:18px}
+.home-station-toggle>.home-group-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 7px;min-width:0;width:auto;text-align:right}
+.home-station-toggle .home-group-name>b{font-size:14px;color:#476b82!important}
+.home-group-progress{margin:0!important;color:#8499a7!important;font-size:9px!important;white-space:nowrap}
+.home-station-toggle>svg{width:14px;height:14px;flex:none;color:#8299a8}
+.home-station-clock{position:relative;display:grid;place-items:center;flex:0 0 56px;width:56px;height:56px;padding:0;border:0;border-radius:50%;background:transparent;color:#587b91;cursor:pointer}
+.home-station-clock>svg{position:absolute;inset:0;width:56px;height:56px;transform:rotate(-90deg)}
+.home-station-clock circle{fill:none;stroke-width:3}
+.home-station-clock .station-clock-track{stroke:#e3edf1}
+.home-station-clock .station-clock-progress{stroke:var(--station-ink,#84b8ce);stroke-linecap:round;stroke-dasharray:144.5;transition:stroke-dashoffset .7s linear}
+.home-station-clock>span{position:relative;z-index:1;max-width:48px;color:#587b91;font-size:8px;font-weight:800;line-height:1.15;text-align:center;direction:rtl}
+.home-station-clock.is-past .station-clock-progress{stroke:#cbd7dd;stroke-dashoffset:0!important}
+.home-station-clock.is-next .station-clock-progress{stroke:#e2edf1;stroke-dashoffset:0!important}
+.home-station-clock.is-live{color:var(--station-ink,#587b91)}
+.home-station-time-details{display:flex;justify-content:space-around;gap:8px;margin:0 9px 8px;padding:9px 7px;border:1px solid #e0ebf0;border-radius:12px;background:rgba(255,255,255,.88)}
+.home-station-time-details>span{display:grid;gap:3px;text-align:center}.home-station-time-details small{color:#8499a7;font-size:9px}.home-station-time-details b{color:#4d7188;font-size:11px}
+.home-station-content{gap:0!important;padding:0 10px 10px!important}
+.home-station-entries{gap:0!important;padding:0 3px!important}
+.home-station-entries.has-entries::before,.home-station-content .home-day-entry::after{display:none!important;content:none!important}
+.home-station-content .home-day-entry{min-height:48px!important;gap:9px!important;padding:5px 2px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--station-ink,#7298ac) 15%,transparent)!important;border-radius:0!important;clip-path:none!important;overflow:visible!important;background:transparent!important;box-shadow:none!important}
+.home-station-content .home-day-entry:last-child{border-bottom:0!important}
+.home-station-content .home-entry-icon,.home-station-content .home-entry-check{width:29px;height:29px;transform:none!important;background:color-mix(in srgb,var(--station-ink,#7298ac) 11%,#fff)!important;color:var(--station-ink,#7298ac)!important}
+.home-entry-main{gap:2px!important}.home-entry-main>b{font-size:12px!important;color:#476b82!important}.home-entry-main>small{font-size:9px!important;color:#8398a6!important}
+.home-entry-target{min-width:0!important;color:#607f93!important;font-size:10px!important;font-weight:650!important;direction:rtl!important}
+.home-entry-duration{min-width:35px!important;margin-inline-start:2px;color:#718b9b!important;font-size:10px!important;font-weight:750!important;text-align:left!important}
+.home-station-group.period-4 .home-station-content .home-day-entry.entry-activity .home-entry-main,.home-station-group.period-4 .home-station-content .home-day-entry.entry-activity .home-entry-target,.home-station-group.period-4 .home-station-content .home-day-entry.entry-activity .home-entry-state{color:#476b82!important}
+.home-station-time-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:7px;padding-top:8px;border-top:1px solid #e2ebf0;text-align:center}
+.home-station-time-summary>div{display:grid;align-content:start;gap:4px;min-width:0}
+.home-station-time-summary small{color:#879ba8;font-size:8px;font-weight:650;line-height:1.3}
+.home-station-time-summary b{color:#59788c;font-size:11px;font-weight:850;line-height:1.25;overflow-wrap:anywhere}
+.home-station-time-summary.is-enough>div:last-of-type b{color:#478463}
+.home-station-time-summary.is-tight>div:last-of-type b{color:#b7783e}
+.home-station-time-summary.is-insufficient>div:last-of-type b{color:#b65560}
+.home-station-time-summary.is-partial>div:last-of-type b{color:#7e94a2}
+.home-station-time-summary.is-historical>div:last-of-type b{color:#7e94a2}
+.home-station-time-summary>p{grid-column:1/-1;margin:1px 0 0;color:#879ba8;font-size:8px;text-align:right}
+@media(max-width:390px){.home-station-group-head{gap:5px;padding-inline:7px!important}.home-station-toggle{gap:6px}.home-station-toggle .home-group-name>b{font-size:13px}.home-station-clock,.home-station-clock>svg{width:52px;height:52px}.home-station-clock{flex-basis:52px}.home-station-content{padding-inline:7px!important}.home-entry-target{font-size:9px!important}.home-station-time-summary{gap:2px}.home-station-time-summary small{font-size:7px}.home-station-time-summary b{font-size:10px}}
+
 /* تأثيرات عداد الذكر: الرقم وحده يتحرك، ونص «تم إنجاز» يبقى ثابتًا. */
 .gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback{transform-box:fill-box!important;transform-origin:center!important}
 .gauge-ring-value.number-feedback.add,.gauge-dial-value.number-feedback.add{animation:dhikr-number-up .76s cubic-bezier(.22,1,.36,1) both!important}
