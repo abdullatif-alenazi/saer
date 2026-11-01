@@ -886,11 +886,8 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-time-summary.is-historical>div:last-of-type b{color:#7e94a2}
 .home-station-time-summary>p{grid-column:1/-1;margin:1px 0 0;color:#879ba8;font-size:8px;text-align:right}
 @media(max-width:390px){.home-station-group-head{gap:5px;padding-inline:7px!important}.home-station-toggle{gap:6px}.home-station-toggle .home-group-name>b{font-size:13px}.home-station-clock,.home-station-clock>svg{width:52px;height:52px}.home-station-clock{flex-basis:52px}.home-station-content{padding-inline:7px!important}.home-entry-target{font-size:9px!important}.home-station-time-summary{gap:2px}.home-station-time-summary small{font-size:7px}.home-station-time-summary b{font-size:10px}}
-/* Keep the station time readable without a circular badge; activity icons retain their round markers. */
-.home-station-clock{flex-basis:auto!important;width:auto!important;height:auto!important;min-width:0;padding:5px 2px!important;border-radius:0!important;background:transparent!important}
-.home-station-clock>svg{display:none!important}
-.home-station-clock>span{max-width:none!important;font-size:10px!important;white-space:nowrap}
-.home-station-content .home-entry-icon{border-radius:50%!important}
+/* Remove the filled badge behind station icons; keep activity icon markers and the station time ring. */
+.home-station-toggle>.home-group-icon{background:transparent!important}
 
 /* تأثيرات عداد الذكر: الرقم وحده يتحرك، ونص «تم إنجاز» يبقى ثابتًا. */
 .gauge-ring-value.number-feedback,.gauge-dial-value.number-feedback{transform-box:fill-box!important;transform-origin:center!important}
