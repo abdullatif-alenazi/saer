@@ -588,6 +588,35 @@
 .my-activities-empty b{color:#56758b;font-size:16px}
 .my-activities-empty span{max-width:260px;font-size:11px;line-height:1.7}
 .my-activities-empty>button{margin-top:4px}
+.my-activities-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px}
+.my-activity-view-tabs{display:flex;gap:6px;padding:4px;border:1px solid #deebf0;border-radius:15px;background:#f4f9fb}
+.my-activity-view-tabs button{display:flex;align-items:center;gap:6px;min-height:34px;padding:0 10px;border:0;border-radius:11px;background:transparent;color:#7893a5;font-size:11px;font-weight:800;cursor:pointer}
+.my-activity-view-tabs button.selected{background:#fff;color:#4f6d87;box-shadow:0 2px 8px rgba(80,111,132,.08)}
+.my-activity-view-tabs button span{display:grid;min-width:20px;height:20px;place-items:center;border-radius:50%;background:#e5f2f8;color:#5e8aa5;font-size:10px}
+.my-activity-sort{display:flex;align-items:center;gap:6px;color:#8297a7;font-size:10px;font-weight:750;white-space:nowrap}
+.my-activity-sort select{max-width:125px;min-height:36px;padding:0 9px;border:1px solid #d8e8ef;border-radius:12px;background:#fff;color:#4f6d87;font:inherit;font-weight:800}
+.my-activity-row{grid-template-columns:minmax(0,1fr) 38px;align-items:start;gap:8px;padding:8px 10px;cursor:default}
+.my-activity-row.is-archived{background:linear-gradient(110deg,#f7fafb,#f1f5f7);opacity:.82}
+.my-activity-row.is-dragging{opacity:.5;border-style:dashed}
+.my-activity-open{width:100%;min-width:0;min-height:50px;display:grid;grid-template-columns:38px minmax(0,1fr) 18px;align-items:center;gap:9px;padding:2px;border:0;border-radius:13px;background:transparent;color:inherit;text-align:right;cursor:pointer}
+.my-activity-open:disabled{cursor:default}
+.my-activity-open:focus-visible,.my-activity-menu-toggle:focus-visible,.my-activity-actions button:focus-visible{outline:2px solid #8fc7df;outline-offset:2px}
+.my-activity-menu-toggle{width:36px;height:36px;display:grid;place-items:center;border:1px solid #dceaf0;border-radius:12px;background:#f5fafc;color:#6d8ca1;cursor:pointer}
+.my-activity-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:7px;padding:7px 2px 2px;border-top:1px solid #e8f0f3}
+.my-activity-actions button{min-height:34px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;border:1px solid #dceaf0;border-radius:11px;background:#fff;color:#58788f;font-size:11px;font-weight:800;cursor:pointer}
+.my-activity-actions button.delete{border-color:#f0d4d7;background:#fff6f6;color:#a65b65}
+.my-activity-confirm{position:fixed!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;width:min(calc(100% - 32px),420px)!important;max-height:80dvh!important;margin:0!important;padding:20px!important;border:1px solid #dceaf1!important;border-radius:24px!important;background:linear-gradient(150deg,#fff,#f6fafc)!important;color:#4f6d87!important;box-shadow:0 24px 80px rgba(38,70,90,.22)!important;direction:rtl!important}
+.my-activity-confirm::backdrop{background:rgba(30,48,62,.38);backdrop-filter:blur(3px)}
+.my-activity-confirm>header{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.my-activity-confirm-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#fff0f0;color:#b05d67}
+.my-activity-confirm header small{color:#91a5b2;font-size:10px;font-weight:750}
+.my-activity-confirm h2{margin:2px 0 0;color:#4f6d87;font-size:18px}
+.my-activity-confirm p{margin:0;color:#70899b;font-size:13px;line-height:1.8}
+.my-activity-confirm p b{color:#4f6d87}
+.my-activity-confirm>footer{display:flex;gap:9px;margin-top:20px}
+.my-activity-confirm>footer button{flex:1;min-height:42px;border:1px solid #dceaf0;border-radius:13px;background:#fff;color:#607f94;font-weight:800;cursor:pointer}
+.my-activity-confirm>footer button.confirm-delete{border-color:#efd1d5;background:#fbe9eb;color:#9f4f59}
+@media(max-width:520px){.my-activities-tools{align-items:stretch;flex-direction:column}.my-activity-view-tabs{justify-content:stretch}.my-activity-view-tabs button{flex:1;justify-content:center}.my-activity-sort{justify-content:space-between}.my-activity-sort select{max-width:none;flex:1}}
 .notification-center-dialog{position:fixed!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;width:min(calc(100% - 28px),440px)!important;max-height:min(76dvh,600px)!important;margin:0!important;padding:18px!important;overflow:auto!important;border:1px solid #dceaf1!important;border-radius:24px!important;background:linear-gradient(150deg,#fff,#f5fafc)!important;color:#4f6d87!important;box-shadow:0 24px 80px rgba(38,70,90,.22)!important;direction:rtl!important}
 .notification-center-dialog::backdrop{background:rgba(30,48,62,.36);backdrop-filter:blur(3px)}
 .notification-center-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
