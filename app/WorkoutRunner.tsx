@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import type { PlannedActivity, WorkoutExerciseResult, WorkoutSetResult } from "./local-store";
+import { createPortal } from "react-dom";
+import type { PlannedActivity, WorkoutExercise, WorkoutExerciseResult, WorkoutSetResult, WorkoutSessionSettings } from "./local-store";
+import WorkoutSettings from "./WorkoutSettings";
 
 const ar = (value: number, pad = 1) => Math.max(0, Math.floor(value)).toLocaleString("ar-SA", { minimumIntegerDigits: pad, useGrouping: true });
 const clock = (seconds: number) => `${ar(Math.floor(Math.max(0, seconds) / 60), 2)}:${ar(Math.floor(Math.max(0, seconds) % 60), 2)}`;
@@ -12,7 +14,7 @@ type WorkoutSnapshot = {
   activityId: string; date: string; exerciseIndex: number; setIndex: number; mode: Mode; pausedMode: ClockMode;
   phaseElapsedMs: number; phaseTargetSeconds: number; repetitionCount: number; restSeconds: number;
   restExpired: boolean; pendingSet: PendingSet | null; sessionElapsedMs: number; sessionStarted: boolean;
-  results: Record<string, WorkoutExerciseResult>; expectedAdjustment: number;
+  results: Record<string, WorkoutExerciseResult>; expectedAdjustment: number; exercisePlan?: WorkoutExercise[]; workoutSessionSettings?: WorkoutSessionSettings; workoutStartMode?: "manual" | "automatic";
 };
 
 function exerciseResult(exercise: NonNullable<PlannedActivity["exercises"]>[number], targetSets: number): WorkoutExerciseResult {
@@ -29,16 +31,19 @@ function readSnapshot(activityId: string, date: string): WorkoutSnapshot | null 
   } catch { return null; }
 }
 
-export default function WorkoutRunner({ activity, date, onExit, onFinish, previousSessions = [] }: {
+export default function WorkoutRunner({ activity, date, onExit, onFinish, previousSessions = [], settingsOpen = false, onCloseSettings, onSaveActivity, onDeleteActivity }: {
   activity: PlannedActivity;
   date: string;
   onExit: () => void;
   onFinish: (minutes: number, repetitions: number, durationSeconds?: number, exerciseResults?: WorkoutExerciseResult[], restDurationSeconds?: number) => void;
   previousSessions?: Array<{ durationSeconds?: number; exerciseResults?: WorkoutExerciseResult[] }>;
+  settingsOpen?: boolean; onCloseSettings?: () => void; onSaveActivity?: (activity: PlannedActivity) => void; onDeleteActivity?: () => void;
 }) {
-  const exercises = activity.exercises ?? [];
   const savedAtMount = useRef<WorkoutSnapshot | null>(typeof window === "undefined" ? null : readSnapshot(activity.id, date));
   const saved = savedAtMount.current;
+  const exercisePlan = useRef<WorkoutExercise[]>(saved?.sessionStarted ? saved.exercisePlan ?? activity.exercises ?? [] : activity.exercises ?? []);
+  const sessionSettings = useRef<WorkoutSessionSettings | undefined>(saved?.sessionStarted ? saved.workoutSessionSettings ?? activity.workoutSessionSettings : activity.workoutSessionSettings);
+  const exercises = exercisePlan.current;
   const [exerciseIndex, setExerciseIndex] = useState(saved?.exerciseIndex ?? 0);
   const [setIndex, setSetIndex] = useState(saved?.setIndex ?? 1);
   const [mode, setMode] = useState<Mode>(saved ? (saved.mode === "prepare" || saved.mode === "work" || saved.mode === "rest" ? "paused" : saved.mode) : "ready");
@@ -66,8 +71,10 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const restored = useRef(false);
   const inTransition = useRef(false);
   const exerciseTrack = useRef<HTMLDivElement | null>(null);
+  const detailTouchStart = useRef(0);
   const pendingSetRef = useRef<PendingSet | null>(saved?.pendingSet ?? null);
   const restExpiredRef = useRef(saved?.restExpired ?? false);
+  if (!sessionStarted && !saved?.sessionStarted) { exercisePlan.current = activity.exercises ?? []; sessionSettings.current = activity.workoutSessionSettings; }
 
   const exercise = exercises[exerciseIndex];
   const sets = exercise && Number.isFinite(exercise.sets) ? Math.max(0, Math.floor(exercise.sets)) : 0;
@@ -75,12 +82,47 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const targetDurationValue = exercise?.durationTargets?.[setIndex - 1] ?? exercise?.durationSeconds;
   const targetReps = exercise?.measurement === "repetitions" && Number.isFinite(targetRepsValue) && (targetRepsValue ?? 0) > 0 ? Math.floor(targetRepsValue!) : null;
   const targetDuration = exercise?.measurement === "duration" && Number.isFinite(targetDurationValue) && (targetDurationValue ?? 0) > 0 ? Math.floor(targetDurationValue!) : null;
-  const automaticStart = activity.workoutStartMode === "automatic";
+  const automaticStart = (sessionSettings.current?.startMode ?? (saved?.sessionStarted ? saved.workoutStartMode : activity.workoutStartMode)) === "automatic";
+  const preparationSeconds = Math.max(0, Math.min(15, Math.floor(sessionSettings.current?.preparationSeconds ?? 5)));
 
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { pendingSetRef.current = pendingSet; }, [pendingSet]);
   useEffect(() => { restExpiredRef.current = restExpired; }, [restExpired]);
   useEffect(() => { restored.current = true; }, []);
+  useEffect(() => {
+    if (!expandedExerciseId && !settingsOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, [expandedExerciseId, settingsOpen]);
+  useEffect(() => {
+    if (sessionStarted || saved?.sessionStarted) return;
+    const nextExercises = activity.exercises ?? [];
+    exercisePlan.current = nextExercises;
+    setExerciseIndex(index => Math.min(index, Math.max(0, nextExercises.length - 1)));
+    setSetIndex(1);
+  }, [activity.exercises, sessionStarted, saved?.sessionStarted]);
+  useEffect(() => {
+    const settings = sessionSettings.current;
+    const countdown = mode === "prepare" || mode === "rest" && automaticStart && seconds > 0 && seconds <= 5;
+    if (!countdown || seconds <= 0 || (!settings?.sound && !settings?.vibration)) return;
+    if (settings.sound) {
+      try {
+        const AudioContextClass = window.AudioContext;
+        if (AudioContextClass) {
+          const context = new AudioContextClass();
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.frequency.value = seconds === 1 ? 760 : 620;
+          gain.gain.setValueAtTime(0.035, context.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.09);
+          oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + 0.09);
+          window.setTimeout(() => void context.close(), 150);
+        }
+      } catch { /* audio is optional and may be unavailable */ }
+    }
+    if (settings.vibration && "vibrate" in navigator) navigator.vibrate(18);
+  }, [mode, seconds, automaticStart, sessionStarted]);
   useEffect(() => {
     if (!exerciseTrack.current || !exercise) return;
     const active = exerciseTrack.current.querySelector<HTMLElement>(`[data-exercise-id="${CSS.escape(exercise.id)}"]`);
@@ -95,7 +137,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       const itemSets = Number.isFinite(item.sets) ? Math.max(0, Math.floor(item.sets)) : 0;
       const targetTime = item.measurement === "duration" ? Array.from({ length: itemSets }, (_, index) => Math.max(0, item.durationTargets?.[index] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0) : 0;
       const restTime = Math.max(0, Number.isFinite(item.restSeconds) ? item.restSeconds : 0) * Math.max(0, itemSets - 1);
-      return total + targetTime + restTime;
+      return total + targetTime + restTime + Math.max(0, item.restAfterSeconds ?? 0);
     }, 0);
     if (configured > 0) return Math.max(configured, configuredExerciseTime + 5);
     const containsRepetitionExercise = exercises.some(item => item.measurement === "repetitions");
@@ -146,7 +188,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       mode: currentMode === "prepare" || currentMode === "work" || currentMode === "rest" ? "paused" : currentMode,
       pausedMode: clockMode ?? pausedMode, phaseElapsedMs: elapsedMs, phaseTargetSeconds: phaseTarget.current,
       repetitionCount, restSeconds, restExpired: restExpiredRef.current, pendingSet: pendingSetRef.current,
-      sessionElapsedMs: sessionMs, sessionStarted, results: results.current, expectedAdjustment: estimateAdjustmentSeconds.current,
+      sessionElapsedMs: sessionMs, sessionStarted, results: results.current, expectedAdjustment: estimateAdjustmentSeconds.current, exercisePlan: exercises, workoutSessionSettings: sessionSettings.current, workoutStartMode: saved?.sessionStarted ? saved.workoutStartMode ?? activity.workoutStartMode : activity.workoutStartMode,
     };
     try { sessionStorage.setItem(snapshotKey(activity.id, date), JSON.stringify(snapshot)); } catch { /* session may be unavailable */ }
   }
@@ -217,11 +259,16 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       enterMode("sessionDone");
       return;
     }
-    setExerciseIndex(index => index + 1);
+    const nextIndex = exerciseIndex + 1;
+    setExerciseIndex(nextIndex);
     setSetIndex(1);
     setRepetitionCount(0);
     setSeconds(0);
-    enterMode("ready");
+    const rest = Math.max(0, exercise.restAfterSeconds ?? 0);
+    restExpiredRef.current = rest === 0;
+    setRestExpired(rest === 0);
+    if (rest > 0) startPhase("rest", rest);
+    else enterMode("ready");
   }
 
   function finalizePendingSet(value: number) {
@@ -299,7 +346,8 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     startSessionClock();
     inTransition.current = false;
     setRepetitionCount(0);
-    startPhase("prepare", 5);
+    if (preparationSeconds > 0) startPhase("prepare", preparationSeconds);
+    else startPhase("work", targetDuration ?? 0, targetDuration === null);
   }
 
   useEffect(() => {
@@ -356,11 +404,11 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   }, [activity.id, date, mode, exerciseIndex, setIndex, repetitionCount, restSeconds, restExpired, pendingSet, sessionStarted, resultsVersion]);
 
   if (!exercise) return <section className="workout-runner"><h1>لا توجد تمارين في الخطة.</h1><button className="primary" onClick={onExit}>عودة</button></section>;
-  const progress = mode === "rest" ? Math.max(0, Math.min(100, seconds / Math.max(1, exercise.restSeconds) * 100)) : mode === "work" && targetDuration ? Math.max(0, Math.min(100, seconds / targetDuration * 100)) : mode === "prepare" ? Math.max(0, Math.min(100, seconds / 5 * 100)) : 100;
+  const progress = mode === "rest" ? Math.max(0, Math.min(100, seconds / Math.max(1, phaseTarget.current) * 100)) : mode === "work" && targetDuration ? Math.max(0, Math.min(100, seconds / targetDuration * 100)) : mode === "prepare" ? Math.max(0, Math.min(100, seconds / Math.max(1, preparationSeconds) * 100)) : 100;
   const status = mode === "ready" ? "جاهز" : mode === "prepare" ? "استعد" : mode === "work" ? "التمرين" : mode === "rest" ? restExpired ? "جاهز للجولة التالية" : "راحة بين الجولات" : mode === "paused" ? "متوقف مؤقتًا" : mode === "exerciseDone" ? "اكتمل التمرين" : "اكتملت الحصة";
   const cardRemaining = mode === "ready" ? expectedTotalSeconds : sessionRemaining;
 
-  return <section className={`workout-runner workout-${mode}`} aria-live="polite">
+  return <section className={`workout-runner workout-${mode}`} aria-live="polite" style={{ "--workout-accent": activity.workoutColor ?? "#73b8ce" } as CSSProperties}>
     <header className="workout-head">
       <button type="button" className="workout-exit-action" aria-label={sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"} onClick={requestExit}>{sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"}</button>
       <div className="workout-summary-head"><b>{`التمرين ${ar(exerciseIndex + 1)} من ${ar(exercises.length)}`}</b><span>{mode === "ready" ? "مدة الحصة المتوقعة" : "المتبقي تقديريًا"} <strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></span></div>
@@ -395,7 +443,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
         const targetTotal = Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.measurement === "repetitions" ? item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0 : item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0);
         const actualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
         const percent = targetTotal > 0 ? Math.min(100, Math.round(actualTotal / targetTotal * 100)) : null;
-        return <section className="workout-exercise-expanded" aria-label={`تفاصيل ${item.name}`}>
+        return typeof document === "undefined" ? null : createPortal(<div className="workout-detail-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setExpandedExerciseId(null); }}><section className="workout-exercise-expanded" role="dialog" aria-modal="true" aria-label={`تفاصيل ${item.name}`} onTouchStart={event => { detailTouchStart.current = event.touches[0]?.clientY ?? 0; }} onTouchEnd={event => { if ((event.changedTouches[0]?.clientY ?? detailTouchStart.current) - detailTouchStart.current > 90) setExpandedExerciseId(null); }}>
           <header><b>{item.name}</b><button type="button" aria-label="إغلاق تفاصيل التمرين" onClick={() => setExpandedExerciseId(null)}>×</button></header>
           <div className="workout-set-table"><div className="workout-set-table-head"><span>الجولة</span><span>المستهدف</span><span>المنجز</span><span>الراحة</span></div>
             {Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
@@ -404,11 +452,11 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
               const target = item.measurement === "repetitions" ? item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0 : item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0;
               const targetLabel = item.measurement === "repetitions" ? `${ar(target)} عدة` : `${ar(target)} ث`;
               const actualLabel = savedSet ? item.measurement === "repetitions" ? `${ar(savedSet.repetitions ?? 0)} عدة` : `${ar(savedSet.durationSeconds)} ث` : "—";
-              return <div className="workout-set-table-row" key={round}><b>{ar(round)}</b><span>{targetLabel}</span><strong>{actualLabel}</strong><small>{round < item.sets ? `${ar(Math.max(0, item.restSeconds))} ث` : "—"}</small></div>;
+              return <div className="workout-set-table-row" key={round}><b>{ar(round)}</b><span>{targetLabel}</span><strong>{actualLabel}</strong><small>{round < item.sets ? `${ar(Math.max(0, item.restSeconds))} ث` : item.restAfterSeconds ? `${ar(item.restAfterSeconds)} ث` : "—"}</small></div>;
             })}
           </div>
           <footer><span>الإجمالي <b>{ar(actualTotal)} من {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ثانية"}</b></span><span>تحقيق المستهدف <b>{percent === null ? "—" : `${ar(percent)}٪`}</b></span></footer>
-        </section>;
+        </section></div>, document.body);
       })()}
     </div>
 
@@ -417,7 +465,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
         <p className="workout-status">{status}</p>
         <h1>{exercise.name}</h1>
         <p className="set-label">الجولة <b>{ar(setIndex)}</b> من {sets ? ar(sets) : "غير محدد"}</p>
-        {(mode === "prepare" || mode === "work" || mode === "rest" || mode === "paused") && <div key={`${mode}-${pausedMode}`} className={`workout-clock ${finalCountdown ? "clock-pulse" : ""}`} style={{ "--timer-progress": `${mode === "prepare" ? seconds / 5 * 100 : progress}%` } as CSSProperties}>
+        {(mode === "prepare" || mode === "work" || mode === "rest" || mode === "paused") && <div key={`${mode}-${pausedMode}`} className={`workout-clock ${finalCountdown ? "clock-pulse" : ""}`} style={{ "--timer-progress": `${mode === "prepare" ? seconds / Math.max(1, preparationSeconds) * 100 : progress}%` } as CSSProperties}>
           <div><strong>{mode === "prepare" ? ar(seconds) : clock(seconds)}</strong><span>{mode === "prepare" ? "وتبدأ الجولة" : mode === "paused" ? "المؤقت متوقف" : mode === "rest" ? restExpired ? "انتهت الراحة" : "استراحة" : mode === "work" && exercise.measurement === "duration" ? targetDuration === null ? "الوقت المنقضي" : "زمن الجولة" : "زمن الجولة المنقضي"}</span>{mode === "work" && <small>{exercise.measurement === "repetitions" ? targetReps === null ? "هدف التكرار غير محدد" : `${ar(targetReps)} تكرار مستهدف` : targetDuration === null ? "مدة مستهدفة غير محددة" : `المستهدف ${clock(targetDuration)}`}</small>}{mode === "rest" && !restExpired && <small>{`راحة قبل الجولة ${ar(setIndex)}`}</small>}</div>
         </div>}
         {mode === "ready" && <div className="workout-clock workout-ready-clock"><div><strong>{exercise.measurement === "repetitions" ? targetReps === null ? "—" : ar(targetReps) : targetDuration === null ? "—" : clock(targetDuration)}</strong><span>{exercise.measurement === "repetitions" ? "عدة مستهدفة" : "مدة الجولة"}</span></div></div>}
@@ -429,7 +477,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       </section>
 
       <section className="workout-execution" aria-label="تنفيذ الجولة">
-        {mode === "ready" && <button type="button" className="primary workout-main" onClick={startSet} disabled={!sets}>ابدأ الجولة</button>}
+          {mode === "ready" && <button type="button" className="primary workout-main" onClick={startSet} disabled={!sets}>ابدأ الجولة</button>}
         {mode === "work" && <button type="button" className="primary workout-main" onClick={finishRound}>أنهيت الجولة</button>}
         {mode === "prepare" && <button type="button" className="soft workout-secondary" onClick={pauseClock}>إيقاف مؤقت</button>}
         {mode === "work" && <button type="button" className="soft workout-secondary" onClick={pauseClock}>إيقاف مؤقت</button>}
@@ -455,5 +503,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والإنهاء</button>
     </section>}
     {showExitConfirm && <div className="workout-exit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowExitConfirm(false); }}><section className="workout-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="workout-exit-title"><span aria-hidden="true">Ⅱ</span><h2 id="workout-exit-title">إنهاء الجلسة؟</h2><p>سيُحفظ تقدمك الحالي، ويمكنك استئناف التمرين لاحقًا.</p><div><button type="button" className="workout-exit-continue" onClick={() => setShowExitConfirm(false)}>متابعة التمرين</button><button type="button" className="workout-exit-confirm" onClick={confirmExit}>إنهاء والعودة</button></div></section></div>}
+    {settingsOpen && onCloseSettings && onSaveActivity && onDeleteActivity && typeof document !== "undefined" && createPortal(<WorkoutSettings activity={activity} onClose={onCloseSettings} onSave={onSaveActivity} onDelete={onDeleteActivity}/>, document.body)}
   </section>;
 }

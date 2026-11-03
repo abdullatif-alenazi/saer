@@ -23,16 +23,19 @@ const notifyChange=()=>{if(typeof window!=="undefined")window.dispatchEvent(new 
 export function readExecutionLog():ExecutionRecord[]{try{return JSON.parse(localStorage.getItem(key)||"[]")}catch{return[]}}
 export function saveExecution(record:ExecutionRecord){const records=readExecutionLog(),next=record.id?[record,...records.filter(item=>item.id!==record.id)].slice(0,500):[record,...records].slice(0,500);localStorage.setItem(key,JSON.stringify(next));notifyChange();return next.length}
 
+export type WorkoutSchedule={days:string[];timeMode:"time"|"station";time?:string;station?:string};
+export type WorkoutSessionSettings={startMode:"manual"|"automatic";preparationSeconds:number;sound:boolean;vibration:boolean;motion:"normal"|"reduced"};
 export type PlannedActivity={
  id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;createdAt?:string;updatedAt?:string;archivedAt?:string;sortOrder?:number;
  nature?:TrackingNature;schedule:Schedule;
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
  activityKind?:string;trackingMode?:"time"|"distance";workoutStartMode?:"manual"|"automatic";
+ workoutSchedule?:WorkoutSchedule;workoutSessionSettings?:WorkoutSessionSettings;workoutEnabled?:boolean;workoutColor?:string;workoutIcon?:string;
  exercises?:WorkoutExercise[];goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
  parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;prayerEnabled?:boolean;
 };
 export type Reminder={mode:"none"|"time"|"station"|"before";value?:string|number};
-export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;repetitionTargets?:number[];durationSeconds?:number;durationTargets?:number[];restSeconds:number};
+export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;repetitionTargets?:number[];durationSeconds?:number;durationTargets?:number[];restSeconds:number;restAfterSeconds?:number};
 const planKey="sair.plan.v1";
 export const PRAYER_ACTIVITY_ID="sair-prayer-tracker";
 const prayerWeekDays=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
