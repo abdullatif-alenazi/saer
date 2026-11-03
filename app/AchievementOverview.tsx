@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, BookText, Brain, Calendar, CalendarDays, CalendarRange, Clock3, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
 import PrayerBeadsIcon from "./PrayerBeadsIcon";
+import MosqueIcon from "./MosqueIcon";
 import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
 import { PRAYER_NAMES, PRAYER_STATUS_OPTIONS, prayerRecordFor } from "./PrayerTracker";
 
@@ -47,7 +48,7 @@ const activityIcon = (activity: PlannedActivity) => {
   if (/رياض|تمرين|كاليستنس/.test(text)) return Dumbbell;
   if (/قرآن|قراءة|كتاب/.test(text)) return BookOpen;
   if (/ذكر|استغفار|تسبيح|تهليل/.test(text)) return PrayerBeadsIcon;
-  if (/صلاة/.test(text)) return Sparkles;
+  if (/صلاة/.test(text)) return MosqueIcon;
   if (/نوم/.test(text)) return Moon;
   if (/صيام/.test(text)) return Timer;
   if (/مهارة|تعلم/.test(text)) return Brain;
