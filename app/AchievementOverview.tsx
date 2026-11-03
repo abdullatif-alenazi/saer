@@ -11,7 +11,7 @@ type CalendarKind = "gregory" | "islamic";
 type Status = "future" | "complete" | "partial" | "missed" | "unscheduled";
 type Metric = { done: number; target: number; unit: string; percent: number | null; dueDays: number; achievedDays: number };
 const weekdays = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-const compactWeekdays = ["سبت", "أحد", "اثن", "ثلا", "أرب", "خمي", "جمع"];
+const compactWeekdays = ["س", "ح", "ن", "ث", "ر", "خ", "ج"];
 const ar = (value: number, maximumFractionDigits = 0) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits, useGrouping: false }).format(value);
 const arGrouped = (value: number) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits: 1, useGrouping: true }).format(value).replace(/[٬,]/g, ".").replace("٫", ".");
 const durationMinutes = (seconds: number) => arGrouped(Math.round(seconds / 6) / 10);

@@ -8,7 +8,7 @@ const ar=(value:number)=>value.toLocaleString("ar-SA");
 const dateKey=(date:Date)=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 const calendarParts=(date:Date,calendar:CalendarKind)=>{const parts=new Intl.DateTimeFormat(calendar==="islamic"?"en-US-u-ca-islamic-umalqura":"en-US-u-ca-gregory",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(date),read=(type:string)=>Number(parts.find(part=>part.type===type)?.value??0);return{day:read("day"),month:read("month"),year:read("year")}};
 const weekdayNames=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-const weekdayShort=["أح","إث","ثل","أر","خم","جم","سب"];
+const weekdayShort=["ح","ن","ث","ر","خ","ج","س"];
 function CurrentPeriodIcon(){return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 11a8.5 8.5 0 1 1 2.1 6.2M3.5 4.8V11h6.2M12 7.5v5l3.2 1.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
 
 export default function TaskAchievements({activity,records,unitProgress,weekStartsOn,calendarMode,onClose,embedded=false,transitioningIn=false}:{activity:PlannedActivity;records:ExecutionRecord[];unitProgress:UnitProgress[];weekStartsOn:"saturday"|"sunday";calendarMode:"islamic"|"gregory"|"mixed";onClose:()=>void;embedded?:boolean;transitioningIn?:boolean}){
