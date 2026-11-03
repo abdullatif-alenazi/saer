@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { LucideProps } from "lucide-react";
 
-export default function MosqueIcon({ size = 24, className, style, ...props }: LucideProps) {
+export default function MosqueIcon({ size = 14, className, style, ...props }: LucideProps) {
   const mask = "url('/prayer-mosque.png')";
   return <span
     className={className}
