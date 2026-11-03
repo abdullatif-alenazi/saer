@@ -241,6 +241,10 @@
 .workout-session-meta+.workout-current .workout-clock{margin-top:5px}
 .workout-execution{margin-top:5px}
 .workout-runner{overflow-x:hidden}
+
+/* Keep the ready-state action aligned with Saer's light pastel palette. */
+.workout-ready .workout-main{border:1px solid #b8d9eb;background:#cfe7f5;color:#557187;box-shadow:0 7px 18px rgba(111,150,173,.12);transition:background-color .2s ease,border-color .2s ease,transform .2s ease}
+.workout-ready .workout-main:disabled{border-color:#e0e9ee;background:#eaf1f4;color:#91a8b8;box-shadow:none}
 @media(max-width:380px){.workout-exercise-track{gap:6px}.workout-exercise-card{flex-basis:138px;padding:8px;min-height:76px}.workout-exercise-expanded{padding:7px 8px}.workout-exercise-expanded>footer{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.workout-exercise-card,.workout-exercise-card-rounds>i{transition:none}.workout-exercise-card-rounds>i.done{animation:none}.workout-exercise-expanded{animation:none}}
 .selected-exercises article{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:stretch;padding:11px;border:1px solid var(--line);border-radius:14px;background:#fff}
