@@ -26,6 +26,11 @@
 .topbar-utility-button{position:relative!important;width:40px!important;height:40px!important;min-width:40px!important;display:grid!important;place-items:center!important;border:1px solid #d9e7ee!important;border-radius:14px!important;background:rgba(255,255,255,.8)!important;color:#557187!important;box-shadow:0 4px 12px rgba(104,130,152,.08)!important;cursor:pointer!important}
 .topbar-utility-button svg{width:20px!important;height:20px!important;stroke-width:1.9!important;color:currentColor!important}
 .topbar-notifications-button{justify-self:end!important}
+.topbar-unread-badge{position:absolute;inset-block-start:-5px;inset-inline-start:-5px;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;border:2px solid #fff;border-radius:999px;background:#e6a1a8;color:#fff;font-size:10px;font-weight:800;line-height:1}
+.topbar-gear-icon{display:block;width:21px;height:21px;background:currentColor;-webkit-mask:url('/settings-gear.png') center/contain no-repeat;mask:url('/settings-gear.png') center/contain no-repeat}
+.bottom-nav-five .nav-memo-icon{display:block;width:19px;height:19px;background:currentColor;-webkit-mask:url('/memo-icon.png') center/contain no-repeat;mask:url('/memo-icon.png') center/contain no-repeat;transition:transform .25s ease}
+.bottom-nav-five .bottom-nav-item.active .nav-memo-icon{width:21px;height:21px}
+@media(prefers-reduced-motion:reduce){.bottom-nav-five .nav-memo-icon{transition:none!important}}
 .notification-unread-badge{position:absolute!important;top:-5px!important;left:-5px!important;min-width:17px!important;height:17px!important;padding:0 4px!important;display:grid!important;place-items:center!important;border:1px solid white!important;border-radius:99px!important;background:#d8757e!important;color:#fff!important;font-size:9px!important;font-weight:850!important;line-height:1!important}
 .saer-app-header .topbar-page-title{min-width:0!important;max-width:100%!important;overflow:hidden!important}
 .saer-app-header .topbar-page-title b{max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:clamp(21px,5.8vw,28px)!important}
