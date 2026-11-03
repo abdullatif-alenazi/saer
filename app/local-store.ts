@@ -29,14 +29,36 @@ export type PlannedActivity={
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
  activityKind?:string;trackingMode?:"time"|"distance";workoutStartMode?:"manual"|"automatic";
  exercises?:WorkoutExercise[];goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
- parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;
+ parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;prayerEnabled?:boolean;
 };
 export type Reminder={mode:"none"|"time"|"station"|"before";value?:string|number};
 export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;durationSeconds?:number;restSeconds:number};
 const planKey="sair.plan.v1";
+export const PRAYER_ACTIVITY_ID="sair-prayer-tracker";
+const prayerWeekDays=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
 const normalize=(item:PlannedActivity):PlannedActivity=>({...item,nature:item.nature??"commitment",schedule:{...item.schedule,days:item.schedule.days??[]}});
-export function readPlan():PlannedActivity[]{try{return (JSON.parse(localStorage.getItem(planKey)||"[]") as PlannedActivity[]).map(normalize)}catch{return[]}}
-export function savePlan(activity:PlannedActivity){const plan=readPlan(),now=new Date().toISOString();const next=[...plan,normalize({...activity,createdAt:activity.createdAt??now,updatedAt:now})];localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
+export function readPlan():PlannedActivity[]{
+ try{
+  const raw=JSON.parse(localStorage.getItem(planKey)||"[]") as PlannedActivity[],plan=raw.map(normalize),prayers=plan.filter(item=>item.template==="صلاة");
+  if(!prayers.length)return plan;
+  const source=prayers.find(item=>item.id===PRAYER_ACTIVITY_ID)??prayers[0],aliases=new Set(prayers.map(item=>item.id));
+  const prayer=normalize({...source,id:PRAYER_ACTIVITY_ID,name:"الصلاة",nature:"commitment",period:"الصباح",goal:"",expectedMinutes:0,schedule:{mode:"daily",value:"الصلوات الخمس",days:prayerWeekDays},quantity:5,unit:"صلوات",measurements:["حالة الصلاة"],unitTracking:undefined,goalDefinition:undefined,supportingPlan:undefined,prayerEnabled:source.prayerEnabled!==false});
+  const next=[...plan.filter(item=>item.template!=="صلاة"),prayer];
+  const changed=prayers.length!==1||JSON.stringify(prayers[0])!==JSON.stringify(prayer);
+  if(changed){
+   localStorage.setItem(planKey,JSON.stringify(next));
+   try{
+    const records=JSON.parse(localStorage.getItem("sair.executionLog.v1")||"[]") as ExecutionRecord[];
+    const migrated=records.map(record=>record.activityId&&aliases.has(record.activityId)?{...record,activityId:PRAYER_ACTIVITY_ID,activity:"الصلاة"}:record);
+    const seen=new Set<string>(),deduped=migrated.filter(record=>{if(record.prayerName&&record.dueKey&&record.activityId===PRAYER_ACTIVITY_ID){const key=`${record.dueKey}:${record.prayerName}`;if(seen.has(key))return false;seen.add(key)}return true});
+    if(JSON.stringify(deduped)!==JSON.stringify(records))localStorage.setItem("sair.executionLog.v1",JSON.stringify(deduped));
+   }catch{}
+   notifyChange();
+  }
+  return next;
+ }catch{return[]}
+}
+export function savePlan(activity:PlannedActivity){const plan=readPlan(),now=new Date().toISOString();if(activity.template==="صلاة"){const prayer=normalize({...activity,id:PRAYER_ACTIVITY_ID,name:"الصلاة",nature:"commitment",period:"الصباح",goal:"",expectedMinutes:0,schedule:{mode:"daily",value:"الصلوات الخمس",days:prayerWeekDays},quantity:5,unit:"صلوات",measurements:["حالة الصلاة"],unitTracking:undefined,goalDefinition:undefined,supportingPlan:undefined,prayerEnabled:true,createdAt:plan.find(item=>item.template==="صلاة")?.createdAt??activity.createdAt??now,updatedAt:now}),next=[...plan.filter(item=>item.template!=="صلاة"),prayer];localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}const next=[...plan,normalize({...activity,createdAt:activity.createdAt??now,updatedAt:now})];localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 export function updatePlan(activity:PlannedActivity){const next=readPlan().map(item=>item.id===activity.id?normalize({...activity,createdAt:activity.createdAt??item.createdAt,updatedAt:new Date().toISOString()}):item);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 export function deletePlan(id:string){const next=readPlan().filter(item=>item.id!==id);localStorage.setItem(planKey,JSON.stringify(next));notifyChange();return next}
 
