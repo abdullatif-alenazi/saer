@@ -898,12 +898,12 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-entries{gap:0!important;padding:0 3px!important}
 .home-station-entries.has-entries::before,.home-station-content .home-day-entry::after{display:none!important;content:none!important}
 .home-station-content .home-day-entry{min-height:48px!important;gap:9px!important;padding:5px 2px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--station-ink,#7298ac) 15%,transparent)!important;border-radius:0!important;clip-path:none!important;overflow:visible!important;background:transparent!important;box-shadow:none!important}
-.home-station-content .home-day-entry.entry-activity{display:grid!important;grid-template-columns:29px minmax(0,1fr) 38px!important;column-gap:8px!important}
+.home-station-content .home-day-entry.entry-activity{display:grid!important;grid-template-columns:29px minmax(0,1fr) 72px!important;column-gap:8px!important}
 .home-station-content .home-day-entry.entry-activity>.home-entry-icon{grid-column:1;grid-row:1}
 .home-station-content .home-day-entry.entry-activity>.home-entry-main{grid-column:2;grid-row:1;width:100%;min-width:0}
-.home-station-content .home-day-entry.entry-activity>.home-entry-indicator{grid-column:3;grid-row:1;display:grid;place-items:center;width:38px;height:38px}
+.home-station-content .home-day-entry.entry-activity>.home-entry-indicator{grid-column:3;grid-row:1;display:grid;align-content:center;justify-items:center;gap:2px;width:72px;min-height:48px}
 .home-entry-main>b.has-progress-ring,.home-entry-main>b.has-prayer-rating{display:flex!important;align-items:center;justify-content:flex-start;gap:7px;width:100%;min-width:0;overflow:visible!important;white-space:normal!important}
-.home-entry-main>small{text-align:left!important;width:100%}
+.home-entry-indicator>small{display:block;width:72px;color:#8398a6;font-size:9px!important;line-height:1.25;text-align:center;white-space:nowrap}
 .home-entry-duration{display:inline-flex;align-items:center;justify-content:flex-start;gap:3px;flex:none;min-width:35px;margin:0;color:#718b9b!important;font-size:10px!important;font-weight:750!important;text-align:right!important;white-space:nowrap;direction:rtl}
 .home-station-content .home-day-entry:last-child{border-bottom:0!important}
 .home-station-content .home-entry-icon{width:29px;height:29px;transform:none!important;background:#E5F2F8!important;color:#5E8AA5!important}.home-station-content .home-entry-check{width:29px;height:29px;transform:none!important}
@@ -943,10 +943,10 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 ::view-transition-group(activity-title){animation-duration:.56s;animation-timing-function:cubic-bezier(.2,.85,.25,1)}
 ::view-transition-old(activity-container),::view-transition-new(activity-container),::view-transition-old(activity-title),::view-transition-new(activity-title){animation-duration:.28s}
 @media(prefers-reduced-motion:reduce){::view-transition-group(root),::view-transition-group(activity-container),::view-transition-group(activity-title){animation-duration:.01ms!important}.activity-header-control>small{animation:none!important;opacity:1;clip-path:none;transform:none}}
-.home-entry-main>b.has-progress-ring,.home-entry-main>b.has-prayer-rating{display:grid!important;grid-template-columns:minmax(0,1fr) 34px;align-items:center;column-gap:7px;width:100%;min-width:0;overflow:visible!important;text-overflow:clip!important;white-space:normal!important}.home-entry-main>b.has-progress-ring>.home-progress-ring,.home-entry-main>b.has-prayer-rating>.home-prayer-rating{justify-self:center}
+.home-entry-main>b.has-progress-ring,.home-entry-main>b.has-prayer-rating{display:flex!important;align-items:center;justify-content:flex-start;gap:7px;width:100%;min-width:0;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;direction:rtl}
 .home-entry-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .home-progress-ring{position:relative;display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;color:#438b62;direction:ltr}
-.home-entry-main>b.has-prayer-rating{display:grid!important;grid-template-columns:minmax(0,1fr) 34px;align-items:center;column-gap:7px;width:100%;min-width:0;overflow:visible!important;text-overflow:clip!important;white-space:normal!important}
+
 .home-prayer-rating{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border:1px solid transparent;border-radius:50%;background:#eef3f5;color:#8b9eaa}.home-prayer-rating>svg{width:14px;height:14px;stroke-width:2.4}.home-prayer-rating.status-very-early{background:#e8f4eb;border-color:#cfe7d5;color:#548563}.home-prayer-rating.status-early{background:#eff5e8;border-color:#dce8c9;color:#718b54}.home-prayer-rating.status-late{background:#fbf3dc;border-color:#efe2b5;color:#a18438}.home-prayer-rating.status-very-late{background:#fbecdf;border-color:#f0d7bd;color:#ae7546}.home-prayer-rating.status-home{background:#f8e8ea;border-color:#ecced2;color:#ad636b}.home-prayer-rating.status-makeup{background:#edf0f2;border-color:#dce2e6;color:#77848c}
 .home-progress-ring>svg{position:absolute;inset:0;width:34px;height:34px;transform:rotate(-90deg)}
 .home-progress-ring circle{fill:none;stroke-width:3.5}
