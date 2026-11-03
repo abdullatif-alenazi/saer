@@ -898,6 +898,10 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-entries{gap:0!important;padding:0 3px!important}
 .home-station-entries.has-entries::before,.home-station-content .home-day-entry::after{display:none!important;content:none!important}
 .home-station-content .home-day-entry{min-height:48px!important;gap:9px!important;padding:5px 2px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--station-ink,#7298ac) 15%,transparent)!important;border-radius:0!important;clip-path:none!important;overflow:visible!important;background:transparent!important;box-shadow:none!important}
+.home-station-content .home-day-entry.entry-activity{display:grid!important;grid-template-columns:29px minmax(0,1fr) 50px!important;column-gap:9px!important}
+.home-station-content .home-day-entry.entry-activity>.home-entry-icon{grid-column:1;grid-row:1}
+.home-station-content .home-day-entry.entry-activity>.home-entry-main{grid-column:2;grid-row:1;width:100%;min-width:0}
+.home-station-content .home-day-entry.entry-activity>.home-entry-duration{grid-column:3;grid-row:1;justify-self:start}
 .home-station-content .home-day-entry:last-child{border-bottom:0!important}
 .home-station-content .home-entry-icon{width:29px;height:29px;transform:none!important;background:#E5F2F8!important;color:#5E8AA5!important}.home-station-content .home-entry-check{width:29px;height:29px;transform:none!important}
 .home-entry-main{gap:2px!important}.home-entry-main>b{font-size:12px!important;color:#476b82!important}.home-entry-main>small{font-size:9px!important;color:#8398a6!important}
