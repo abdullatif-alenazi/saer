@@ -202,3 +202,56 @@
 @media(max-height:740px){.workout-runner{min-height:0;padding-top:3px}.workout-session-meta{gap:4px}.workout-round-map{padding:5px;gap:3px 5px}.workout-clock{width:min(190px,51vw);height:min(190px,51vw);margin:4px 0}.workout-prepare .workout-clock strong{font-size:62px}.workout-session-details{margin-top:4px}}
 @media(max-width:380px){.workout-round-map{grid-template-columns:1fr;gap:2px;padding:5px}.workout-round-row{padding:3px 6px}.workout-clock{width:min(205px,57vw);height:min(205px,57vw)}.workout-summary-head{gap:6px}.workout-session-meta .workout-session-timing{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.workout-round-dots i,.workout-round-row,.workout-clock{transition:none}.workout-round-dots i.done{animation:none}}
+
+/* Interactive exercise cards with inline round details */
+.workout-exercise-track{width:100%;max-width:100%;min-width:0;display:flex;gap:8px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding:3px 1px 6px;margin:1px 0 0;direction:rtl}
+.workout-exercise-track::-webkit-scrollbar{display:none}
+.workout-exercise-card{flex:0 0 clamp(142px,42vw,176px);min-width:0;min-height:80px;display:grid;align-content:start;gap:6px;padding:9px 10px;border:1px solid #dce9ef;border-radius:15px;background:#fff;color:#718b9b;text-align:right;scroll-snap-align:center;cursor:pointer;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s}
+.workout-exercise-card:active{transform:scale(.985)}
+.workout-exercise-card.current{border-color:#9bcddd;background:#edf8fb;color:#456f86;box-shadow:0 3px 12px rgba(82,151,178,.1)}
+.workout-exercise-card.complete{border-color:#d4e9db;background:#f5faf6;color:#54866a}
+.workout-exercise-card-head{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0}
+.workout-exercise-card-head>b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4e7188;font-size:11px}
+.workout-exercise-card.current .workout-exercise-card-head>b{color:#416e87}
+.workout-exercise-card-head>small{flex:none;color:#91a4ae;font-size:8px}
+.workout-exercise-card.complete .workout-exercise-card-head>small{color:#5b936f}
+.workout-exercise-card-rounds{display:flex;gap:4px;align-items:center;min-height:9px}
+.workout-exercise-card-rounds>i{width:8px;height:8px;border:1.5px solid #d0dfe5;border-radius:50%;background:#fff;transition:background .22s,border-color .22s,transform .22s}
+.workout-exercise-card-rounds>i.done{border-color:#72b58b;background:#72b58b;animation:roundComplete .28s ease-out}
+.workout-exercise-card-rounds>i.active{border:2px solid #63aeca;background:#fff;box-shadow:0 0 0 2px rgba(99,174,202,.13)}
+.workout-exercise-card-total{color:#54768c;font-size:10px;font-weight:800;font-variant-numeric:tabular-nums}
+.workout-exercise-card-percent{color:#8ba0ac;font-size:8px}
+.workout-exercise-expanded{width:100%;max-height:180px;overflow:auto;margin:2px 0 5px;padding:8px 10px;border:1px solid #dce9ef;border-radius:14px;background:#fff;text-align:right;animation:exerciseDetailsIn .2s ease-out both}
+.workout-exercise-expanded>header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px;color:#4e7188;font-size:11px}
+.workout-exercise-expanded>header button{width:25px;height:25px;border:1px solid #dce9ef;border-radius:50%;background:#f7fbfc;color:#6c8797;line-height:1}
+.workout-set-table{display:grid;gap:2px}
+.workout-set-table-head,.workout-set-table-row{display:grid;grid-template-columns:.65fr 1fr 1fr .8fr;gap:5px;align-items:center;padding:4px 5px;border-radius:7px;font-size:9px}
+.workout-set-table-head{background:#f2f7f9;color:#8499a5;font-size:8px;font-weight:700}
+.workout-set-table-row{color:#718b9b}
+.workout-set-table-row:nth-child(odd){background:#fafcfd}
+.workout-set-table-row>b,.workout-set-table-row>strong{color:#4e7188;font-variant-numeric:tabular-nums}
+.workout-set-table-row>small{color:#90a3ae;font-size:8px}
+.workout-exercise-expanded>footer{display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding-top:6px;border-top:1px solid #e8eff2;color:#8197a4;font-size:8px}
+.workout-exercise-expanded>footer b{display:block;margin-top:2px;color:#4f7188;font-size:9px}
+@keyframes exerciseDetailsIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.workout-session-meta{gap:6px}
+.workout-session-meta .workout-session-timing{font-size:8px}
+.workout-current .workout-status{margin-top:4px}
+.workout-runner .set-label{margin-bottom:0}
+.workout-session-meta+.workout-current .workout-clock{margin-top:5px}
+.workout-execution{margin-top:5px}
+.workout-runner{overflow-x:hidden}
+@media(max-width:380px){.workout-exercise-track{gap:6px}.workout-exercise-card{flex-basis:138px;padding:8px;min-height:76px}.workout-exercise-expanded{padding:7px 8px}.workout-exercise-expanded>footer{font-size:7px}}
+@media(prefers-reduced-motion:reduce){.workout-exercise-card,.workout-exercise-card-rounds>i{transition:none}.workout-exercise-card-rounds>i.done{animation:none}.workout-exercise-expanded{animation:none}}
+.selected-exercises article{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:stretch;padding:11px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.selected-exercise-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.selected-exercise-heading h4{margin:0;color:#4e7188;font-size:12px}
+.selected-exercise-heading>span{color:#8298a5;font-size:9px}
+.selected-exercise-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.exercise-round-target-editor{display:grid;gap:6px;padding-top:7px;border-top:1px solid #edf2f4}
+.exercise-round-target-editor>b{color:#728b9a;font-size:9px}
+.exercise-round-target-editor>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(62px,1fr));gap:6px}
+.exercise-round-target-editor label{position:relative;margin:0!important;padding:6px 6px 4px;border:1px solid #e1edf2;border-radius:9px;background:#f8fbfc;color:#8196a3;font-size:8px}
+.exercise-round-target-editor input{height:31px;margin-top:4px;padding-inline:5px;text-align:center;font-size:11px}
+.exercise-round-target-editor label>small{position:absolute;left:10px;bottom:12px;color:#8ca1ad;font-size:7px}
+@media(max-width:380px){.exercise-round-target-editor>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
