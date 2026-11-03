@@ -899,7 +899,7 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-entries.has-entries::before,.home-station-content .home-day-entry::after{display:none!important;content:none!important}
 .home-station-content .home-day-entry{min-height:48px!important;gap:9px!important;padding:5px 2px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--station-ink,#7298ac) 15%,transparent)!important;border-radius:0!important;clip-path:none!important;overflow:visible!important;background:transparent!important;box-shadow:none!important}
 .home-station-content .home-day-entry:last-child{border-bottom:0!important}
-.home-station-content .home-entry-icon,.home-station-content .home-entry-check{width:29px;height:29px;transform:none!important;background:color-mix(in srgb,var(--station-ink,#7298ac) 11%,#fff)!important;color:var(--station-ink,#7298ac)!important}
+.home-station-content .home-entry-icon{width:29px;height:29px;transform:none!important;background:#E5F2F8!important;color:#5E8AA5!important}.home-station-content .home-entry-check{width:29px;height:29px;transform:none!important}
 .home-entry-main{gap:2px!important}.home-entry-main>b{font-size:12px!important;color:#476b82!important}.home-entry-main>small{font-size:9px!important;color:#8398a6!important}
 .home-entry-target{min-width:0!important;color:#607f93!important;font-size:10px!important;font-weight:650!important;direction:rtl!important}
 .home-entry-duration{min-width:35px!important;margin-inline-start:2px;color:#718b9b!important;font-size:10px!important;font-weight:750!important;text-align:left!important}
