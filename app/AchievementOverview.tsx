@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, BookText, Brain, Calendar, CalendarDays, CalendarRange, Clock3, Dumbbell, HeartPulse, Moon, Sparkles, Timer } from "lucide-react";
+import { AlertCircle, BookOpen, BookText, Brain, Calendar, CalendarDays, CalendarRange, Check, Clock3, Dumbbell, HeartPulse, House, Moon, RotateCcw, Sparkles, Timer } from "lucide-react";
 import PrayerBeadsIcon from "./PrayerBeadsIcon";
 import MosqueIcon from "./MosqueIcon";
-import { counterValue, type ExecutionRecord, type PlannedActivity, type UnitProgress, type WeekStartsOn } from "./local-store";
+import { counterValue, type ExecutionRecord, type PlannedActivity, type PrayerStatus, type UnitProgress, type WeekStartsOn } from "./local-store";
 import { PRAYER_NAMES, PRAYER_STATUS_OPTIONS, prayerRecordFor } from "./PrayerTracker";
 
 type Range = "day" | "week" | "month" | "year";
@@ -13,6 +13,16 @@ type Status = "future" | "complete" | "partial" | "missed" | "unscheduled";
 type Metric = { done: number; target: number; unit: string; percent: number | null; dueDays: number; achievedDays: number };
 const weekdays = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 const compactWeekdays = ["س", "ح", "ن", "ث", "ر", "خ", "ج"];
+const prayerStatusIcon = (status: PrayerStatus) => {
+  switch (status) {
+    case "very-early": return <Sparkles aria-hidden="true"/>;
+    case "early": return <Check aria-hidden="true"/>;
+    case "late": return <Clock3 aria-hidden="true"/>;
+    case "very-late": return <AlertCircle aria-hidden="true"/>;
+    case "home": return <House aria-hidden="true"/>;
+    case "makeup": return <RotateCcw aria-hidden="true"/>;
+  }
+};
 const ar = (value: number, maximumFractionDigits = 0) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits, useGrouping: false }).format(value);
 const arGrouped = (value: number) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits: 1, useGrouping: true }).format(value).replace(/[٬,]/g, ".").replace("٫", ".");
 const durationMinutes = (seconds: number) => arGrouped(Math.round(seconds / 6) / 10);
@@ -101,6 +111,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const [activityId, setActivityId] = useState(plan[0]?.id ?? "");
   const [calendar, setCalendar] = useState<CalendarKind>(calendarMode === "gregory" ? "gregory" : "islamic");
   const [dayDetail, setDayDetail] = useState<{ activity: PlannedActivity; date: Date } | null>(null);
+  const [weekPrayerDetail, setWeekPrayerDetail] = useState<{ prayer: string; date: Date; status: PrayerStatus | null } | null>(null);
   const todayKey = keyOf(new Date()), today = dateFromKey(todayKey);
   const firstDay = 6;
   const selectedActivity = plan.find(activity => activity.id === activityId) ?? plan[0];
@@ -314,7 +325,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
         {weekOffset !== 0 && <button className="achievement-current-period" type="button" aria-label="العودة للأسبوع الحالي" onClick={() => setWeekOffset(0)}><CurrentPeriodIcon/></button>}
         <button type="button" aria-label="الأسبوع التالي" onClick={() => setWeekOffset(value => value + 1)}>←</button>
       </div>
-      {prayerActivities.map((activity, activityIndex) => {const stats=prayerStateCounts(activity,weekDates);return <section className="prayer-achievement-week" key={activity.id} aria-label={`حالات الصلوات الأسبوعية: ${activity.name}`}><h2>{activity.name}</h2><div className="achievement-table-clip" role="region" aria-label="جدول حالات الصلوات الأسبوعية" tabIndex={0}><table className="achievement-table prayer-week-table"><thead><tr><th className="activity-sticky">الصلاة</th>{weekDates.map((date,index)=><th key={keyOf(date)} className={keyOf(date)===todayKey?"today":""}><span>{compactWeekdays[index]}</span></th>)}</tr></thead><tbody>{PRAYER_NAMES.map((name,rowIndex)=><tr key={name} className={`pastel-${(activityIndex+rowIndex)%6}`}><th scope="row" className="activity-sticky">{name}</th>{weekDates.map(date=>{const state=prayerRecordFor(records,activity.id,keyOf(date),name),option=PRAYER_STATUS_OPTIONS.find(item=>item.id===state?.prayerStatus),label=option?.label??(keyOf(date)>todayKey?"—":"·"),shortLabel=state?.prayerStatus?({"very-early":"بج",early:"ب",late:"ت","very-late":"تج",home:"بيت",makeup:"قض"} as Record<string,string>)[state.prayerStatus]??label:label;return <td key={keyOf(date)} className={`prayer-week-cell ${keyOf(date)===todayKey?"today":""}`}><span title={label} aria-label={`${name}: ${label}`} className={state?.prayerStatus?`prayer-state-${state.prayerStatus}`:""}><span className="prayer-week-full-label">{label}</span><span className="prayer-week-short-label" aria-hidden="true">{shortLabel}</span></span></td>})}</tr>)}</tbody></table></div><section className="prayer-week-stats"><b>{ar(stats.registered)} مسجلة</b>{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id}>{item.label} <strong>{ar(stats.counts[item.id])}</strong><i>{stats.registered?`${ar(Math.round(stats.counts[item.id]/stats.registered*100))}٪`:"—"}</i></span>)}</section></section>})}
+      {prayerActivities.map((activity, activityIndex) => {const stats=prayerStateCounts(activity,weekDates);return <section className="prayer-achievement-week" key={activity.id} aria-label={`حالات الصلوات الأسبوعية: ${activity.name}`}><h2>{activity.name}</h2><div className="achievement-table-clip" role="region" aria-label="جدول حالات الصلوات الأسبوعية" tabIndex={0}><table className="achievement-table prayer-week-table"><thead><tr><th className="activity-sticky">الصلاة</th>{weekDates.map((date,index)=><th key={keyOf(date)} className={keyOf(date)===todayKey?"today":""}><span>{compactWeekdays[index]}</span></th>)}</tr></thead><tbody>{PRAYER_NAMES.map((name,rowIndex)=><tr key={name} className={`pastel-${(activityIndex+rowIndex)%6}`}><th scope="row" className="activity-sticky">{name}</th>{weekDates.map(date=>{const state=prayerRecordFor(records,activity.id,keyOf(date),name),status=state?.prayerStatus??null,option=PRAYER_STATUS_OPTIONS.find(item=>item.id===status),label=option?.label??"لم تُسجل";return <td key={keyOf(date)} className={`prayer-week-cell ${keyOf(date)===todayKey?"today":""}`}><button type="button" title={label} aria-label={`${name}، ${compactWeekdays[(date.getUTCDay()+1)%7]}: ${label}`} className={`prayer-week-state ${status?`prayer-state-${status}`:"unrecorded"}`} onClick={()=>setWeekPrayerDetail({prayer:name,date,status})}>{status?prayerStatusIcon(status):<i aria-hidden="true"/>}</button></td>})}</tr>)}</tbody></table></div><section className="prayer-week-stats"><b>{ar(stats.registered)} مسجلة</b>{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id} className={`prayer-week-stat prayer-state-${item.id}`}><i aria-hidden="true"/><small>{item.label}</small><strong>{ar(stats.counts[item.id])}</strong></span>)}</section></section>})}
       {ordinaryPlan.length > 0 && <div className="achievement-table-clip" role="region" aria-label="جدول الإنجازات الأسبوعية" tabIndex={0}>
         <table className="achievement-table">
           <colgroup><col className="activity-col"/>{weekDates.map(date => <col key={keyOf(date)} className="day-col"/>)}<col className="total-col"/><col className="percent-col"/></colgroup>
@@ -385,6 +396,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       </> : <EmptyState/>}
     </>}
 
+    {weekPrayerDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setWeekPrayerDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="week-prayer-detail-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setWeekPrayerDetail(null)}>×</button><small>{formatDate(weekPrayerDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="week-prayer-detail-title">صلاة {weekPrayerDetail.prayer}</h2><p className={`day-status ${weekPrayerDetail.status ? `prayer-state-${weekPrayerDetail.status}` : ""}`}>{PRAYER_STATUS_OPTIONS.find(item => item.id === weekPrayerDetail.status)?.label ?? "لم تُسجل"}</p>{weekPrayerDetail.status && <p className="prayer-week-detail-hint">{PRAYER_STATUS_OPTIONS.find(item => item.id === weekPrayerDetail.status)?.hint}</p>}</section></div>}
     {dayDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setDayDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="achievement-day-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setDayDetail(null)}>×</button><small>{formatDate(dayDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="achievement-day-title">{dayDetail.activity.name}</h2>{dayDetail.activity.template === "صلاة" ? <div className="prayer-day-detail">{PRAYER_NAMES.map(name=>{const record=prayerRecordFor(records,dayDetail.activity.id,keyOf(dayDetail.date),name),status=PRAYER_STATUS_OPTIONS.find(item=>item.id===record?.prayerStatus);return <div key={name}><b>{name}</b><span className={status?`prayer-state-${status.id}`:""}>{status?.label??"لم تُسجل"}</span></div>})}</div> : (() => { const status = statusForDay(dayDetail.activity, dayDetail.date), done = dayDone(dayDetail.activity, dayDetail.date), target = targetForDay(dayDetail.activity, dayDetail.date), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : null; return <><p className="day-status">{statusLabel(status)}</p><div className="day-detail-values"><span><small>المستهدف اليومي</small><b>{target > 0 ? `${ar(target, 1)} ${unitFor(dayDetail.activity)}` : "—"}</b></span><span><small>المنجز الفعلي</small><b>{keyOf(dayDetail.date) > todayKey ? "—" : `${ar(done, 1)} ${unitFor(dayDetail.activity)}`}</b></span><span><small>نسبة الإنجاز</small><b>{percent == null || keyOf(dayDetail.date) > todayKey ? "—" : `${ar(percent)}٪`}</b></span></div></>; })()}</section></div>}
   </section>;
 }
