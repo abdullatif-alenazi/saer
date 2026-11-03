@@ -66,7 +66,7 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete }:
 
   return <div className="workout-settings-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
     <section className="workout-settings-panel" role="dialog" aria-modal="true" aria-labelledby="workout-settings-title">
-      <header className="workout-settings-heading"><div><small>إدارة البرنامج الرياضي</small><h2 id="workout-settings-title">إعدادات الكاليستنكس</h2></div><button type="button" aria-label="إغلاق الإعدادات" onClick={onClose}><X size={20}/></button></header>
+      <header className="workout-settings-heading"><div><small>إدارة البرنامج الرياضي</small><h2 id="workout-settings-title">إعدادات الكاليسثنكس</h2></div><button type="button" aria-label="إغلاق الإعدادات" onClick={onClose}><X size={20}/></button></header>
       <nav className="workout-settings-tabs" aria-label="أقسام الإعدادات">{([["program", "البرنامج"], ["schedule", "الجدول"], ["session", "الجلسة"], ["settings", "الإعدادات"]] as [Tab, string][]).map(([id, label]) => <button key={id} type="button" className={tab === id ? "active" : ""} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>)}</nav>
       <div className="workout-settings-content">
         {tab === "program" && <div className="workout-settings-program">

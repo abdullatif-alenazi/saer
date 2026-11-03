@@ -20,7 +20,8 @@ export type WeekStartsOn="saturday"|"sunday";
 export function readWeekStartsOn():WeekStartsOn{return localStorage.getItem(weekStartsOnKey)==="sunday"?"sunday":"saturday"}
 export function saveWeekStartsOn(value:WeekStartsOn){localStorage.setItem(weekStartsOnKey,value);notifyChange()}
 const notifyChange=()=>{if(typeof window!=="undefined")window.dispatchEvent(new Event("sair-local-change"))};
-export function readExecutionLog():ExecutionRecord[]{try{return JSON.parse(localStorage.getItem(key)||"[]")}catch{return[]}}
+const normalizeCalisthenicsLabel=(value:string)=>value.replaceAll("كاليستنكس","كاليسثنكس");
+export function readExecutionLog():ExecutionRecord[]{try{return(JSON.parse(localStorage.getItem(key)||"[]") as ExecutionRecord[]).map(record=>({...record,activity:normalizeCalisthenicsLabel(record.activity)}))}catch{return[]}}
 export function saveExecution(record:ExecutionRecord){const records=readExecutionLog(),next=record.id?[record,...records.filter(item=>item.id!==record.id)].slice(0,500):[record,...records].slice(0,500);localStorage.setItem(key,JSON.stringify(next));notifyChange();return next.length}
 
 export type WorkoutSchedule={days:string[];timeMode:"time"|"station";time?:string;station?:string};
@@ -39,7 +40,7 @@ export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"�
 const planKey="sair.plan.v1";
 export const PRAYER_ACTIVITY_ID="sair-prayer-tracker";
 const prayerWeekDays=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
-const normalize=(item:PlannedActivity):PlannedActivity=>({...item,nature:item.nature??"commitment",schedule:{...item.schedule,days:item.schedule.days??[]}});
+const normalize=(item:PlannedActivity):PlannedActivity=>({...item,name:normalizeCalisthenicsLabel(item.name),nature:item.nature??"commitment",schedule:{...item.schedule,days:item.schedule.days??[]}});
 export function readPlan():PlannedActivity[]{
  try{
   const raw=JSON.parse(localStorage.getItem(planKey)||"[]") as PlannedActivity[],plan=raw.map(normalize),prayers=plan.filter(item=>item.template==="صلاة");
