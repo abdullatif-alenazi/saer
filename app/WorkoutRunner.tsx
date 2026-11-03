@@ -50,6 +50,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const [pendingSet, setPendingSet] = useState<PendingSet | null>(saved?.pendingSet ?? null);
   const [sessionElapsed, setSessionElapsed] = useState(Math.floor((saved?.sessionElapsedMs ?? 0) / 1000));
   const [sessionStarted, setSessionStarted] = useState(saved?.sessionStarted ?? false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [resultsVersion, setResultsVersion] = useState(0);
   const modeRef = useRef<Mode>(mode);
@@ -170,6 +171,17 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     sessionAnchor.current = Date.now();
     phaseAnchor.current = performance.now();
     enterMode(pausedMode);
+  }
+  function requestExit() {
+    if (!sessionStarted || modeRef.current === "sessionDone") { onExit(); return; }
+    setShowExitConfirm(true);
+  }
+  function confirmExit() {
+    const currentMode = modeRef.current;
+    if (currentMode === "prepare" || currentMode === "work" || currentMode === "rest") pauseClock();
+    else persistSnapshot(currentMode);
+    setShowExitConfirm(false);
+    onExit();
   }
   function durationTargetForRound(targetExercise: NonNullable<PlannedActivity["exercises"]>[number] | undefined, round: number) {
     if (!targetExercise || targetExercise.measurement !== "duration") return null;
@@ -350,7 +362,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
 
   return <section className={`workout-runner workout-${mode}`} aria-live="polite">
     <header className="workout-head">
-      <button type="button" aria-label="العودة" onClick={onExit}>×</button>
+      <button type="button" className="workout-exit-action" aria-label={sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"} onClick={requestExit}>{sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"}</button>
       <div className="workout-summary-head"><b>{`التمرين ${ar(exerciseIndex + 1)} من ${ar(exercises.length)}`}</b><span>{mode === "ready" ? "مدة الحصة المتوقعة" : "المتبقي تقديريًا"} <strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></span></div>
     </header>
     <div className="workout-session-meta">
@@ -442,5 +454,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       })}</div>
       <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والإنهاء</button>
     </section>}
+    {showExitConfirm && <div className="workout-exit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowExitConfirm(false); }}><section className="workout-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="workout-exit-title"><span aria-hidden="true">Ⅱ</span><h2 id="workout-exit-title">إنهاء الجلسة؟</h2><p>سيُحفظ تقدمك الحالي، ويمكنك استئناف التمرين لاحقًا.</p><div><button type="button" className="workout-exit-continue" onClick={() => setShowExitConfirm(false)}>متابعة التمرين</button><button type="button" className="workout-exit-confirm" onClick={confirmExit}>إنهاء والعودة</button></div></section></div>}
   </section>;
 }

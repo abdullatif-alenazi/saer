@@ -245,6 +245,16 @@
 /* Keep the ready-state action aligned with Saer's light pastel palette. */
 .workout-ready .workout-main{border:1px solid #b8d9eb;background:#cfe7f5;color:#557187;box-shadow:0 7px 18px rgba(111,150,173,.12);transition:background-color .2s ease,border-color .2s ease,transform .2s ease}
 .workout-ready .workout-main:disabled{border-color:#e0e9ee;background:#eaf1f4;color:#91a8b8;box-shadow:none}
+.workout-head>button.workout-exit-action{width:auto;min-width:64px;height:34px;padding:0 11px;border:1px solid #d8e8ef;border-radius:12px;background:#fff;color:#68869a;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer}
+.workout-exit-backdrop{position:fixed;z-index:120;inset:0;display:grid;place-items:center;padding:18px;background:rgba(69,91,106,.24);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.workout-exit-dialog{width:min(350px,100%);padding:23px 19px 17px;border:1px solid #d8e8ef;border-radius:22px;background:linear-gradient(155deg,#fff,#f4fafd);box-shadow:0 18px 48px rgba(62,97,120,.18);color:#557187;text-align:center}
+.workout-exit-dialog>span{display:grid;width:42px;height:42px;margin:0 auto 10px;place-items:center;border-radius:50%;background:#eaf4f8;color:#6f96ab;font-size:18px;font-weight:900}
+.workout-exit-dialog h2{margin:0;font-size:19px}
+.workout-exit-dialog p{margin:8px 0 18px;color:#8298a6;font-size:12px;line-height:1.7}
+.workout-exit-dialog>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.workout-exit-dialog>div button{min-height:42px;padding:8px;border:1px solid #d6e7ef;border-radius:12px;background:#fff;color:#68869a;font-size:11px;font-weight:800}
+.workout-exit-dialog>div .workout-exit-confirm{border-color:#b8d9eb;background:#cfe7f5;color:#557187}
+@media(prefers-reduced-motion:reduce){.workout-exit-backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media(max-width:380px){.workout-exercise-track{gap:6px}.workout-exercise-card{flex-basis:138px;padding:8px;min-height:76px}.workout-exercise-expanded{padding:7px 8px}.workout-exercise-expanded>footer{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.workout-exercise-card,.workout-exercise-card-rounds>i{transition:none}.workout-exercise-card-rounds>i.done{animation:none}.workout-exercise-expanded{animation:none}}
 .selected-exercises article{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:stretch;padding:11px;border:1px solid var(--line);border-radius:14px;background:#fff}
