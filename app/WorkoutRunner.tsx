@@ -411,7 +411,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   return <section className={`workout-runner workout-${mode}`} aria-live="polite" style={{ "--workout-accent": activity.workoutColor ?? "#73b8ce" } as CSSProperties}>
     <header className="workout-head">
       <button type="button" className="workout-exit-action" aria-label={sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"} onClick={requestExit}>{sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"}</button>
-      <div className="workout-summary-head"><b>{`التمرين ${ar(exerciseIndex + 1)} من ${ar(exercises.length)}`}</b><span>{mode === "ready" ? "مدة الحصة المتوقعة" : "المتبقي تقديريًا"} <strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></span></div>
+      <div className="workout-summary-head"><span>{mode === "ready" ? "مدة الحصة المتوقعة" : "المتبقي تقديريًا"} <strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></span></div>
     </header>
     <div className="workout-session-meta">
       <div className="workout-exercise-track" ref={exerciseTrack} aria-label={`تمارين الحصة، ${ar(completedRounds)} من ${ar(totalRounds)} جولات مكتملة`}>
@@ -422,17 +422,14 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
             ? Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0)
             : Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0);
           const actualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
-          const percent = targetTotal > 0 ? Math.min(100, Math.round(actualTotal / targetTotal * 100)) : null;
-          const label = done ? "مكتمل" : index === exerciseIndex ? "حالي" : "قادم";
           return <button key={item.id} type="button" data-exercise-id={item.id} className={`workout-exercise-card ${index === exerciseIndex ? "current" : ""} ${done ? "complete" : ""} ${expandedExerciseId === item.id ? "expanded" : ""}`} aria-current={index === exerciseIndex ? "step" : undefined} aria-expanded={expandedExerciseId === item.id} onClick={() => setExpandedExerciseId(current => current === item.id ? null : item.id)}>
-            <span className="workout-exercise-card-head"><b>{item.name}</b><small>{label === "مكتمل" ? "✓ مكتمل" : label}</small></span>
+            <span className="workout-exercise-card-head"><b>{item.name}</b></span>
             <span className="workout-exercise-card-rounds">{Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
               const completed = roundIndex < (result?.completedSets ?? 0);
               const active = index === exerciseIndex && roundIndex + 1 === setIndex && !completed && mode !== "exerciseDone" && mode !== "sessionDone";
               return <i key={roundIndex} className={`${completed ? "done" : ""} ${active ? "active" : ""}`} aria-label={`الجولة ${ar(roundIndex + 1)}${completed ? " مكتملة" : active ? " الحالية" : " قادمة"}`} />;
             })}</span>
             <span className="workout-exercise-card-total">{ar(actualTotal)} / {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ث"}</span>
-            {percent !== null && <span className="workout-exercise-card-percent">{ar(percent)}٪ من المستهدف</span>}
           </button>;
         })}
       </div>
@@ -464,7 +461,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       <section className="workout-current" aria-label="التمرين الحالي">
         <p className="workout-status">{status}</p>
         <h1>{exercise.name}</h1>
-        <p className="set-label">الجولة <b>{ar(setIndex)}</b> من {sets ? ar(sets) : "غير محدد"}</p>
         {(mode === "prepare" || mode === "work" || mode === "rest" || mode === "paused") && <div key={`${mode}-${pausedMode}`} className={`workout-clock ${finalCountdown ? "clock-pulse" : ""}`} style={{ "--timer-progress": `${mode === "prepare" ? seconds / Math.max(1, preparationSeconds) * 100 : progress}%` } as CSSProperties}>
           <div><strong>{mode === "prepare" ? ar(seconds) : clock(seconds)}</strong><span>{mode === "prepare" ? "وتبدأ الجولة" : mode === "paused" ? "المؤقت متوقف" : mode === "rest" ? restExpired ? "انتهت الراحة" : "استراحة" : mode === "work" && exercise.measurement === "duration" ? targetDuration === null ? "الوقت المنقضي" : "زمن الجولة" : "زمن الجولة المنقضي"}</span>{mode === "work" && <small>{exercise.measurement === "repetitions" ? targetReps === null ? "هدف التكرار غير محدد" : `${ar(targetReps)} تكرار مستهدف` : targetDuration === null ? "مدة مستهدفة غير محددة" : `المستهدف ${clock(targetDuration)}`}</small>}{mode === "rest" && !restExpired && <small>{`راحة قبل الجولة ${ar(setIndex)}`}</small>}</div>
         </div>}
