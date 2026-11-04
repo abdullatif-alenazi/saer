@@ -1024,9 +1024,13 @@ body:has(.day-screen.calendar-is-expanded){overflow-y:auto!important;overscroll-
 .home-station-group.is-dimmed{filter:blur(1.6px);opacity:.5;transition:filter .22s ease,opacity .22s ease}
 @media(prefers-reduced-motion:reduce){.home-station-group.is-dimmed{transition:none}}
 .settings-screen .settings-section-title{display:flex;align-items:center;gap:9px;color:#4c7188}
-.settings-screen .settings-section-icon{flex:0 0 32px;width:32px;height:32px;display:inline-grid;place-items:center;border:1px solid #d9eaf2;border-radius:11px;background:#eaf5fa;color:#5b8399}
+.settings-screen .settings-section-icon{flex:0 0 32px;width:32px;height:32px;display:inline-grid;place-items:center;border:1px solid #d8e8ef;border-radius:11px;background:#edf6fa;color:#52748a}
 .settings-screen .calendar-settings-link>button{justify-content:space-between!important;background:#f8fcfd!important;border-color:#dceaf0!important;color:#4e7188!important}
 .settings-screen .settings-link-label{display:inline-flex;align-items:center;gap:9px;color:#4e7188}
-.settings-screen .settings-link-label svg{color:#6c9bb2}
+.settings-screen .settings-link-label svg{color:#52748a}
 .settings-screen .calendar-settings-link>button .settings-link-arrow{font-size:20px;color:#7e9cad}
 .settings-screen .time-bubble-setting{border-color:#dceaf0;background:#fff}
+.settings-screen .time-bubble-setting+.time-bubble-setting{margin-top:12px!important}
+.settings-screen .time-bubble-scope-options .calendar-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;min-height:48px!important;padding:4px!important;border:1px solid #deebf1!important;border-radius:14px!important;background:#f3f8fb!important}
+.settings-screen .time-bubble-scope-options .calendar-switch button{min-width:0!important;min-height:40px!important;padding:6px 8px!important;border:1px solid transparent!important;border-radius:11px!important;background:transparent!important;color:#7f98a8!important;font-size:12px!important;line-height:1.25!important;white-space:nowrap!important}
+.settings-screen .time-bubble-scope-options .calendar-switch button.selected{border-color:#d2e7f0!important;background:#e7f3f8!important;color:#52748a!important;box-shadow:0 2px 7px rgba(85,113,135,.08)!important}
