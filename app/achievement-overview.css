@@ -40,6 +40,13 @@
 @media(prefers-reduced-motion:reduce){.achievement-overview.is-transitioning-out,.achievement-overview.is-transitioning-in,.achievement-day-backdrop,.achievement-day-dialog,.achievement-annual-card>i>b,.achievement-calendar-day>i,.achievement-day-cell button i{animation:none;transition:none}}
 .achievement-day-cell.recorded-unscheduled button{background:color-mix(in srgb,var(--cell) 54%,white);color:#4e7188}
 .achievement-day-dialog{max-height:min(82dvh,720px);overflow:auto}
+.achievement-day-cell button small{z-index:1;align-self:start;margin-top:-7px;color:#7895a5;font-size:7px;line-height:1}
+.achievement-total-cell small+small{color:#7895a5}
+.workout-period-summary{display:grid;gap:6px}
+.workout-period-summary article{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 9px;padding:8px 10px;border:1px solid #dcecf3;border-radius:13px;background:#f3f9fb;color:#557b91;font-size:10px}
+.workout-period-summary article>b{flex-basis:100%;color:#4c7188;font-size:11px}
+.achievement-annual-card>small{display:block;color:var(--card-muted);font-size:8px;line-height:1.4;white-space:normal}
+.achievement-annual-card>span{white-space:normal;line-height:1.35}
 .achievement-workout-results{display:grid;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e5eef2;text-align:right}
 .achievement-workout-results>h3{margin:0;color:#4e7188;font-size:13px}
 .achievement-workout-results>article{display:grid;gap:7px;padding:10px;border:1px solid #dfebf0;border-radius:13px;background:#f8fbfc}

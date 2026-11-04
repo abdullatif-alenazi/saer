@@ -26,6 +26,13 @@ const prayerStatusIcon = (status: PrayerStatus) => {
 const ar = (value: number, maximumFractionDigits = 0) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits, useGrouping: false }).format(value);
 const arGrouped = (value: number) => new Intl.NumberFormat("ar-SA", { maximumFractionDigits: 1, useGrouping: true }).format(value).replace(/[٬,]/g, ".").replace("٫", ".");
 const durationMinutes = (seconds: number) => arGrouped(Math.round(seconds / 6) / 10);
+const formatWorkoutDuration = (seconds: number) => {
+  const totalMinutes = Math.floor(Math.max(0, seconds) / 60), remainingSeconds = Math.floor(Math.max(0, seconds) % 60);
+  const hours = Math.floor(totalMinutes / 60), minutes = totalMinutes % 60;
+  if (hours) return `${ar(hours)}س${minutes ? ` ${ar(minutes)}د` : ""}`;
+  if (totalMinutes) return `${ar(totalMinutes)}د${remainingSeconds ? ` ${ar(remainingSeconds)}ث` : ""}`;
+  return `${ar(remainingSeconds)}ث`;
+};
 const riyadhDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh", year: "numeric", month: "2-digit", day: "2-digit" });
 const keyOf = (date: Date) => riyadhDate.format(date);
 const dateFromKey = (key: string) => { const [year, month, day] = key.split("-").map(Number); return new Date(Date.UTC(year, month - 1, day, 12)); };
@@ -77,10 +84,12 @@ const sessionsPerWeek = (activity: PlannedActivity) => {
 };
 const progressFor = (activity: PlannedActivity, progress?: UnitProgress) => activity.unitTracking
   ? activity.unitTracking.periods.reduce((sum, period) => sum + Math.max(progress?.targetByPeriod?.[period.id] ?? period.target, 0), 0)
+  : activity.exercises?.length ? activity.exercises.reduce((sum, exercise) => sum + Math.max(0, Math.floor(exercise.sets || 0)), 0)
   : activity.quantity && activity.quantity > 0 ? activity.quantity
     : activity.expectedMinutes > 0 ? activity.expectedMinutes : 1;
 const unitFor = (activity: PlannedActivity) => activity.unitTracking ? activity.unit ?? "ذكر"
   : activity.template === "صلاة" ? "صلوات"
+  : activity.exercises?.length ? "جولة"
   : activity.quantity && activity.quantity > 0 ? activity.unit ?? "وحدة"
     : activity.expectedMinutes > 0 ? "دقيقة" : activity.goalDefinition?.unit ?? "مرة";
 const validActivityRecords = (activity: PlannedActivity, records: ExecutionRecord[]) => records.filter(record => (record.activityId === activity.id || (!record.activityId && record.activity === activity.name)) && record.status !== "missed");
@@ -174,9 +183,22 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
 
   const activityProgress = (activity: PlannedActivity) => unitProgress.filter(item => item.activityId === activity.id);
   const activityRecords = (activity: PlannedActivity) => validActivityRecords(activity, records);
+  const workoutStatsForDates = (activity: PlannedActivity, dates: Date[]) => {
+    const keys = new Set(dates.map(keyOf));
+    const sessions = activityRecords(activity).filter(record => keys.has(recordDate(record)) && record.exerciseResults?.length);
+    const exerciseResults = sessions.flatMap(record => record.exerciseResults ?? []);
+    return {
+      sessions: sessions.length,
+      rounds: exerciseResults.reduce((sum, result) => sum + result.completedSets, 0),
+      repetitions: exerciseResults.reduce((sum, result) => sum + result.repetitions, 0),
+      performanceSeconds: exerciseResults.reduce((sum, result) => sum + result.durationSeconds, 0),
+      restSeconds: sessions.reduce((sum, record) => sum + (record.restDurationSeconds ?? 0), 0),
+    };
+  };
   const dayDone = (activity: PlannedActivity, date: Date) => {
     const key = keyOf(date), relevant = activityRecords(activity).filter(record => recordDate(record) === key);
     if (activity.template === "صلاة") return new Set(relevant.filter(record => record.prayerName && record.prayerStatus).map(record => record.prayerName)).size;
+    if (activity.exercises?.length) return relevant.flatMap(record => record.exerciseResults ?? []).reduce((sum, result) => sum + result.completedSets, 0);
     if (activity.unitTracking) {
       const progress = activityProgress(activity).find(item => item.date === key);
       const tracked = progress ? activity.unitTracking.periods.reduce((sum, period) => sum + Math.max(counterValue(progress, period.id), (progress.completedUnitsByPeriod[period.id]?.length ?? 0) * period.unitValue), 0) : 0;
@@ -226,6 +248,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
   const weeklyAverage = weeklyDue.length ? Math.round(weeklyDue.reduce((sum, item) => sum + Math.min(100, item.metric.done / item.metric.target * 100), 0) / weeklyDue.length) : null;
   const dailyDue = range === "day" ? ordinaryPlan.filter(activity => !["unscheduled", "future"].includes(statusForDay(activity, selectedDay))) : [];
   const dailyAchieved = range === "day" ? dailyDue.filter(activity => statusForDay(activity, selectedDay) === "complete").length : 0;
+  const weeklyWorkoutStats = range === "week" ? ordinaryPlan.filter(activity => activity.exercises?.length).map(activity => ({ activity, ...workoutStatsForDates(activity, weekDates) })) : [];
 
   const moveCalendar = (amount: number, period: "month" | "year") => {
     const start = calendarParts(viewDate, calendar), direction = Math.sign(amount);
@@ -265,7 +288,9 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
 
   const annualMetrics = range === "year" && selectedActivity ? monthGroups.map(group => ({ ...group, metric: metricFor(selectedActivity, group.dates) })) : [];
   const monthlyPrayerStats = range === "month" && selectedActivity?.template === "صلاة" ? prayerStateCounts(selectedActivity, monthDates) : null;
+  const monthlyWorkoutStats = range === "month" && selectedActivity?.exercises?.length ? workoutStatsForDates(selectedActivity, monthDates) : null;
   const annualPrayerStats = range === "year" && selectedActivity?.template === "صلاة" ? prayerStateCounts(selectedActivity, yearDates) : null;
+  const annualWorkoutStats = range === "year" && selectedActivity?.exercises?.length ? workoutStatsForDates(selectedActivity, yearDates) : null;
   const annualPrayerMonths = range === "year" && selectedActivity?.template === "صلاة" ? monthGroups.map(group => ({ ...group, ...prayerStateCounts(selectedActivity, group.dates) })) : [];
   const annualMetric = range === "year" && selectedActivity ? metricFor(selectedActivity, yearDates) : null;
   const averageMonthly = annualMetrics.filter(item => item.metric.target > 0);
@@ -296,7 +321,8 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
             const workoutTargetSets = recordedExercises.reduce((sum, result) => sum + result.targetSets, 0);
             const workoutDoneSets = recordedExercises.reduce((sum, result) => sum + result.completedSets, 0);
             const cardPercent = workout && workoutTargetSets ? Math.min(100, Math.round(workoutDoneSets / workoutTargetSets * 100)) : percent;
-            const primaryValue = status === "future" || status === "unscheduled" ? statusLabel(status) : workout ? `${ar(cardPercent)}٪` : target > 0 ? `${arGrouped(done)} ${unitFor(activity)}` : statusLabel(status);
+            const workoutStats = workout ? workoutStatsForDates(activity, [selectedDay]) : null;
+            const primaryValue = status === "future" || status === "unscheduled" ? statusLabel(status) : workout ? `${ar(workoutStats?.rounds ?? 0)} جولة` : target > 0 ? `${arGrouped(done)} ${unitFor(activity)}` : statusLabel(status);
             const legacyWorkoutRecord = workout && dayRecords.length > 0 && dayRecords.some(record => !record.exerciseResults?.length);
             const workoutDetails = workout ? (activity.exercises ?? []).map(exercise => {
               const results = recordedExercises.filter(result => result.exerciseId === exercise.id || (!result.exerciseId && result.name === exercise.name));
@@ -306,11 +332,11 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
               return exercise.measurement === "repetitions" ? `${arGrouped(count)} عدة ${exercise.name}` : `${durationMinutes(seconds)} د ${exercise.name}`;
             }).filter((value): value is string => Boolean(value)) : [];
             const secondaryValue = workout
-              ? workoutDetails.length ? workoutDetails.join("  ") : legacyWorkoutRecord ? "تفاصيل الجلسة السابقة غير محفوظة" : "لا توجد تفاصيل جلسة مسجلة"
+              ? workoutDetails.length ? `${ar(workoutStats?.sessions ?? 0)} جلسة · ${workoutDetails.join("  ")}` : legacyWorkoutRecord ? "تفاصيل الجلسة السابقة غير محفوظة" : "لا توجد تفاصيل جلسة مسجلة"
               : target > 0 ? `${arGrouped(target)} ${unitFor(activity)}` : status === "future" || status === "unscheduled" ? "" : statusLabel(status);
             return <button type="button" key={activity.id} className={`achievement-daily-card pastel-${index % 6} ${status}`} onClick={() => onStartActivity(activity, selectedDay)} aria-label={`بدء تنفيذ ${activity.name} في ${compactDate(selectedDay, calendar)}`}>
               <span className="achievement-daily-fill" style={{ width: `${cardPercent}%` }}/>
-              <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><span className="achievement-daily-heading"><b>{activity.name || "نشاط بلا اسم"}</b><strong>{primaryValue}</strong></span>{secondaryValue && <small className={workout ? "achievement-daily-exercise-details" : ""}>{workout && workoutDetails.length ? workoutDetails.map((detail, detailIndex) => <span key={`${activity.id}-${detailIndex}`}>{detail}</span>) : secondaryValue}</small>}</span></span>
+              <span className="achievement-daily-main"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><span className="achievement-daily-copy"><span className="achievement-daily-heading"><b>{activity.name || "نشاط بلا اسم"}</b><strong>{primaryValue}</strong></span>{secondaryValue && <small className={workout ? "achievement-daily-exercise-details" : ""}>{workout && workoutDetails.length ? <><span>{ar(workoutStats?.sessions ?? 0)} جلسة</span>{workoutDetails.map((detail, detailIndex) => <span key={`${activity.id}-${detailIndex}`}>{detail}</span>)}</> : secondaryValue}</small>}</span></span>
             </button>;
           })}
         </section>
@@ -339,9 +365,11 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
                 const recordedOnUnscheduledDay = status === "unscheduled" && done > 0;
                 const displayStatus = recordedOnUnscheduledDay ? "recorded-unscheduled" : status;
                 const emptyDay = status === "future" || status === "unscheduled" && !recordedOnUnscheduledDay;
-                return <td key={keyOf(date)} className={`achievement-day-cell ${displayStatus} ${keyOf(date) === todayKey ? "today" : ""}`}><button type="button" aria-label={`${activity.name}، ${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}: ${emptyDay ? status === "future" ? "يوم مستقبلي" : "غير مجدول" : `${ar(done, 1)} ${unitFor(activity)}`}`} onClick={() => setDayDetail({ activity, date })} title={emptyDay ? status === "future" ? "يوم مستقبلي" : "غير مجدول" : `${ar(done, 1)} ${unitFor(activity)}${recordedOnUnscheduledDay ? " · إنجاز مسجل في يوم غير مجدول" : target > 0 ? ` من ${ar(target, 1)}` : ""}`}>{emptyDay ? "—" : ar(done, 1)}{target > 0 && !emptyDay && <i style={{ width: `${percent}%` }}/>}</button></td>;
+                const workoutStats = activity.exercises?.length ? workoutStatsForDates(activity, [date]) : null;
+                const detail = workoutStats?.sessions ? `، ${ar(workoutStats.sessions)} جلسة، ${arGrouped(workoutStats.repetitions)} عدة، أداء ${formatWorkoutDuration(workoutStats.performanceSeconds)}` : "";
+                return <td key={keyOf(date)} className={`achievement-day-cell ${displayStatus} ${keyOf(date) === todayKey ? "today" : ""}`}><button type="button" aria-label={`${activity.name}، ${formatDate(date, calendar, { weekday: "long", day: "numeric", month: "long" })}: ${emptyDay ? status === "future" ? "يوم مستقبلي" : "غير مجدول" : `${ar(done, 1)} ${unitFor(activity)}${detail}`}`} onClick={() => setDayDetail({ activity, date })} title={emptyDay ? status === "future" ? "يوم مستقبلي" : "غير مجدول" : `${ar(done, 1)} ${unitFor(activity)}${detail}${recordedOnUnscheduledDay ? " · إنجاز مسجل في يوم غير مجدول" : target > 0 ? ` من ${ar(target, 1)}` : ""}`}>{emptyDay ? "—" : <>{ar(done, 1)}{activity.exercises?.length && !emptyDay && <small>ج</small>}</>}{target > 0 && !emptyDay && <i style={{ width: `${percent}%` }}/>}</button></td>;
               })}
-              <td className="achievement-total-cell">{summary.target > 0 ? <><b>{ar(summary.done, 1)}</b><small>{summary.unit}</small></> : "—"}</td>
+              <td className="achievement-total-cell">{summary.target > 0 ? <><b>{ar(summary.done, 1)}</b><small>{summary.unit}</small>{activity.exercises?.length ? <small>{ar(workoutStatsForDates(activity, weekDates).sessions)} جلسة</small> : null}</> : "—"}</td>
               <td className="achievement-percent-cell">{summary.percent == null ? "—" : `${ar(summary.percent)}٪`}</td>
             </tr>;
           })}</tbody>
@@ -352,6 +380,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
         <div><small>حققت المستهدف</small><b>{ar(weeklyAchieved)}<span> / {ar(weeklyDue.length)}</span></b></div>
         <div><small>متوسط الإنجاز</small><b>{weeklyAverage == null ? "—" : `${ar(weeklyAverage)}٪`}</b></div>
       </section>}
+      {weeklyWorkoutStats.length > 0 && <section className="workout-period-summary" aria-label="نتائج التمارين الأسبوعية">{weeklyWorkoutStats.map(item => <article key={item.activity.id}><b>{item.activity.name}</b><span>{ar(item.sessions)} جلسة</span><span>{ar(item.rounds)} جولة</span><span>{arGrouped(item.repetitions)} عدة</span><span>{formatWorkoutDuration(item.performanceSeconds)} أداء</span><span>{formatWorkoutDuration(item.restSeconds)} راحة</span></article>)}</section>}
     </>}
 
     {range === "month" && <>
@@ -385,6 +414,11 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
           <AnalysisCard title="أفضل يوم" value={bestDate ? formatDate(bestDate, calendar, { weekday: "short", day: "numeric", month: "short" }) : "—"} foot={bestDate ? `${ar(dayDone(selectedActivity, bestDate), 1)} ${unitFor(selectedActivity)}` : "لا توجد إنجازات"} tone="orange"/>
           <AnalysisCard title="الاستمرارية" value={`${ar(streak)} يوم`} foot="أطول سلسلة مكتملة" tone="pink"/>
           <AnalysisCard title="مقارنة بالشهر السابق" value={comparison == null ? "—" : `${comparison > 0 ? "+" : ""}${ar(comparison)} نقطة`} foot={comparison == null ? "لا تتوفر مقارنة" : comparison > 0 ? "تحسن" : comparison < 0 ? "تراجع" : "دون تغيير"} tone="gold"/>
+          {monthlyWorkoutStats && <>
+            <AnalysisCard title="جلسات التمرين" value={`${ar(monthlyWorkoutStats.sessions)} جلسة`} foot={`${ar(monthlyWorkoutStats.rounds)} جولة مكتملة`} tone="blue"/>
+            <AnalysisCard title="التكرارات المنجزة" value={`${arGrouped(monthlyWorkoutStats.repetitions)} عدة`} foot="مجموع التكرارات الفعلية" tone="green"/>
+            <AnalysisCard title="زمن الأداء" value={formatWorkoutDuration(monthlyWorkoutStats.performanceSeconds)} foot={`راحة فعلية ${formatWorkoutDuration(monthlyWorkoutStats.restSeconds)}`} tone="purple"/>
+          </>}
           </>}
         </section>
       </>}
@@ -394,8 +428,8 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       <div className="achievement-controls"><label htmlFor="achievement-year-activity">النشاط</label><select id="achievement-year-activity" value={selectedActivity?.id ?? ""} onChange={event => setActivityId(event.target.value)}>{plan.map(activity => <option key={activity.id} value={activity.id}>{activity.name || "نشاط بلا اسم"}</option>)}</select></div>
       <CalendarToolbar title={yearTitle} calendarMode={calendarMode} calendar={calendar} onCalendar={setCalendar} onPrevious={() => moveCalendar(-1, "year")} onNext={() => moveCalendar(1, "year")} />
       {selectedActivity ? <>
-        <div className="achievement-month-cards">{selectedActivity.template === "صلاة" ? annualPrayerMonths.map((item,index)=>{const early=item.counts["very-early"]+item.counts.early,percent=item.registered?Math.round(early/item.registered*100):null;return <button type="button" className={`achievement-annual-card pastel-${index%6}`} key={item.month} onClick={()=>goMonth(item.dates)}><header><b>{item.label}</b><strong>{percent==null?"—":`${ar(percent)}٪`}</strong></header><span>{ar(item.registered)} صلاة مسجلة</span><i><b style={{width:`${percent??0}%`}}/></i></button>}) : annualMetrics.map((item, index) => <button type="button" className={`achievement-annual-card pastel-${index % 6}`} key={item.month} onClick={() => goMonth(item.dates)}><header><b>{item.label}</b><strong>{item.metric.percent == null ? "—" : `${ar(item.metric.percent)}٪`}</strong></header><span>{ar(item.metric.done, 1)} / {ar(item.metric.target, 1)} {item.metric.unit}</span><i><b style={{ width: `${item.metric.percent ?? 0}%` }}/></i></button>)}</div>
-        {selectedActivity.template === "صلاة" && annualPrayerStats ? <section className="achievement-year-summary"><header><b>ملخص الصلوات السنوي</b><strong>{annualPrayerStats.registered ? `${ar(annualPrayerStats.registered)} صلاة` : "لا توجد سجلات"}</strong></header><div className="prayer-year-stats">{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id}><small>{item.label}</small><b>{ar(annualPrayerStats.counts[item.id])} <i>{annualPrayerStats.registered?`${ar(Math.round(annualPrayerStats.counts[item.id]/annualPrayerStats.registered*100))}٪`:"—"}</i></b></span>)}</div></section> : <section className="achievement-year-summary" aria-label="ملخص السنة"><header><b>الإجمالي السنوي</b><strong>{annualMetric?.percent == null ? "—" : `${ar(annualMetric.percent)}٪`}</strong></header><div className="year-summary-values"><span><small>المنجز</small><b>{ar(annualMetric?.done ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>المستهدف</small><b>{ar(annualMetric?.target ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>متوسط شهري</small><b>{averageMonthly.length ? `${ar(averageMonthly.reduce((sum, item) => sum + item.metric.done, 0) / averageMonthly.length, 1)} ${unitFor(selectedActivity)}` : "—"}</b></span><span><small>أفضل شهر</small><b>{bestMonth?.label ?? "—"}</b></span></div><i><b style={{ width: `${annualMetric?.percent ?? 0}%` }}/></i></section>}
+        <div className="achievement-month-cards">{selectedActivity.template === "صلاة" ? annualPrayerMonths.map((item,index)=>{const early=item.counts["very-early"]+item.counts.early,percent=item.registered?Math.round(early/item.registered*100):null;return <button type="button" className={`achievement-annual-card pastel-${index%6}`} key={item.month} onClick={()=>goMonth(item.dates)}><header><b>{item.label}</b><strong>{percent==null?"—":`${ar(percent)}٪`}</strong></header><span>{ar(item.registered)} صلاة مسجلة</span><i><b style={{width:`${percent??0}%`}}/></i></button>}) : annualMetrics.map((item, index) => {const workoutStats = selectedActivity.exercises?.length ? workoutStatsForDates(selectedActivity, item.dates) : null; return <button type="button" className={`achievement-annual-card pastel-${index % 6}`} key={item.month} onClick={() => goMonth(item.dates)}><header><b>{item.label}</b><strong>{item.metric.percent == null ? "—" : `${ar(item.metric.percent)}٪`}</strong></header><span>{ar(item.metric.done, 1)} / {ar(item.metric.target, 1)} {item.metric.unit}</span>{workoutStats && <small>{ar(workoutStats.sessions)} جلسة · {ar(workoutStats.repetitions)} عدة · {formatWorkoutDuration(workoutStats.performanceSeconds)}</small>}<i><b style={{ width: `${item.metric.percent ?? 0}%` }}/></i></button>})}</div>
+        {selectedActivity.template === "صلاة" && annualPrayerStats ? <section className="achievement-year-summary"><header><b>ملخص الصلوات السنوي</b><strong>{annualPrayerStats.registered ? `${ar(annualPrayerStats.registered)} صلاة` : "لا توجد سجلات"}</strong></header><div className="prayer-year-stats">{PRAYER_STATUS_OPTIONS.map(item=><span key={item.id}><small>{item.label}</small><b>{ar(annualPrayerStats.counts[item.id])} <i>{annualPrayerStats.registered?`${ar(Math.round(annualPrayerStats.counts[item.id]/annualPrayerStats.registered*100))}٪`:"—"}</i></b></span>)}</div></section> : <section className="achievement-year-summary" aria-label="ملخص السنة"><header><b>الإجمالي السنوي</b><strong>{annualMetric?.percent == null ? "—" : `${ar(annualMetric.percent)}٪`}</strong></header><div className="year-summary-values"><span><small>المنجز</small><b>{ar(annualMetric?.done ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>المستهدف</small><b>{ar(annualMetric?.target ?? 0, 1)} {unitFor(selectedActivity)}</b></span><span><small>متوسط شهري</small><b>{averageMonthly.length ? `${ar(averageMonthly.reduce((sum, item) => sum + item.metric.done, 0) / averageMonthly.length, 1)} ${unitFor(selectedActivity)}` : "—"}</b></span><span><small>أفضل شهر</small><b>{bestMonth?.label ?? "—"}</b></span>{annualWorkoutStats && <><span><small>الجلسات</small><b>{ar(annualWorkoutStats.sessions)} جلسة</b></span><span><small>التكرارات</small><b>{arGrouped(annualWorkoutStats.repetitions)} عدة</b></span><span><small>زمن الأداء</small><b>{formatWorkoutDuration(annualWorkoutStats.performanceSeconds)}</b></span><span><small>زمن الراحة</small><b>{formatWorkoutDuration(annualWorkoutStats.restSeconds)}</b></span></>}</div><i><b style={{ width: `${annualMetric?.percent ?? 0}%` }}/></i></section>}
       </> : <EmptyState/>}
     </>}
 
