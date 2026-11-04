@@ -389,3 +389,19 @@
 .exercise-round-target-editor input{height:31px;margin-top:4px;padding-inline:5px;text-align:center;font-size:11px}
 .exercise-round-target-editor label>small{position:absolute;left:10px;bottom:12px;color:#8ca1ad;font-size:7px}
 @media(max-width:380px){.exercise-round-target-editor>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Full-width compact exercise rows and a centered exercise-details dialog. */
+.workout-exercise-track{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;overflow:visible;overscroll-behavior:initial;scroll-snap-type:none;padding:2px 1px 4px;direction:rtl}
+.workout-exercise-card{width:100%;min-height:48px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"head rounds total" "head percent total";align-items:center;align-content:center;gap:1px 10px;padding:5px 10px;border-radius:12px;text-align:right}
+.workout-exercise-card-head{grid-area:head;min-width:0;justify-content:flex-start;gap:8px}
+.workout-exercise-card-head>b{font-size:11px}
+.workout-exercise-card-head>small{font-size:8px}
+.workout-exercise-card-rounds{grid-area:rounds;justify-self:center;gap:3px;min-height:8px}
+.workout-exercise-card-rounds>i{width:7px;height:7px}
+.workout-exercise-card-total{grid-area:total;white-space:nowrap;font-size:9px}
+.workout-exercise-card-percent{grid-area:percent;justify-self:center;white-space:nowrap;font-size:7px}
+.workout-detail-backdrop{align-items:center;padding:18px 16px}
+.workout-exercise-expanded{width:min(520px,100%);max-height:min(78dvh,660px);margin:auto;padding:16px;border:1px solid #dce9ef;border-radius:24px;background:linear-gradient(160deg,#fff,#f5fafc);box-shadow:0 16px 44px rgba(65,103,126,.2);animation:workoutExerciseDialogIn .22s cubic-bezier(.22,1,.36,1) both}
+@keyframes workoutExerciseDialogIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(0,1fr) auto auto;gap:1px 6px;padding-inline:7px}.workout-exercise-card-head>b{font-size:10px}.workout-exercise-card-total{font-size:8px}.workout-exercise-expanded{padding:13px}}
+@media(prefers-reduced-motion:reduce){.workout-exercise-expanded{animation:none}}
