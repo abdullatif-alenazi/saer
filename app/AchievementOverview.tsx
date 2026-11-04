@@ -400,7 +400,18 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
     </>}
 
     {weekPrayerDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setWeekPrayerDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="week-prayer-detail-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setWeekPrayerDetail(null)}>×</button><small>{formatDate(weekPrayerDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="week-prayer-detail-title">صلاة {weekPrayerDetail.prayer}</h2><p className={`day-status ${weekPrayerDetail.status ? `prayer-state-${weekPrayerDetail.status}` : ""}`}>{PRAYER_STATUS_OPTIONS.find(item => item.id === weekPrayerDetail.status)?.label ?? "لم تُسجل"}</p>{weekPrayerDetail.status && <p className="prayer-week-detail-hint">{PRAYER_STATUS_OPTIONS.find(item => item.id === weekPrayerDetail.status)?.hint}</p>}</section></div>}
-    {dayDetail && <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setDayDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="achievement-day-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setDayDetail(null)}>×</button><small>{formatDate(dayDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="achievement-day-title">{dayDetail.activity.name}</h2>{dayDetail.activity.template === "صلاة" ? <div className="prayer-day-detail">{PRAYER_NAMES.map(name=>{const record=prayerRecordFor(records,dayDetail.activity.id,keyOf(dayDetail.date),name),status=PRAYER_STATUS_OPTIONS.find(item=>item.id===record?.prayerStatus);return <div key={name}><b>{name}</b><span className={status?`prayer-state-${status.id}`:""}>{status?.label??"لم تُسجل"}</span></div>})}</div> : (() => { const status = statusForDay(dayDetail.activity, dayDetail.date), done = dayDone(dayDetail.activity, dayDetail.date), target = targetForDay(dayDetail.activity, dayDetail.date), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : null; return <><p className="day-status">{statusLabel(status)}</p><div className="day-detail-values"><span><small>المستهدف اليومي</small><b>{target > 0 ? `${ar(target, 1)} ${unitFor(dayDetail.activity)}` : "—"}</b></span><span><small>المنجز الفعلي</small><b>{keyOf(dayDetail.date) > todayKey ? "—" : `${ar(done, 1)} ${unitFor(dayDetail.activity)}`}</b></span><span><small>نسبة الإنجاز</small><b>{percent == null || keyOf(dayDetail.date) > todayKey ? "—" : `${ar(percent)}٪`}</b></span></div></>; })()}</section></div>}
+    {dayDetail && (() => {
+      const dayKey = keyOf(dayDetail.date);
+      const dayRecords = validActivityRecords(dayDetail.activity, records).filter(record => recordDate(record) === dayKey);
+      const workoutRecords = dayRecords.filter(record => record.exerciseResults?.length);
+      return <div className="achievement-day-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setDayDetail(null); }}><section className="achievement-day-dialog" role="dialog" aria-modal="true" aria-labelledby="achievement-day-title"><button className="achievement-dialog-close" type="button" aria-label="إغلاق" onClick={() => setDayDetail(null)}>×</button><small>{formatDate(dayDetail.date, calendar, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</small><h2 id="achievement-day-title">{dayDetail.activity.name}</h2>
+        {dayDetail.activity.template === "صلاة" ? <div className="prayer-day-detail">{PRAYER_NAMES.map(name=>{const record=prayerRecordFor(records,dayDetail.activity.id,dayKey,name),status=PRAYER_STATUS_OPTIONS.find(item=>item.id===record?.prayerStatus);return <div key={name}><b>{name}</b><span className={status?`prayer-state-${status.id}`:""}>{status?.label??"لم تُسجل"}</span></div>})}</div> : <>
+          <p className="day-status">{statusForDay(dayDetail.activity, dayDetail.date) === "unscheduled" && workoutRecords.length ? "جلسة مسجلة في يوم غير مجدول" : statusLabel(statusForDay(dayDetail.activity, dayDetail.date))}</p>
+          {(() => { const done = dayDone(dayDetail.activity, dayDetail.date), target = targetForDay(dayDetail.activity, dayDetail.date), percent = target > 0 ? Math.min(100, Math.round(done / target * 100)) : null; return <div className="day-detail-values"><span><small>المستهدف اليومي</small><b>{target > 0 ? `${ar(target, 1)} ${unitFor(dayDetail.activity)}` : "—"}</b></span><span><small>المنجز الفعلي</small><b>{dayKey > todayKey ? "—" : `${ar(done, 1)} ${unitFor(dayDetail.activity)}`}</b></span><span><small>نسبة الإنجاز</small><b>{percent == null || dayKey > todayKey ? "—" : `${ar(percent)}٪`}</b></span></div>; })()}
+          {dayDetail.activity.exercises?.length ? <WorkoutDayResults records={workoutRecords}/> : null}
+        </>}
+      </section></div>;
+    })()}
   </section>;
 }
 
@@ -408,6 +419,23 @@ function CalendarToolbar({ title, calendarMode, calendar, onCalendar, onPrevious
   return <div className="achievement-calendar-toolbar"><button type="button" aria-label="الفترة السابقة" onClick={onPrevious}>→</button><strong>{title}</strong><button type="button" aria-label="الفترة التالية" onClick={onNext}>←</button>{calendarMode === "mixed" && <div className="achievement-calendar-kind" role="group" aria-label="نوع التقويم"><button type="button" className={calendar === "islamic" ? "selected" : ""} aria-pressed={calendar === "islamic"} onClick={() => onCalendar("islamic")}>هجري</button><button type="button" className={calendar === "gregory" ? "selected" : ""} aria-pressed={calendar === "gregory"} onClick={() => onCalendar("gregory")}>ميلادي</button></div>}</div>;
 }
 function AnalysisCard({ title, value, foot, tone }: { title: string; value: string; foot: string; tone: string }) { return <article className={`achievement-analysis-card tone-${tone}`}><small>{title}</small><b>{value}</b><span>{foot}</span></article>; }
+function WorkoutDayResults({ records }: { records: ExecutionRecord[] }) {
+  const sessions = records.filter(record => record.exerciseResults?.length);
+  if (!sessions.length) return null;
+  const formatDuration = (seconds: number) => `${ar(Math.floor(seconds / 60))}:${ar(Math.floor(seconds % 60), 2)} د`;
+  return <section className="achievement-workout-results" aria-label="نتائج جلسات التمرين">
+    <h3>إنجازات الجلسة</h3>
+    {sessions.map((record, sessionIndex) => <article key={record.id ?? `${record.completedAt}-${sessionIndex}`}>
+      <header><b>{sessions.length > 1 ? `الجلسة ${ar(sessionIndex + 1)}` : "الجلسة"}</b><span>{formatDuration(record.durationSeconds ?? record.minutes * 60)}</span></header>
+      {record.exerciseResults?.map((result, exerciseIndex) => <div className="achievement-workout-exercise" key={`${result.exerciseId}-${exerciseIndex}`}>
+        <b>{result.name}</b>
+        <span>{ar(result.completedSets)} من {ar(result.targetSets)} جولات</span>
+        <strong>{result.measurement === "repetitions" ? `${arGrouped(result.repetitions)} عدة` : formatDuration(result.durationSeconds)}</strong>
+        {result.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `ج${ar(set.round)}: ${arGrouped(set.repetitions)} عدة` : `ج${ar(set.round)}: ${formatDuration(set.durationSeconds)}`).join(" · ")}</small> : null}
+      </div>)}
+    </article>)}
+  </section>;
+}
 function EmptyState() { return <div className="achievement-empty"><p>لا توجد أنشطة محفوظة لعرض إنجازاتها بعد.</p></div>; }
 function statusLabel(status: Status) { return status === "complete" ? "اكتمل المستهدف" : status === "partial" ? "إنجاز جزئي" : status === "missed" ? "مستحق دون إنجاز" : status === "future" ? "يوم مستقبلي" : "غير مجدول"; }
 function CurrentPeriodIcon() { return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 11a8.5 8.5 0 1 1 2.1 6.2M3.5 4.8V11h6.2M12 7.5v5l3.2 1.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
