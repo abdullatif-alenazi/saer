@@ -446,3 +446,14 @@
  .progression-level-track>small{font-size:7px}
  .progression-stage-node i{flex-basis:16px;width:16px;height:16px;font-size:6px}
 }
+
+/* Keep the plan dialog content-sized and avoid repeating table headings in each row. */
+.progression-dialog{height:auto;max-height:min(88dvh,850px)}
+.progression-scroll{flex:0 1 auto;max-height:calc(88dvh - 132px)}
+.progression-field-label{display:none}
+.progression-level-track>small{display:none}
+@media(max-width:560px){
+ .progression-dialog{height:auto;max-height:min(90dvh,850px)}
+ .progression-scroll{max-height:calc(90dvh - 122px)}
+ .progression-field-label{display:block}
+}
