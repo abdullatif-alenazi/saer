@@ -638,14 +638,14 @@
   min-height:70px!important;
   padding:6px 10px!important;
 }
-.workout-exercise-card-rounds{grid-area:rounds;display:grid!important;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:stretch;gap:2px;overflow:hidden;}
-.workout-round-dots-row{display:grid;grid-template-columns:12px minmax(0,1fr)!important;grid-template-areas:"index dots" "count count";align-items:center;gap:1px 4px;min-width:0;min-height:0;}
+.workout-exercise-card-rounds{grid-area:rounds;display:grid!important;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:stretch;gap:2px;overflow:hidden;direction:ltr;}
+.workout-round-dots-row{display:grid;grid-template-columns:12px minmax(0,1fr)!important;grid-template-areas:"index dots" "count count";align-items:center;gap:1px 4px;min-width:0;min-height:0;direction:ltr;}
 .workout-round-index{grid-area:index;align-self:center;font-size:7px;line-height:1;}
-.workout-rep-dots{grid-area:dots;width:100%;min-width:0;display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start;gap:3px;min-height:8px;overflow:hidden;white-space:nowrap;}
-.workout-rep-dots>i{flex:0 0 6px;width:6px;height:6px;}
-.workout-round-count{grid-area:count;justify-self:start;text-align:left;font-size:7px;line-height:1.05;}
+.workout-rep-dots{grid-area:dots;width:100%;min-width:0;display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start;gap:3px;min-height:10px;overflow:hidden;white-space:nowrap;}
+.workout-rep-dots>i{flex:0 0 8px;width:8px;height:8px;}
+.workout-round-count{grid-area:count;justify-self:start;text-align:left;font-size:8px;line-height:1.05;}
 .workout-exercise-card-total{grid-area:total;font-size:8px;line-height:1.1;}
-.workout-exercise-card-times{grid-area:times;font-size:7px;gap:8px;}
+.workout-exercise-card-times{grid-area:times;display:flex;justify-content:flex-start!important;text-align:left;direction:ltr;font-size:7px;gap:8px;}
 .workout-duration-summary{min-height:38px;}
 .workout-clock{width:min(20dvh,48vw,190px)!important;height:min(20dvh,48vw,190px)!important;min-width:min(128px,40vw)!important;min-height:min(128px,40vw)!important;margin:3px 0 4px!important;}
 .workout-current{flex:0 0 auto!important;justify-content:flex-start!important;}
@@ -658,7 +658,7 @@
  .workout-exercise-card-times{font-size:6px;gap:5px;}
  .workout-round-count{font-size:6px;}
  .workout-rep-dots{gap:2px;}
- .workout-rep-dots>i{flex-basis:5px;width:5px;height:5px;}
+ .workout-rep-dots>i{flex-basis:7px;width:7px;height:7px;}
 }
 @media(max-height:740px){
  .workout-runner{min-height:0!important;padding-top:2px!important;gap:3px;}
