@@ -689,3 +689,14 @@
  .progression-scroll{max-height:calc(90dvh - 122px)}
  .progression-field-label{display:block}
 }
+
+
+/* Final alignment for compact workout exercise rows. */
+.workout-exercise-card-head{min-width:0;}
+.workout-exercise-card-head>b{font-size:15px!important;line-height:1.25;overflow:visible;text-overflow:clip;}
+.workout-exercise-card-rounds{justify-items:stretch;direction:ltr;}
+.workout-round-dots-row{direction:ltr;justify-items:start;}
+.workout-round-count{justify-self:start!important;text-align:left!important;font-size:9px!important;line-height:1.2;}
+.workout-exercise-card-total{width:100%;justify-self:stretch!important;text-align:left!important;direction:ltr!important;font-size:10px!important;line-height:1.2;}
+.workout-exercise-card-times{width:100%;justify-self:stretch!important;justify-content:flex-start!important;text-align:left!important;direction:ltr!important;font-size:8px!important;line-height:1.2;}
+@media(max-height:740px){.workout-exercise-card-head>b{font-size:14px!important}.workout-round-count{font-size:8px!important}.workout-exercise-card-total{font-size:9px!important}.workout-exercise-card-times{font-size:7px!important}}
