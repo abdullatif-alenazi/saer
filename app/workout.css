@@ -299,6 +299,23 @@
 }
 @media(prefers-reduced-motion:reduce){.workout-rep-dots>i{transition:none}.workout-rep-dots>i.done{animation:none}}
 
+/* Final compact layout overrides: keep the dots in the full row and the header metrics inside their bounds. */
+.workout-head .workout-summary-head{flex-direction:row;align-items:stretch}
+.workout-head .workout-summary-head.is-active{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.workout-head .workout-summary-head.is-ready{grid-template-columns:minmax(0,1fr)}
+.workout-head .workout-summary-metric{width:auto;max-width:100%;box-sizing:border-box}
+.workout-head>button.workout-exit-action{flex:0 0 auto;width:auto;min-width:max-content}
+.workout-exercise-track{align-content:start;grid-auto-rows:max-content;gap:3px}
+.workout-exercise-card{flex:none;grid-template-columns:minmax(0,1fr) max-content;grid-template-areas:"head total" "rounds rounds";grid-template-rows:auto auto;align-content:center;align-items:center;gap:2px 7px;min-height:0;padding:4px 8px}
+.workout-exercise-card-rounds{grid-area:rounds;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;justify-items:stretch;gap:1px;width:100%;height:auto;min-height:0;overflow:visible}
+.workout-round-dots-row{width:100%;min-height:7px;grid-template-columns:13px minmax(0,1fr) max-content;gap:4px}
+.workout-rep-dots{min-height:6px;align-content:center;overflow:visible}
+.workout-exercise-card-total{font-size:8px}
+@media(max-width:380px){
+ .workout-exercise-card{grid-template-columns:minmax(0,1fr) max-content;grid-template-areas:"head total" "rounds rounds";grid-template-rows:auto auto;min-height:0;padding:4px 7px}
+ .workout-round-dots-row{grid-template-columns:12px minmax(0,1fr) max-content;gap:3px}
+}
+
 /* Dedicated workout settings and viewport-fitted runner */
 .app-shell:has(.workout-runner){height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;overflow-y:hidden!important;padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
 .app-shell:has(.workout-runner) .topbar{position:fixed!important;left:max(0px,calc((100vw - 520px)/2));right:max(0px,calc((100vw - 520px)/2));top:0;z-index:25}
