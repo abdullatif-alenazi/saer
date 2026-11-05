@@ -708,3 +708,18 @@
 .workout-rep-dots{flex:0 1 auto!important;width:auto!important;min-width:0;grid-area:auto!important;overflow:hidden;align-items:center;}
 .workout-round-count{flex:0 0 auto;grid-area:auto!important;justify-self:auto!important;white-space:nowrap;font-size:9px!important;}
 @media(max-height:740px){.workout-round-count{font-size:8px!important}}
+
+
+/* Three-zone exercise rows: name right, rounds centered, timing at far left. */
+.workout-exercise-card{grid-template-columns:minmax(96px,.72fr) minmax(0,1.55fr) minmax(82px,.65fr)!important;grid-template-areas:"head rounds times" "head total times"!important;grid-template-rows:auto auto!important;align-items:center!important;column-gap:10px!important;}
+.workout-exercise-card-head{grid-area:head!important;justify-self:stretch;text-align:right;}
+.workout-exercise-card-head>b{font-size:15px!important;}
+.workout-exercise-card-rounds{grid-area:rounds!important;justify-items:center!important;align-content:center!important;overflow:visible!important;}
+.workout-round-dots-row{display:flex!important;flex-direction:row!important;direction:rtl!important;align-items:center!important;justify-content:center!important;gap:5px!important;width:max-content;max-width:100%;margin-inline:auto;white-space:nowrap;}
+.workout-round-index{flex:0 0 12px;text-align:center;}
+.workout-rep-dots{flex:0 1 auto!important;width:auto!important;max-width:100%;justify-content:center!important;overflow:hidden;}
+.workout-round-count{flex:0 0 auto;white-space:nowrap;text-align:right!important;font-size:9px!important;}
+.workout-exercise-card-total{grid-area:total!important;width:100%;justify-self:stretch!important;text-align:center!important;direction:rtl!important;font-size:10px!important;}
+.workout-exercise-card-times{grid-area:times!important;width:100%;justify-self:stretch!important;align-self:center;display:grid!important;justify-content:start!important;gap:4px!important;text-align:left!important;direction:rtl!important;font-size:8px!important;line-height:1.2;white-space:nowrap;}
+.workout-exercise-card-times>small{font-size:inherit;}
+@media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(78px,.7fr) minmax(0,1.4fr) minmax(68px,.6fr)!important;column-gap:5px!important}.workout-exercise-card-head>b{font-size:13px!important}.workout-round-dots-row{gap:3px!important}.workout-round-count{font-size:8px!important}.workout-exercise-card-times{font-size:7px!important}}
