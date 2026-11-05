@@ -432,7 +432,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           const activeExerciseSeconds = index === exerciseIndex && mode === "work" ? seconds : index === exerciseIndex && mode === "paused" && pausedMode === "work" ? Math.floor(phaseElapsedBase.current / 1000) : 0;
           const actualExerciseSeconds = (result?.durationSeconds ?? 0) + (index === exerciseIndex && pendingSet ? pendingSet.durationSeconds : 0) + activeExerciseSeconds;
           return <button key={item.id} type="button" data-exercise-id={item.id} className={`workout-exercise-card ${index === exerciseIndex ? "current" : ""} ${done ? "complete" : ""} ${expandedExerciseId === item.id ? "expanded" : ""}`} aria-current={index === exerciseIndex ? "step" : undefined} aria-expanded={expandedExerciseId === item.id} onClick={() => setExpandedExerciseId(current => current === item.id ? null : item.id)}>
-            <span className="workout-exercise-card-head"><b>{item.name}</b></span>
+            <span className="workout-exercise-card-head"><b>{item.name}</b><small className="workout-exercise-total-inline">{ar(actualTotal)} / {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ث"}</small></span>
             <span className="workout-exercise-card-rounds">{Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
               const round = roundIndex + 1;
               const savedSet = result?.sets?.find(set => set.round === round);
@@ -456,7 +456,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
                 <small className="workout-round-count">{target > 0 ? `${ar(actual)} / ${ar(target)} ${unitLabel}` : "لم يحدد الهدف"}</small>
               </span>;
             })}</span>
-            <span className="workout-exercise-card-total">المجموع {ar(actualTotal)} / {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ث"}</span>
             <span className="workout-exercise-card-times"><small>متوقع {expectedExerciseSeconds === null ? "—" : clock(expectedExerciseSeconds)}</small><small>فعلي {clock(actualExerciseSeconds)}</small></span>
           </button>;
         })}
@@ -522,7 +521,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       </section>
     </> : <section className="session-finish">
       <span>✓</span><p>{endedEarly ? "ملخص الجلسة" : "اكتملت الحصة"}</p><h1>{ar(completedExerciseCount)} من {ar(exercises.length)} تمارين</h1>
-      <div className="session-finish-kpis"><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small><b>{clock(sessionElapsed)}</b><small>الزمن الإجمالي</small></div>
+      <div className="session-finish-kpis"><article><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small></article><article><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small></article><article><b>{clock(sessionElapsed)}</b><small>الزمن الإجمالي</small></article></div>
       <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا توجد مدة سابقة للمقارنة" : `المتوقع ${clock(expectedTotalSeconds)} · الفعلي ${clock(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clock(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
       <div className="workout-result-list">{exercises.map(item => {
         const result = results.current[item.id];

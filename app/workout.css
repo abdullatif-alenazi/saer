@@ -723,3 +723,24 @@
 .workout-exercise-card-times{grid-area:times!important;width:100%;justify-self:stretch!important;align-self:center;display:grid!important;justify-content:start!important;gap:4px!important;text-align:left!important;direction:rtl!important;font-size:8px!important;line-height:1.2;white-space:nowrap;}
 .workout-exercise-card-times>small{font-size:inherit;}
 @media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(78px,.7fr) minmax(0,1.4fr) minmax(68px,.6fr)!important;column-gap:5px!important}.workout-exercise-card-head>b{font-size:13px!important}.workout-round-dots-row{gap:3px!important}.workout-round-count{font-size:8px!important}.workout-exercise-card-times{font-size:7px!important}}
+
+/* Clear workout results: grouped metrics, one result row per exercise. */
+.workout-sessionDone .workout-session-meta{display:none!important;}
+.session-finish{flex:1 1 auto!important;min-height:0!important;width:100%;overflow-y:auto!important;overscroll-behavior:contain;padding:12px 0 calc(108px + env(safe-area-inset-bottom))!important;box-sizing:border-box;}
+.session-finish-kpis{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch;gap:7px!important;margin:12px 0!important;}
+.session-finish-kpis>article{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 5px;border:1px solid #dceaf0;border-radius:12px;background:#f8fbfc;}
+.session-finish-kpis>article>b{font-size:15px!important;line-height:1.2;white-space:nowrap;}
+.session-finish-kpis>article>small{font-size:8px!important;line-height:1.25;text-align:center;}
+.session-finish>.workout-result-list{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important;gap:7px!important;width:100%;max-height:none!important;overflow:visible!important;margin:8px 0 12px!important;}
+.workout-result-list article{grid-template-columns:minmax(0,1fr) auto;align-items:center;min-width:0;padding:9px 11px;font-size:10px;}
+.workout-result-list article>div{min-width:0;display:grid;gap:3px;}
+.workout-result-list article>div b{font-size:13px;}
+.workout-result-list article>div span{font-size:9px;color:#8198a5;}
+.workout-result-list article>strong{font-size:12px;white-space:nowrap;}
+.session-finish>.primary{flex:none!important;width:100%;min-height:48px;margin:6px 0 0!important;}
+.workout-exercise-card{grid-template-areas:"head rounds times"!important;grid-template-rows:auto!important;}
+.workout-exercise-card-head{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:4px!important;}
+.workout-exercise-total-inline{color:#8198a5!important;font-size:10px!important;font-weight:650;line-height:1.2;white-space:nowrap;}
+.workout-exercise-card-times{font-size:10px!important;color:#64869b!important;gap:6px!important;}
+.workout-exercise-card-times>small{font-weight:700;}
+@media(max-width:380px){.session-finish-kpis{gap:4px!important}.session-finish-kpis>article{padding:8px 3px}.session-finish-kpis>article>b{font-size:13px!important}.session-finish-kpis>article>small{font-size:7px!important}.workout-exercise-total-inline{font-size:9px!important}.workout-exercise-card-times{font-size:8px!important}}
