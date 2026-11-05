@@ -749,3 +749,11 @@
 .workout-exercise-card-times{font-size:10px!important;color:#64869b!important;gap:6px!important;}
 .workout-exercise-card-times>small{font-weight:700;}
 @media(max-width:380px){.session-finish-kpis{gap:4px!important}.session-finish-kpis>article{padding:8px 3px}.session-finish-kpis>article>b{font-size:13px!important}.session-finish-kpis>article>small{font-size:7px!important}.workout-exercise-total-inline{font-size:9px!important}.workout-exercise-card-times{font-size:8px!important}}
+
+/* Timed exercise rounds use one proportional progress bar instead of repetition dots. */
+.workout-round-dots-row.timed-round-row{width:100%!important;max-width:100%!important;justify-content:flex-start!important;gap:8px!important;margin-inline:0!important;}
+.workout-time-progress-track{position:relative;flex:1 1 auto;min-width:26px;height:8px;overflow:hidden;border:1px solid #d4e5eb;border-radius:999px;background:#edf4f6;direction:rtl;}
+.workout-time-progress-track>i{display:block;height:100%;max-width:100%;border-radius:inherit;background:#9bcbd9;transition:width .2s ease,background-color .2s ease;}
+.workout-time-progress-track.active>i{background:#72b9d0;}
+.workout-time-progress-track.done>i{background:#78b88f;}
+@media(prefers-reduced-motion:reduce){.workout-time-progress-track>i{transition:none;}}

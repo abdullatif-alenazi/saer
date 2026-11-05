@@ -7,6 +7,7 @@ import WorkoutSettings from "./WorkoutSettings";
 
 const ar = (value: number, pad = 1) => Math.max(0, Math.floor(value)).toLocaleString("ar-SA", { minimumIntegerDigits: pad, useGrouping: true });
 const clock = (seconds: number) => `${ar(Math.floor(Math.max(0, seconds) / 60), 2)}:${ar(Math.floor(Math.max(0, seconds) % 60), 2)}`;
+const clockWithMinuteUnit = (seconds: number) => `${clock(seconds)} د`;
 type Mode = "ready" | "prepare" | "work" | "rest" | "paused" | "exerciseDone" | "sessionDone";
 type ClockMode = "prepare" | "work" | "rest";
 type PendingSet = { round: number; durationSeconds: number; targetRepetitions?: number; targetDurationSeconds?: number };
@@ -135,20 +136,27 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
 
   const configuredEstimate = useMemo(() => {
     const configured = Number.isFinite(activity.expectedMinutes) && activity.expectedMinutes > 0 ? Math.round(activity.expectedMinutes * 60) : 0;
-    const configuredExerciseTime = exercises.reduce((total, item) => {
-      const itemSets = Number.isFinite(item.sets) ? Math.max(0, Math.floor(item.sets)) : 0;
-      const targetTime = item.measurement === "duration" ? Array.from({ length: itemSets }, (_, index) => Math.max(0, item.durationTargets?.[index] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0) : 0;
+    if (configured > 0) return configured;
+    const allExercisesTimed = exercises.length > 0 && exercises.every(item => item.measurement === "duration" && Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, index) => item.durationTargets?.[index] ?? item.durationSeconds ?? 0).every(value => Number.isFinite(value) && value > 0));
+    if (!allExercisesTimed) return null;
+    return exercises.reduce((total, item) => {
+      const itemSets = Math.max(0, Math.floor(item.sets || 0));
+      const targetTime = Array.from({ length: itemSets }, (_, index) => Math.max(0, item.durationTargets?.[index] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0);
       const restTime = Math.max(0, Number.isFinite(item.restSeconds) ? item.restSeconds : 0) * Math.max(0, itemSets - 1);
       return total + targetTime + restTime + Math.max(0, item.restAfterSeconds ?? 0);
-    }, 0);
-    if (configured > 0) return Math.max(configured, configuredExerciseTime + 5);
-    const containsRepetitionExercise = exercises.some(item => item.measurement === "repetitions");
-    return !containsRepetitionExercise && configuredExerciseTime > 0 ? configuredExerciseTime + 5 : null;
-  }, [activity.expectedMinutes, exercises]);
+    }, preparationSeconds);
+  }, [activity.expectedMinutes, exercises, preparationSeconds]);
+  const completedPreviousSessions = useMemo(() => previousSessions.filter(session => {
+    if (!Number.isFinite(session.durationSeconds) || (session.durationSeconds ?? 0) <= 0 || !session.exerciseResults?.length) return false;
+    return exercises.every(item => {
+      const result = session.exerciseResults?.find(entry => entry.exerciseId === item.id || entry.name === item.name);
+      return Boolean(result && result.targetSets > 0 && result.completedSets >= result.targetSets);
+    });
+  }), [previousSessions, exercises]);
   const previousDuration = useMemo(() => {
-    const recent = previousSessions.filter(item => Number.isFinite(item.durationSeconds) && (item.durationSeconds ?? 0) > 0).slice(0, 3);
+    const recent = completedPreviousSessions.slice(0, 3);
     return recent.length ? Math.round(recent.reduce((sum, item) => sum + (item.durationSeconds ?? 0), 0) / recent.length) : null;
-  }, [previousSessions]);
+  }, [completedPreviousSessions]);
   const expectedTotalSeconds = previousDuration ?? configuredEstimate;
   const totalRounds = exercises.reduce((total, item) => total + (Number.isFinite(item.sets) ? Math.max(0, Math.floor(item.sets)) : 0), 0);
   const completedRounds = Object.values(results.current).reduce((total, item) => total + item.completedSets, 0);
@@ -457,16 +465,21 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           const targetTotal = item.measurement === "repetitions"
             ? Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0)
             : Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0);
-          const actualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
-          const historicalDurations = previousSessions.map(session => session.exerciseResults?.find(entry => entry.exerciseId === item.id || entry.name === item.name)?.durationSeconds).filter((value): value is number => Number.isFinite(value) && (value ?? 0) > 0).slice(0, 3);
+          const savedActualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
+          const historicalDurations = completedPreviousSessions.map(session => {
+            const workSeconds = session.exerciseResults?.find(entry => entry.exerciseId === item.id || entry.name === item.name)?.durationSeconds ?? 0;
+            const plannedRest = Math.max(0, item.restSeconds ?? 0) * Math.max(0, Math.floor(item.sets || 0) - 1) + Math.max(0, item.restAfterSeconds ?? 0);
+            return workSeconds + plannedRest;
+          }).filter(value => Number.isFinite(value) && value > 0).slice(0, 3);
           const configuredDuration = item.measurement === "duration"
             ? Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => Math.max(0, item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0) + Math.max(0, item.restSeconds ?? 0) * Math.max(0, Math.floor(item.sets || 0) - 1) + Math.max(0, item.restAfterSeconds ?? 0)
             : 0;
           const expectedExerciseSeconds = historicalDurations.length ? Math.round(historicalDurations.reduce((sum, value) => sum + value, 0) / historicalDurations.length) : configuredDuration > 0 ? configuredDuration : null;
-          const activeExerciseSeconds = index === exerciseIndex && mode === "work" ? seconds : index === exerciseIndex && mode === "paused" && pausedMode === "work" ? Math.floor(phaseElapsedBase.current / 1000) : 0;
+          const activeExerciseSeconds = index === exerciseIndex && mode === "work" ? exercise?.measurement === "duration" && targetDuration !== null ? Math.floor(elapsedInPhase() / 1000) : seconds : index === exerciseIndex && mode === "paused" && pausedMode === "work" ? Math.floor(phaseElapsedBase.current / 1000) : 0;
+          const actualTotal = savedActualTotal + (item.measurement === "duration" ? activeExerciseSeconds : 0);
           const actualExerciseSeconds = (result?.durationSeconds ?? 0) + (index === exerciseIndex && pendingSet ? pendingSet.durationSeconds : 0) + activeExerciseSeconds;
           return <button key={item.id} type="button" data-exercise-id={item.id} className={`workout-exercise-card ${index === exerciseIndex ? "current" : ""} ${done ? "complete" : ""} ${expandedExerciseId === item.id ? "expanded" : ""}`} aria-current={index === exerciseIndex ? "step" : undefined} aria-expanded={expandedExerciseId === item.id} onClick={() => setExpandedExerciseId(current => current === item.id ? null : item.id)}>
-            <span className="workout-exercise-card-head"><b>{item.name}</b><small className="workout-exercise-total-inline">{ar(actualTotal)} / {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ث"}</small></span>
+            <span className="workout-exercise-card-head"><b>{item.name}</b><small className="workout-exercise-total-inline">{item.measurement === "repetitions" ? `${ar(actualTotal)} / ${targetTotal > 0 ? ar(targetTotal) : "—"} عدة` : `${clockWithMinuteUnit(actualTotal)} / ${targetTotal > 0 ? clockWithMinuteUnit(targetTotal) : "—"}`}</small></span>
             <span className="workout-exercise-card-rounds">{Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
               const round = roundIndex + 1;
               const savedSet = result?.sets?.find(set => set.round === round);
@@ -477,26 +490,24 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
               const actual = item.measurement === "repetitions"
                 ? isPendingRepetitions ? repetitionCount : savedSet?.repetitions ?? 0
                 : isActiveDuration ? activeDuration : savedSet?.durationSeconds ?? 0;
-              const durationUnit = item.measurement === "duration" ? 5 : 1;
-              const visualCount = target > 0 ? Math.min(36, item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) : 0;
-              const filledUnits = item.measurement === "duration" ? actual / durationUnit : actual;
-              const unitLabel = item.measurement === "duration" ? "ث" : "عدة";
-              return <span className="workout-round-dots-row" key={round} aria-label={`الجولة ${ar(round)}: ${ar(actual)} من ${target > 0 ? ar(target) : "—"} ${unitLabel}`}>
+              const visualCount = target > 0 ? Math.min(36, Math.floor(target)) : 0;
+              const unitLabel = item.measurement === "duration" ? "د" : "عدة";
+              const progressPercent = target > 0 ? Math.max(0, Math.min(100, actual / target * 100)) : 0;
+              return <span className={`workout-round-dots-row ${item.measurement === "duration" ? "timed-round-row" : ""}`} key={round} aria-label={`الجولة ${ar(round)}: ${item.measurement === "duration" ? clockWithMinuteUnit(actual) : ar(actual)} من ${item.measurement === "duration" ? clockWithMinuteUnit(target) : `${ar(target)} عدة`}`}>
                 <small className="workout-round-index">{ar(round)}</small>
-                <span className="workout-rep-dots">{Array.from({ length: visualCount }, (_, dotIndex) => {
-                  const fill = Math.max(0, Math.min(1, filledUnits - dotIndex));
-                  return <i key={dotIndex} className={fill >= 1 ? "done" : fill > 0 ? "partial" : ""} style={fill > 0 && fill < 1 ? { "--dot-fill": `${fill * 100}%` } as CSSProperties : undefined} />;
-                })}{target > 0 && (item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) > visualCount && <small className="workout-dots-overflow">+{ar((item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) - visualCount)}</small>}</span>
-                <small className="workout-round-count">{target > 0 ? `${ar(actual)} / ${ar(target)} ${unitLabel}` : "لم يحدد الهدف"}</small>
+                {item.measurement === "duration"
+                  ? <span className={`workout-time-progress-track ${isActiveDuration ? "active" : savedSet ? "done" : ""}`}><i style={{ width: `${progressPercent}%` }} /></span>
+                  : <span className="workout-rep-dots">{Array.from({ length: visualCount }, (_, dotIndex) => <i key={dotIndex} className={actual > dotIndex ? "done" : ""} />)}</span>}
+                <small className="workout-round-count">{target > 0 ? item.measurement === "duration" ? `${clockWithMinuteUnit(actual)} / ${clockWithMinuteUnit(target)}` : `${ar(actual)} / ${ar(target)} ${unitLabel}` : "لم يحدد الهدف"}</small>
               </span>;
             })}</span>
-            <span className="workout-exercise-card-times"><small>متوقع {expectedExerciseSeconds === null ? "—" : clock(expectedExerciseSeconds)}</small><small>فعلي {clock(actualExerciseSeconds)}</small></span>
+            <span className="workout-exercise-card-times"><small>متوقع {expectedExerciseSeconds === null ? "—" : clockWithMinuteUnit(expectedExerciseSeconds)}</small><small>فعلي {clockWithMinuteUnit(actualExerciseSeconds)}</small></span>
           </button>;
         })}
       </div>
       <div className="workout-duration-summary has-actual" aria-label="مجموع الزمن المتوقع والفعلي للحصة">
-        <div><small>مجموع الوقت المتوقع</small><strong>{cardExpected === null ? "غير محدد" : clock(cardExpected)}</strong></div>
-        <div><small>مجموع الوقت الفعلي</small><strong>{clock(sessionElapsed)}</strong></div>
+        <div><small>مجموع الوقت المتوقع</small><strong>{cardExpected === null ? "غير محدد" : clockWithMinuteUnit(cardExpected)}</strong></div>
+        <div><small>مجموع الوقت الفعلي</small><strong>{clockWithMinuteUnit(sessionElapsed)}</strong></div>
       </div>
       {expandedExerciseId && (() => {
         const item = exercises.find(candidate => candidate.id === expandedExerciseId);
@@ -512,8 +523,8 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
               const round = roundIndex + 1;
               const savedSet = result?.sets?.find(set => set.round === round);
               const target = item.measurement === "repetitions" ? item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0 : item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0;
-              const targetLabel = item.measurement === "repetitions" ? `${ar(target)} عدة` : `${ar(target)} ث`;
-              const actualLabel = savedSet ? item.measurement === "repetitions" ? `${ar(savedSet.repetitions ?? 0)} عدة` : `${ar(savedSet.durationSeconds)} ث` : "—";
+              const targetLabel = item.measurement === "repetitions" ? `${ar(target)} عدة` : clockWithMinuteUnit(target);
+              const actualLabel = savedSet ? item.measurement === "repetitions" ? `${ar(savedSet.repetitions ?? 0)} عدة` : clockWithMinuteUnit(savedSet.durationSeconds) : "—";
               return <div className="workout-set-table-row" key={round}><b>{ar(round)}</b><span>{targetLabel}</span><strong>{actualLabel}</strong><small>{round < item.sets ? `${ar(Math.max(0, item.restSeconds))} ث` : item.restAfterSeconds ? `${ar(item.restAfterSeconds)} ث` : "—"}</small></div>;
             })}
           </div>
@@ -526,9 +537,9 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       <section className="workout-current" aria-label="التمرين الحالي">
         {mode !== "ready" && <><p className="workout-status">{status}</p><h1>{exercise.name}</h1></>}
         {(mode === "prepare" || mode === "work" || mode === "rest" || mode === "paused") && <div key={`${mode}-${pausedMode}`} className={`workout-clock ${finalCountdown ? "clock-pulse" : ""}`} style={{ "--timer-progress": `${mode === "prepare" ? seconds / Math.max(1, preparationSeconds) * 100 : progress}%` } as CSSProperties}>
-          <div><strong>{mode === "prepare" ? ar(seconds) : clock(seconds)}</strong><span>{mode === "prepare" ? "وتبدأ الجولة" : mode === "paused" ? "المؤقت متوقف" : mode === "rest" ? restExpired ? "انتهت الراحة" : "استراحة" : mode === "work" && exercise.measurement === "duration" ? targetDuration === null ? "الوقت المنقضي" : "زمن الجولة" : "زمن الجولة المنقضي"}</span>{mode === "work" && <small>{exercise.measurement === "repetitions" ? targetReps === null ? "هدف التكرار غير محدد" : `${ar(targetReps)} تكرار مستهدف` : targetDuration === null ? "مدة مستهدفة غير محددة" : `المستهدف ${clock(targetDuration)}`}</small>}{mode === "rest" && !restExpired && <small>{`راحة قبل الجولة ${ar(setIndex)}`}</small>}</div>
+          <div><strong>{mode === "prepare" ? ar(seconds) : clockWithMinuteUnit(seconds)}</strong><span>{mode === "prepare" ? "وتبدأ الجولة" : mode === "paused" ? "المؤقت متوقف" : mode === "rest" ? restExpired ? "انتهت الراحة" : "استراحة" : mode === "work" && exercise.measurement === "duration" ? targetDuration === null ? "الوقت المنقضي" : "زمن الجولة" : "زمن الجولة المنقضي"}</span>{mode === "work" && <small>{exercise.measurement === "repetitions" ? targetReps === null ? "هدف التكرار غير محدد" : `${ar(targetReps)} تكرار مستهدف` : targetDuration === null ? "مدة مستهدفة غير محددة" : `المستهدف ${clockWithMinuteUnit(targetDuration)}`}</small>}{mode === "rest" && !restExpired && <small>{`راحة قبل الجولة ${ar(setIndex)}`}</small>}</div>
         </div>}
-        {mode === "ready" && <div className="workout-clock workout-ready-clock"><div><span className="workout-clock-label">هدف الجولة</span><strong>{exercise.measurement === "repetitions" ? targetReps === null ? "—" : ar(targetReps) : targetDuration === null ? "—" : clock(targetDuration)}</strong><span>{exercise.measurement === "repetitions" ? `عدات ${exercise.name}` : `مدة ${exercise.name}`}</span></div></div>}
+        {mode === "ready" && <div className="workout-clock workout-ready-clock"><div><span className="workout-clock-label">هدف الجولة</span><strong>{exercise.measurement === "repetitions" ? targetReps === null ? "—" : ar(targetReps) : targetDuration === null ? "—" : clockWithMinuteUnit(targetDuration)}</strong><span>{exercise.measurement === "repetitions" ? `عدات ${exercise.name}` : `مدة ${exercise.name}`}</span></div></div>}
         {mode === "ready" && <>
           {exercise.measurement === "repetitions" && targetReps === null && <p className="workout-plan-notice">لم يحدد هدف العدّات في الخطة. سجّل ما أنجزته أثناء الراحة.</p>}
           {exercise.measurement === "duration" && targetDuration === null && <p className="workout-plan-notice">لم تحدد مدة لهذه الجولة. سيعمل المؤقت تصاعديًا حتى تنهيها.</p>}
@@ -555,11 +566,11 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       </section>
     </> : <section className="session-finish">
       <span>✓</span><p>{endedEarly ? "ملخص الجلسة" : "اكتملت الحصة"}</p><h1>{ar(completedExerciseCount)} من {ar(exercises.length)} تمارين</h1>
-      <div className="session-finish-kpis"><article><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small></article><article><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small></article><article><b>{clock(sessionElapsed)}</b><small>الزمن الإجمالي</small></article></div>
-      <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا توجد مدة سابقة للمقارنة" : `المتوقع ${clock(expectedTotalSeconds)} · الفعلي ${clock(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clock(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
+      <div className="session-finish-kpis"><article><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small></article><article><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small></article><article><b>{clockWithMinuteUnit(sessionElapsed)}</b><small>الزمن الإجمالي</small></article></div>
+      <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا توجد مدة سابقة للمقارنة" : `المتوقع ${clockWithMinuteUnit(expectedTotalSeconds)} · الفعلي ${clockWithMinuteUnit(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clockWithMinuteUnit(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
       <div className="workout-result-list">{exercises.map(item => {
         const result = results.current[item.id];
-        return <article key={item.id}><div><b>{item.name}</b><span>{ar(result?.completedSets ?? 0)} من {ar(item.sets)} جولات</span></div><strong>{item.measurement === "repetitions" ? `${ar(result?.repetitions ?? 0)} عدة` : clock(result?.durationSeconds ?? 0)}</strong>{result?.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `${ar(set.repetitions)} من ${set.targetRepetitions ? ar(set.targetRepetitions) : "—"} عدة` : `${clock(set.durationSeconds)} من ${set.targetDurationSeconds ? clock(set.targetDurationSeconds) : "—"}`).join(" · ")}</small> : null}</article>;
+        return <article key={item.id}><div><b>{item.name}</b><span>{ar(result?.completedSets ?? 0)} من {ar(item.sets)} جولات</span></div><strong>{item.measurement === "repetitions" ? `${ar(result?.repetitions ?? 0)} عدة` : clockWithMinuteUnit(result?.durationSeconds ?? 0)}</strong>{result?.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `${ar(set.repetitions)} من ${set.targetRepetitions ? ar(set.targetRepetitions) : "—"} عدة` : `${clockWithMinuteUnit(set.durationSeconds)} من ${set.targetDurationSeconds ? clockWithMinuteUnit(set.targetDurationSeconds) : "—"}`).join(" · ")}</small> : null}</article>;
       })}</div>
       <div className="session-finish-actions">
         <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والعودة إلى اليوم</button>
