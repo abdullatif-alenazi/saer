@@ -525,6 +525,77 @@
  .progression-stage-node i{flex-basis:16px;width:16px;height:16px;font-size:6px}
 }
 
+/* Compact workout rows: exercise name on the right, round progress and totals on the left. */
+.workout-session-meta{display:flex;flex-direction:column;gap:5px;width:100%;}
+.workout-exercise-card{
+  width:100%;
+  min-height:0;
+  grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)!important;
+  grid-template-areas:"head total" "head rounds"!important;
+  grid-template-rows:auto auto;
+  align-items:center;
+  align-content:center;
+  gap:2px 9px;
+  padding:4px 9px!important;
+  text-align:right;
+}
+.workout-exercise-card-head{grid-area:head;align-self:center;min-width:0;}
+.workout-exercise-card-head>b{font-size:11px;line-height:1.2;}
+.workout-exercise-card-total{grid-area:total;justify-self:stretch;text-align:left;font-size:8px;line-height:1.15;}
+.workout-exercise-card-rounds{
+  grid-area:rounds;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+  align-content:center;
+  justify-items:stretch;
+  gap:1px;
+  width:100%;
+  min-height:0;
+  overflow:hidden;
+}
+.workout-round-dots-row{display:grid;width:100%;grid-template-columns:10px minmax(0,1fr) max-content;gap:3px;align-items:center;min-height:7px;line-height:1;}
+.workout-rep-dots{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap;}
+.workout-rep-dots>i{flex:0 0 4px;width:4px;height:4px;}
+.workout-round-count{font-size:7px;line-height:1;white-space:nowrap;}
+.workout-duration-summary{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:0;
+  width:100%;
+  min-height:34px;
+  padding:5px 10px;
+  border:1px solid #d8e9f0;
+  border-radius:11px;
+  background:#f6fbfd;
+  box-sizing:border-box;
+}
+.workout-duration-summary.has-actual{grid-template-columns:repeat(2,minmax(0,1fr));}
+.workout-duration-summary>div{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;}
+.workout-duration-summary>div+div{border-inline-start:1px solid #dceaf0;padding-inline-start:9px;margin-inline-start:9px;}
+.workout-duration-summary small{color:#8098a6;font-size:8px;font-weight:700;white-space:nowrap;}
+.workout-duration-summary strong{color:#4e7188;font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.workout-end-session{
+  align-self:center;
+  min-height:28px;
+  margin:0 0 4px;
+  padding:3px 13px;
+  border:1px solid #d8e7ed;
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  color:#718b9a;
+  font-size:9px;
+  font-weight:700;
+}
+.workout-current .workout-clock{margin-bottom:3px;}
+@media(max-width:380px){
+ .workout-exercise-card{grid-template-columns:minmax(0,.68fr) minmax(0,1.32fr)!important;gap:2px 6px;padding-inline:7px!important;}
+ .workout-exercise-card-head>b{font-size:10px;}
+ .workout-round-count{font-size:6px;}
+ .workout-duration-summary{padding-inline:7px;}
+ .workout-duration-summary small{font-size:7px;}
+ .workout-duration-summary strong{font-size:10px;}
+}
+
 /* Keep the plan dialog content-sized and avoid repeating table headings in each row. */
 .progression-dialog{height:auto;max-height:min(88dvh,850px)}
 .progression-scroll{flex:0 1 auto;max-height:calc(88dvh - 132px)}

@@ -410,13 +410,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const cardRemaining = mode === "ready" ? expectedTotalSeconds : sessionRemaining;
 
   return <section className={`workout-runner workout-${mode}`} aria-live="polite" style={{ "--workout-accent": activity.workoutColor ?? "#73b8ce" } as CSSProperties}>
-    <header className="workout-head">
-      <button type="button" className="workout-exit-action" aria-label={sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"} onClick={requestExit}>{sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"}</button>
-      <div className={`workout-summary-head ${mode === "ready" ? "is-ready" : "is-active"}`}>
-        <div className="workout-summary-metric expected"><small>{mode === "ready" ? "المدة المتوقعة للحصة" : "المتبقي التقديري"}</small><strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></div>
-        {sessionStarted && <div className="workout-summary-metric actual"><small>الوقت الفعلي</small><strong>{clock(sessionElapsed)}</strong></div>}
-      </div>
-    </header>
     <div className="workout-session-meta">
       <div className="workout-exercise-track" ref={exerciseTrack} aria-label={`تمارين الحصة، ${ar(completedRounds)} من ${ar(totalRounds)} جولات مكتملة`}>
         {exercises.map((item, index) => {
@@ -455,6 +448,10 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           </button>;
         })}
       </div>
+      <div className={`workout-duration-summary ${sessionStarted ? "has-actual" : ""}`} aria-label="ملخص زمن الحصة">
+        <div><small>{mode === "ready" ? "المدة المتوقعة" : "المتبقي التقديري"}</small><strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></div>
+        {sessionStarted && <div><small>الوقت الفعلي</small><strong>{clock(sessionElapsed)}</strong></div>}
+      </div>
       {expandedExerciseId && (() => {
         const item = exercises.find(candidate => candidate.id === expandedExerciseId);
         if (!item) return null;
@@ -487,6 +484,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           <div><strong>{mode === "prepare" ? ar(seconds) : clock(seconds)}</strong><span>{mode === "prepare" ? "وتبدأ الجولة" : mode === "paused" ? "المؤقت متوقف" : mode === "rest" ? restExpired ? "انتهت الراحة" : "استراحة" : mode === "work" && exercise.measurement === "duration" ? targetDuration === null ? "الوقت المنقضي" : "زمن الجولة" : "زمن الجولة المنقضي"}</span>{mode === "work" && <small>{exercise.measurement === "repetitions" ? targetReps === null ? "هدف التكرار غير محدد" : `${ar(targetReps)} تكرار مستهدف` : targetDuration === null ? "مدة مستهدفة غير محددة" : `المستهدف ${clock(targetDuration)}`}</small>}{mode === "rest" && !restExpired && <small>{`راحة قبل الجولة ${ar(setIndex)}`}</small>}</div>
         </div>}
         {mode === "ready" && <div className="workout-clock workout-ready-clock"><div><strong>{exercise.measurement === "repetitions" ? targetReps === null ? "—" : ar(targetReps) : targetDuration === null ? "—" : clock(targetDuration)}</strong><span>{exercise.measurement === "repetitions" ? "عدة مستهدفة" : "مدة الجولة"}</span></div></div>}
+        {sessionStarted && mode !== "sessionDone" && <button type="button" className="workout-end-session" onClick={requestExit}>إنهاء الجلسة</button>}
         {mode === "ready" && <>
           {exercise.measurement === "repetitions" && targetReps === null && <p className="workout-plan-notice">لم يحدد هدف العدّات في الخطة. سجّل ما أنجزته أثناء الراحة.</p>}
           {exercise.measurement === "duration" && targetDuration === null && <p className="workout-plan-notice">لم تحدد مدة لهذه الجولة. سيعمل المؤقت تصاعديًا حتى تنهيها.</p>}
