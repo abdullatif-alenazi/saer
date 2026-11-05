@@ -57,6 +57,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const [sessionElapsed, setSessionElapsed] = useState(Math.floor((saved?.sessionElapsedMs ?? 0) / 1000));
   const [sessionStarted, setSessionStarted] = useState(saved?.sessionStarted ?? false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [endedEarly, setEndedEarly] = useState(false);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [resultsVersion, setResultsVersion] = useState(0);
   const modeRef = useRef<Mode>(mode);
@@ -220,10 +221,20 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   }
   function confirmExit() {
     const currentMode = modeRef.current;
-    if (currentMode === "prepare" || currentMode === "work" || currentMode === "rest") pauseClock();
-    else persistSnapshot(currentMode);
+    const activeClockMode: ClockMode | null = currentMode === "paused" ? pausedMode : currentMode === "prepare" || currentMode === "work" || currentMode === "rest" ? currentMode : null;
+    if (currentMode === "prepare" || currentMode === "work" || currentMode === "rest") commitPhase(currentMode);
+    else if (currentMode === "paused" && pausedMode === "rest") {
+      restElapsedMs.current += phaseElapsedBase.current;
+      setRestSeconds(Math.floor(restElapsedMs.current / 1000));
+    }
+    if (activeClockMode) phaseAnchor.current = null;
+    sessionElapsedBaseMs.current = elapsedSessionMs();
+    sessionAnchor.current = null;
+    setSessionElapsed(Math.floor(sessionElapsedBaseMs.current / 1000));
+    setEndedEarly(true);
     setShowExitConfirm(false);
-    onExit();
+    persistSnapshot("sessionDone");
+    enterMode("sessionDone");
   }
   function durationTargetForRound(targetExercise: NonNullable<PlannedActivity["exercises"]>[number] | undefined, round: number) {
     if (!targetExercise || targetExercise.measurement !== "duration") return null;
@@ -515,16 +526,16 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
         {mode === "exerciseDone" && <div className="exercise-finish"><span>✓</span><b>اكتمل {exercise.name}</b><button type="button" className="primary workout-main" onClick={nextAfterExercise}>{nextExercise ? `التمرين التالي · ${nextExercise.name}` : "عرض ملخص الحصة"}</button></div>}
       </section>
     </> : <section className="session-finish">
-      <span>✓</span><p>اكتملت الحصة</p><h1>{ar(completedExerciseCount)} من {ar(exercises.length)} تمارين</h1>
+      <span>✓</span><p>{endedEarly ? "ملخص الجلسة" : "اكتملت الحصة"}</p><h1>{ar(completedExerciseCount)} من {ar(exercises.length)} تمارين</h1>
       <div className="session-finish-kpis"><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small><b>{clock(sessionElapsed)}</b><small>الزمن الإجمالي</small></div>
       <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا توجد مدة سابقة للمقارنة" : `المتوقع ${clock(expectedTotalSeconds)} · الفعلي ${clock(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clock(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
       <div className="workout-result-list">{exercises.map(item => {
         const result = results.current[item.id];
         return <article key={item.id}><div><b>{item.name}</b><span>{ar(result?.completedSets ?? 0)} من {ar(item.sets)} جولات</span></div><strong>{item.measurement === "repetitions" ? `${ar(result?.repetitions ?? 0)} عدة` : clock(result?.durationSeconds ?? 0)}</strong>{result?.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `${ar(set.repetitions)} من ${set.targetRepetitions ? ar(set.targetRepetitions) : "—"} عدة` : `${clock(set.durationSeconds)} من ${set.targetDurationSeconds ? clock(set.targetDurationSeconds) : "—"}`).join(" · ")}</small> : null}</article>;
       })}</div>
-      <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والإنهاء</button>
+      <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والعودة إلى اليوم</button>
     </section>}
-    {showExitConfirm && <div className="workout-exit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowExitConfirm(false); }}><section className="workout-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="workout-exit-title"><span aria-hidden="true">Ⅱ</span><h2 id="workout-exit-title">إنهاء الجلسة؟</h2><p>سيُحفظ تقدمك الحالي، ويمكنك استئناف التمرين لاحقًا.</p><div><button type="button" className="workout-exit-continue" onClick={() => setShowExitConfirm(false)}>متابعة التمرين</button><button type="button" className="workout-exit-confirm" onClick={confirmExit}>إنهاء والعودة</button></div></section></div>}
+    {showExitConfirm && <div className="workout-exit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowExitConfirm(false); }}><section className="workout-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="workout-exit-title"><span aria-hidden="true">Ⅱ</span><h2 id="workout-exit-title">إنهاء الجلسة؟</h2><p>سيظهر ملخص الجولات المسجلة، ولن تُحتسب الجولة التي لم تؤكد نتيجتها.</p><div><button type="button" className="workout-exit-continue" onClick={() => setShowExitConfirm(false)}>متابعة التمرين</button><button type="button" className="workout-exit-confirm" onClick={confirmExit}>إنهاء وعرض النتائج</button></div></section></div>}
     {settingsOpen && onCloseSettings && onSaveActivity && onDeleteActivity && typeof document !== "undefined" && createPortal(<WorkoutSettings activity={activity} records={executionRecords} onClose={onCloseSettings} onSave={onSaveActivity} onSaveProgression={onSaveProgression} onDelete={onDeleteActivity}/>, document.body)}
   </section>;
 }
