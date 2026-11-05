@@ -277,6 +277,28 @@
  .workout-summary-head.is-ready .workout-summary-metric strong{font-size:16px}
 }
 
+/* Per-round set progress: one green dot per completed rep, with seconds grouped in 5s units. */
+.workout-exercise-card{grid-template-columns:minmax(0,1fr) max-content;grid-template-areas:"head total" "rounds rounds";align-items:center;align-content:center;gap:3px 8px;min-height:0;padding:5px 9px}
+.workout-exercise-card-head{grid-area:head}
+.workout-exercise-card-total{grid-area:total}
+.workout-exercise-card-rounds{grid-area:rounds;width:100%;display:grid;gap:2px;justify-self:stretch;align-items:stretch;min-height:0}
+.workout-round-dots-row{min-width:0;display:grid;grid-template-columns:15px minmax(0,1fr) max-content;align-items:center;gap:5px;min-height:9px;line-height:1}
+.workout-round-index{color:#8ba0ac;font-size:7px;text-align:center}
+.workout-rep-dots{min-width:0;display:flex;align-items:center;gap:2px;flex-wrap:wrap;overflow:hidden}
+.workout-rep-dots>i{flex:0 0 5px;width:5px;height:5px;border:1px solid #cfdee5;border-radius:50%;background:#fff;transition:background .16s,border-color .16s,transform .16s}
+.workout-rep-dots>i.done{border-color:#72b58b;background:#72b58b;animation:roundComplete .22s ease-out}
+.workout-rep-dots>i.partial{border-color:#72b58b;background:linear-gradient(to right,#72b58b var(--dot-fill),#fff var(--dot-fill))}
+.workout-round-count{color:#8299a7;font-size:7px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.workout-dots-overflow{color:#8299a7;font-size:7px;white-space:nowrap}
+@media(max-width:380px){
+ .workout-exercise-card{grid-template-columns:minmax(0,1fr) max-content;gap:2px 6px;padding:4px 7px}
+ .workout-round-dots-row{grid-template-columns:13px minmax(0,1fr) max-content;gap:3px}
+ .workout-rep-dots{gap:1px}
+ .workout-rep-dots>i{flex-basis:4px;width:4px;height:4px}
+ .workout-round-count{font-size:6px}
+}
+@media(prefers-reduced-motion:reduce){.workout-rep-dots>i{transition:none}.workout-rep-dots>i.done{animation:none}}
+
 /* Dedicated workout settings and viewport-fitted runner */
 .app-shell:has(.workout-runner){height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;overflow-y:hidden!important;padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
 .app-shell:has(.workout-runner) .topbar{position:fixed!important;left:max(0px,calc((100vw - 520px)/2));right:max(0px,calc((100vw - 520px)/2));top:0;z-index:25}

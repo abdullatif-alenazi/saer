@@ -428,12 +428,30 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
           const actualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
           return <button key={item.id} type="button" data-exercise-id={item.id} className={`workout-exercise-card ${index === exerciseIndex ? "current" : ""} ${done ? "complete" : ""} ${expandedExerciseId === item.id ? "expanded" : ""}`} aria-current={index === exerciseIndex ? "step" : undefined} aria-expanded={expandedExerciseId === item.id} onClick={() => setExpandedExerciseId(current => current === item.id ? null : item.id)}>
             <span className="workout-exercise-card-head"><b>{item.name}</b></span>
-            <span className="workout-exercise-card-rounds">{Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
-              const completed = roundIndex < (result?.completedSets ?? 0);
-              const active = index === exerciseIndex && roundIndex + 1 === setIndex && !completed && mode !== "exerciseDone" && mode !== "sessionDone";
-              return <i key={roundIndex} className={`${completed ? "done" : ""} ${active ? "active" : ""}`} aria-label={`الجولة ${ar(roundIndex + 1)}${completed ? " مكتملة" : active ? " الحالية" : " قادمة"}`} />;
-            })}</span>
             <span className="workout-exercise-card-total">{ar(actualTotal)} / {targetTotal > 0 ? ar(targetTotal) : "—"} {item.measurement === "repetitions" ? "عدة" : "ث"}</span>
+            <span className="workout-exercise-card-rounds">{Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => {
+              const round = roundIndex + 1;
+              const savedSet = result?.sets?.find(set => set.round === round);
+              const target = item.measurement === "repetitions" ? item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0 : item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0;
+              const isPendingRepetitions = index === exerciseIndex && mode === "rest" && pendingSet?.round === round && item.measurement === "repetitions";
+              const isActiveDuration = index === exerciseIndex && item.measurement === "duration" && (mode === "work" || mode === "paused" && pausedMode === "work") && setIndex === round;
+              const activeDuration = targetDuration === null ? Math.floor(seconds) : Math.max(0, Math.floor(targetDuration - seconds));
+              const actual = item.measurement === "repetitions"
+                ? isPendingRepetitions ? repetitionCount : savedSet?.repetitions ?? 0
+                : isActiveDuration ? activeDuration : savedSet?.durationSeconds ?? 0;
+              const durationUnit = item.measurement === "duration" ? 5 : 1;
+              const visualCount = target > 0 ? Math.min(36, item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) : 0;
+              const filledUnits = item.measurement === "duration" ? actual / durationUnit : actual;
+              const unitLabel = item.measurement === "duration" ? "ث" : "عدة";
+              return <span className="workout-round-dots-row" key={round} aria-label={`الجولة ${ar(round)}: ${ar(actual)} من ${target > 0 ? ar(target) : "—"} ${unitLabel}`}>
+                <small className="workout-round-index">{ar(round)}</small>
+                <span className="workout-rep-dots">{Array.from({ length: visualCount }, (_, dotIndex) => {
+                  const fill = Math.max(0, Math.min(1, filledUnits - dotIndex));
+                  return <i key={dotIndex} className={fill >= 1 ? "done" : fill > 0 ? "partial" : ""} style={fill > 0 && fill < 1 ? { "--dot-fill": `${fill * 100}%` } as CSSProperties : undefined} />;
+                })}{target > 0 && (item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) > visualCount && <small className="workout-dots-overflow">+{ar((item.measurement === "duration" ? Math.ceil(target / durationUnit) : Math.floor(target)) - visualCount)}</small>}</span>
+                <small className="workout-round-count">{target > 0 ? `${ar(actual)} / ${ar(target)} ${unitLabel}` : "لم يحدد الهدف"}</small>
+              </span>;
+            })}</span>
           </button>;
         })}
       </div>
