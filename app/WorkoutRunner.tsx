@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import type { PlannedActivity, WorkoutExercise, WorkoutExerciseResult, WorkoutSetResult, WorkoutSessionSettings } from "./local-store";
+import type { ExecutionRecord, PlannedActivity, WorkoutExercise, WorkoutExerciseResult, WorkoutSetResult, WorkoutSessionSettings } from "./local-store";
 import WorkoutSettings from "./WorkoutSettings";
 
 const ar = (value: number, pad = 1) => Math.max(0, Math.floor(value)).toLocaleString("ar-SA", { minimumIntegerDigits: pad, useGrouping: true });
@@ -31,13 +31,14 @@ function readSnapshot(activityId: string, date: string): WorkoutSnapshot | null 
   } catch { return null; }
 }
 
-export default function WorkoutRunner({ activity, date, onExit, onFinish, previousSessions = [], settingsOpen = false, onCloseSettings, onSaveActivity, onDeleteActivity }: {
+export default function WorkoutRunner({ activity, date, onExit, onFinish, previousSessions = [], executionRecords = [], settingsOpen = false, onCloseSettings, onSaveActivity, onSaveProgression, onDeleteActivity }: {
   activity: PlannedActivity;
   date: string;
   onExit: () => void;
   onFinish: (minutes: number, repetitions: number, durationSeconds?: number, exerciseResults?: WorkoutExerciseResult[], restDurationSeconds?: number) => void;
   previousSessions?: Array<{ durationSeconds?: number; exerciseResults?: WorkoutExerciseResult[] }>;
-  settingsOpen?: boolean; onCloseSettings?: () => void; onSaveActivity?: (activity: PlannedActivity) => void; onDeleteActivity?: () => void;
+  executionRecords?: ExecutionRecord[];
+  settingsOpen?: boolean; onCloseSettings?: () => void; onSaveActivity?: (activity: PlannedActivity) => void; onSaveProgression?: (activity: PlannedActivity) => void; onDeleteActivity?: () => void;
 }) {
   const savedAtMount = useRef<WorkoutSnapshot | null>(typeof window === "undefined" ? null : readSnapshot(activity.id, date));
   const saved = savedAtMount.current;
@@ -499,6 +500,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والإنهاء</button>
     </section>}
     {showExitConfirm && <div className="workout-exit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowExitConfirm(false); }}><section className="workout-exit-dialog" role="dialog" aria-modal="true" aria-labelledby="workout-exit-title"><span aria-hidden="true">Ⅱ</span><h2 id="workout-exit-title">إنهاء الجلسة؟</h2><p>سيُحفظ تقدمك الحالي، ويمكنك استئناف التمرين لاحقًا.</p><div><button type="button" className="workout-exit-continue" onClick={() => setShowExitConfirm(false)}>متابعة التمرين</button><button type="button" className="workout-exit-confirm" onClick={confirmExit}>إنهاء والعودة</button></div></section></div>}
-    {settingsOpen && onCloseSettings && onSaveActivity && onDeleteActivity && typeof document !== "undefined" && createPortal(<WorkoutSettings activity={activity} onClose={onCloseSettings} onSave={onSaveActivity} onDelete={onDeleteActivity}/>, document.body)}
+    {settingsOpen && onCloseSettings && onSaveActivity && onDeleteActivity && typeof document !== "undefined" && createPortal(<WorkoutSettings activity={activity} records={executionRecords} onClose={onCloseSettings} onSave={onSaveActivity} onSaveProgression={onSaveProgression} onDelete={onDeleteActivity}/>, document.body)}
   </section>;
 }

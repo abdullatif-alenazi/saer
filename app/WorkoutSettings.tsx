@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { GripVertical, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import type { PlannedActivity, WorkoutExercise } from "./local-store";
 import { calisthenicsCatalog } from "./workout-data";
+import WorkoutProgression from "./WorkoutProgression";
 
 type Tab = "program" | "schedule" | "session" | "settings";
 const days = ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
@@ -12,11 +13,13 @@ const colors = [{ value: "#77b9d0", label: "أزرق" }, { value: "#82b99a", lab
 const EMPTY_EXERCISES: WorkoutExercise[] = [];
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
-export default function WorkoutSettings({ activity, onClose, onSave, onDelete }: {
+export default function WorkoutSettings({ activity, onClose, onSave, onDelete, records = [], onSaveProgression }: {
   activity: PlannedActivity;
   onClose: () => void;
   onSave: (activity: PlannedActivity) => void;
   onDelete: () => void;
+  records?: import("./local-store").ExecutionRecord[];
+  onSaveProgression?: (activity: PlannedActivity, message?: string) => void;
 }) {
   const [draft, setDraft] = useState(() => clone(activity));
   const [tab, setTab] = useState<Tab>("program");
@@ -26,6 +29,7 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete }:
   const [confirmDeleteActivity, setConfirmDeleteActivity] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState("");
   const [newMeasurement, setNewMeasurement] = useState<"repetitions" | "duration">("repetitions");
+  const [progressionOpen,setProgressionOpen]=useState(false);
   const exercises = draft.exercises ?? EMPTY_EXERCISES;
   const schedule = draft.workoutSchedule ?? { days: draft.schedule.days ?? [], timeMode: draft.startTime ? "time" as const : "station" as const, time: draft.startTime, station: draft.period === "الصباح" ? "الفجر" : draft.period };
   const session = draft.workoutSessionSettings ?? { startMode: draft.workoutStartMode ?? "manual", preparationSeconds: 5, sound: false, vibration: false, motion: "normal" as const };
@@ -71,6 +75,7 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete }:
       <div className="workout-settings-content">
         {tab === "program" && <div className="workout-settings-program">
           <div className="workout-settings-subhead"><b>تمارين البرنامج</b><span>{exercises.length ? `${exercises.length} تمارين` : "أضف تمارين لبرنامجك"}</span></div>
+          <button type="button" className="workout-progression-entry" onClick={()=>setProgressionOpen(true)}><span><b>خطة التقدم</b><small>{draft.progressionPlan?`${draft.progressionPlan.paths.length} مسارات تمرين`:"أنشئ مسارات لمتابعة تطور أدائك"}</small></span><span aria-hidden="true">›</span></button>
           {exercises.map((item, index) => <article className={`workout-plan-item ${editingId === item.id ? "editing" : ""}`} key={item.id} draggable onDragStart={event => event.dataTransfer.setData("text/plain", String(index))} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); moveExercise(Number(event.dataTransfer.getData("text/plain")), index); }}>
             <header><button type="button" className="workout-drag-handle" aria-label="اسحب لإعادة الترتيب"><GripVertical size={17}/></button><button type="button" className="workout-plan-title" onClick={() => setEditingId(editingId === item.id ? null : item.id)}><b>{item.name}</b><small>{item.sets} جولات · {item.measurement === "duration" ? `${item.durationSeconds ?? 0} ث` : `${item.reps ?? 0} عدة`} · راحة {item.restSeconds} ث</small></button><button type="button" aria-label={`حذف ${item.name}`} className="workout-delete-icon" onClick={() => setDeleteId(item.id)}><Trash2 size={16}/></button></header>
             {editingId === item.id && <div className="workout-exercise-editor">
@@ -92,5 +97,6 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete }:
       <footer className="workout-settings-footer"><button type="button" className="workout-settings-cancel" onClick={onClose}>إلغاء</button><button type="button" className="workout-settings-save" onClick={persist}>حفظ الإعدادات</button></footer>
       {(deleteId || confirmReset || confirmDeleteActivity) && <div className="workout-confirm-backdrop"><section role="alertdialog" aria-modal="true"><h3>{confirmDeleteActivity ? "حذف النشاط؟" : confirmReset ? "إعادة ضبط البرنامج؟" : "حذف التمرين؟"}</h3><p>{confirmDeleteActivity ? "سيُزال النشاط من القائمة، وستبقى سجلات الإنجاز التاريخية محفوظة." : confirmReset ? "سيُمسح ترتيب وتمارين البرنامج الحالية فقط، مع بقاء كل نتائج الجولات السابقة." : "سيُحذف التمرين من البرنامج، وستبقى نتائجه السابقة محفوظة."}</p><div><button type="button" onClick={() => { setDeleteId(null); setConfirmReset(false); setConfirmDeleteActivity(false); }}>تراجع</button><button type="button" className="danger" onClick={() => { if (confirmDeleteActivity) onDelete(); else if (confirmReset) { updateDraft({ exercises: [] }); setEditingId(null); } else if (deleteId) { updateDraft({ exercises: exercises.filter(item => item.id !== deleteId) }); setDeleteId(null); } setConfirmReset(false); setConfirmDeleteActivity(false); }}>تأكيد</button></div></section></div>}
     </section>
+    {progressionOpen&&<WorkoutProgression activity={draft} records={records} onClose={()=>setProgressionOpen(false)} onSave={(updated,message)=>{setDraft(updated);onSaveProgression?.(updated,message)}}/>}
   </div>;
 }

@@ -10,6 +10,10 @@ export type TimedRound={id:string;sessionId:string;periodId:string;periodAmounts
 export type TimedSession={id:string;activityId:string;date:string;startedAt:string;roundStartedAt?:string;updatedAt:string;status:"running"|"paused"|"finished";elapsedMs:number;roundElapsedMs:number;pendingRoundAmount?:number;pendingRoundAmounts?:Record<string,number>;pendingRoundPeriodId?:string;pendingUnitIndexes?:number[];pendingUnitIndexesByPeriod?:Record<string,number[]>;rounds:TimedRound[];interrupted?:boolean;finishedAt?:string};
 export type WorkoutSetResult={round:number;repetitions?:number;targetRepetitions?:number;durationSeconds:number;targetDurationSeconds?:number;completedAt:string};
 export type WorkoutExerciseResult={exerciseId:string;name:string;measurement:"repetitions"|"duration";completedSets:number;targetSets:number;repetitions:number;durationSeconds:number;sets?:WorkoutSetResult[]};
+export type ProgressionStage={id:string;name:string;sets:number;targets:number[];completedAt?:string;evidenceSessionIds?:string[]};
+export type ProgressionLevel={id:string;name:string;stages:ProgressionStage[]};
+export type ExerciseProgressionPath={exerciseId:string;exerciseName:string;measurement:"repetitions"|"duration";levels:ProgressionLevel[];currentLevelId:string;currentStageId:string;qualifyingSessionIds:string[];processedSessionIds:string[];pendingPromotion?:{levelId:string;stageId:string;sessionIds:string[];createdAt:string};lastAdvancedAt?:string};
+export type WorkoutProgressionPlan={version:1;name:string;mode:"ready"|"custom";fitnessLevel:"beginner"|"intermediate"|"advanced";goal:string;requiredConsecutiveSessions:number;requireAllSets:boolean;requireSameLevel:boolean;requireConfirmation:boolean;createdAt:string;updatedAt:string;paths:ExerciseProgressionPath[]};
 export type PrayerStatus="very-early"|"early"|"late"|"very-late"|"home"|"makeup";
 export type ExecutionRecord={id?:string;activityId?:string;activity:string;minutes:number;durationSeconds?:number;restDurationSeconds?:number;quantity?:number;targetQuantity?:number;quantityUnit?:string;activityKind?:"quantity"|"time"|"single";completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number;sessionId?:string;rounds?:TimedRound[];exerciseResults?:WorkoutExerciseResult[];prayerName?:"الفجر"|"الظهر"|"العصر"|"المغرب"|"العشاء";prayerStatus?:PrayerStatus};
 const key="sair.executionLog.v1";
@@ -32,7 +36,7 @@ export type PlannedActivity={
  quantity?:number;unit?:string;measurements:string[];startTime?:string;endTime?:string;
  activityKind?:string;trackingMode?:"time"|"distance";workoutStartMode?:"manual"|"automatic";
  workoutSchedule?:WorkoutSchedule;workoutSessionSettings?:WorkoutSessionSettings;workoutEnabled?:boolean;workoutColor?:string;workoutIcon?:string;
- exercises?:WorkoutExercise[];goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
+ exercises?:WorkoutExercise[];progressionPlan?:WorkoutProgressionPlan;goalDefinition?:GoalDefinition;supportingPlan?:SupportingPlan;
  parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;prayerEnabled?:boolean;
 };
 export type Reminder={mode:"none"|"time"|"station"|"before";value?:string|number};

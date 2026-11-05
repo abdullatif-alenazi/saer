@@ -103,13 +103,14 @@ const hasProgress = (activity: PlannedActivity, date: string, records: Execution
   ));
 };
 
-export default function AchievementOverview({ plan, records, unitProgress, calendarMode, onStartActivity, transitioningOut = false, transitioningIn = false }: {
+export default function AchievementOverview({ plan, records, unitProgress, calendarMode, onStartActivity, onOpenProgression, transitioningOut = false, transitioningIn = false }: {
   plan: PlannedActivity[];
   records: ExecutionRecord[];
   unitProgress: UnitProgress[];
   weekStartsOn: WeekStartsOn;
   calendarMode: "islamic" | "gregory" | "mixed";
   onStartActivity: (activity: PlannedActivity, date: Date) => void;
+  onOpenProgression?: (activity: PlannedActivity) => void;
   transitioningOut?: boolean;
   transitioningIn?: boolean;
 }) {
@@ -359,7 +360,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
           <tbody>{ordinaryPlan.map((activity, activityIndex) => {
             const Icon = activityIcon(activity), summary = metricFor(activity, weekDates);
             return <tr key={activity.id} className={`achievement-row pastel-${activityIndex % 6}`}>
-              <th scope="row" className="activity-sticky"><span className="activity-sticky-content"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span><b>{activity.name || "نشاط بلا اسم"}</b></span></th>
+              <th scope="row" className="activity-sticky"><span className="activity-sticky-content"><span className="achievement-card-icon"><Icon aria-hidden="true"/></span>{activity.exercises?.length&&onOpenProgression?<button type="button" className="achievement-progression-link" onClick={()=>onOpenProgression(activity)}>{activity.name || "نشاط بلا اسم"}</button>:<b>{activity.name || "نشاط بلا اسم"}</b>}</span></th>
               {weekDates.map(date => {
                 const status = statusForDay(activity, date), done = dayDone(activity, date), target = targetForDay(activity, date), percent = target ? Math.min(100, Math.round(done / target * 100)) : 0;
                 const recordedOnUnscheduledDay = status === "unscheduled" && done > 0;
@@ -388,7 +389,7 @@ export default function AchievementOverview({ plan, records, unitProgress, calen
       <CalendarToolbar title={monthTitle} calendarMode={calendarMode} calendar={calendar} onCalendar={setCalendar} onPrevious={() => moveCalendar(-1, "month")} onNext={() => moveCalendar(1, "month")} />
       {!selectedActivity ? <EmptyState/> : <>
         <section className="achievement-month-card">
-          <header><div><small>{selectedActivity.name}</small><h2>{monthTitle}</h2></div><div className="achievement-month-legend"><span className="complete">مكتمل</span><span className="partial">جزئي</span><span className="missed">دون إنجاز</span></div></header>
+          <header><div>{selectedActivity.exercises?.length&&onOpenProgression?<button type="button" className="achievement-progression-link" onClick={()=>onOpenProgression(selectedActivity)}>{selectedActivity.name}</button>:<small>{selectedActivity.name}</small>}<h2>{monthTitle}</h2></div><div className="achievement-month-legend"><span className="complete">مكتمل</span><span className="partial">جزئي</span><span className="missed">دون إنجاز</span></div></header>
           <div className="achievement-calendar-grid" dir="rtl">
             {weekDayLabels.map(label => <b className="weekday-label" key={label}>{label}</b>)}
             {Array.from({ length: monthOffset }, (_, index) => <i className="calendar-blank" key={`blank-${index}`} aria-hidden="true"/>)}
