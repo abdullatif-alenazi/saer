@@ -596,6 +596,38 @@
  .workout-duration-summary strong{font-size:10px;}
 }
 
+/* Make each round's dots the first visual cue, with its score beneath. */
+.workout-exercise-card{
+  grid-template-areas:"head rounds" "head total" "head times"!important;
+  grid-template-rows:auto auto auto;
+  gap:2px 9px;
+  padding-block:4px!important;
+}
+.workout-exercise-card-head{grid-area:head;align-self:center;}
+.workout-exercise-card-rounds{grid-area:rounds;gap:2px;}
+.workout-round-dots-row{
+  grid-template-columns:12px minmax(0,1fr)!important;
+  grid-template-areas:"index dots" "count count";
+  gap:1px 4px;
+  min-height:0;
+}
+.workout-round-index{grid-area:index;align-self:center;font-size:7px;}
+.workout-rep-dots{grid-area:dots;min-height:7px;gap:2px;}
+.workout-rep-dots>i{flex-basis:6px;width:6px;height:6px;}
+.workout-round-count{grid-area:count;justify-self:start;text-align:left;font-size:7px;line-height:1.05;}
+.workout-exercise-card-total{grid-area:total;justify-self:start;text-align:left;font-size:8px;line-height:1.1;}
+.workout-exercise-card-times{grid-area:times;display:flex;justify-content:flex-start;gap:8px;min-width:0;color:#7f97a5;font-size:7px;line-height:1.1;white-space:nowrap;}
+.workout-exercise-card-times>small{font-size:inherit;}
+.workout-duration-summary{min-height:38px;padding-block:6px;}
+.workout-clock-label{font-size:10px!important;font-weight:750;color:#8299a7;}
+.workout-ready-clock>div{gap:3px;}
+@media(max-width:380px){
+ .workout-exercise-card{grid-template-columns:minmax(0,.64fr) minmax(0,1.36fr)!important;gap:2px 6px;}
+ .workout-exercise-card-times{gap:5px;font-size:6px;}
+ .workout-round-count{font-size:6px;}
+ .workout-rep-dots>i{flex-basis:5px;width:5px;height:5px;}
+}
+
 /* Keep the plan dialog content-sized and avoid repeating table headings in each row. */
 .progression-dialog{height:auto;max-height:min(88dvh,850px)}
 .progression-scroll{flex:0 1 auto;max-height:calc(88dvh - 132px)}
