@@ -412,7 +412,10 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   return <section className={`workout-runner workout-${mode}`} aria-live="polite" style={{ "--workout-accent": activity.workoutColor ?? "#73b8ce" } as CSSProperties}>
     <header className="workout-head">
       <button type="button" className="workout-exit-action" aria-label={sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"} onClick={requestExit}>{sessionStarted && mode !== "sessionDone" ? "إنهاء الجلسة" : "عودة"}</button>
-      <div className="workout-summary-head"><span>{mode === "ready" ? "مدة الحصة المتوقعة" : "المتبقي تقديريًا"} <strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></span></div>
+      <div className={`workout-summary-head ${mode === "ready" ? "is-ready" : "is-active"}`}>
+        <div className="workout-summary-metric expected"><small>{mode === "ready" ? "المدة المتوقعة للحصة" : "المتبقي التقديري"}</small><strong>{cardRemaining === null ? "غير محدد" : clock(cardRemaining)}</strong></div>
+        {sessionStarted && <div className="workout-summary-metric actual"><small>الوقت الفعلي</small><strong>{clock(sessionElapsed)}</strong></div>}
+      </div>
     </header>
     <div className="workout-session-meta">
       <div className="workout-exercise-track" ref={exerciseTrack} aria-label={`تمارين الحصة، ${ar(completedRounds)} من ${ar(totalRounds)} جولات مكتملة`}>

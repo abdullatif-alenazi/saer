@@ -258,6 +258,25 @@
 @media(max-width:380px){.workout-exercise-track{gap:6px}.workout-exercise-card{flex-basis:138px;padding:8px;min-height:76px}.workout-exercise-expanded{padding:7px 8px}.workout-exercise-expanded>footer{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.workout-exercise-card,.workout-exercise-card-rounds>i{transition:none}.workout-exercise-card-rounds>i.done{animation:none}.workout-exercise-expanded{animation:none}}
 
+/* Make the planned duration prominent before training and separate it from elapsed time. */
+.workout-head{gap:8px}
+.workout-head .workout-summary-head{flex:1;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.workout-summary-metric{min-width:0;min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:5px;padding:5px 8px;border:1px solid #d9e9f0;border-radius:11px;background:#fff;color:#718b9b}
+.workout-summary-metric small{overflow:hidden;color:#718b9b;font-size:8px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+.workout-summary-metric strong{flex:none;color:#4e7188;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.workout-summary-metric.expected{border-color:#c7e4ef;background:#eaf6fa}
+.workout-summary-head.is-ready{grid-template-columns:minmax(0,1fr)}
+.workout-summary-head.is-ready .workout-summary-metric{min-height:44px;padding-inline:10px}
+.workout-summary-head.is-ready .workout-summary-metric small{font-size:9px;font-weight:750}
+.workout-summary-head.is-ready .workout-summary-metric strong{font-size:18px}
+@media(max-width:360px){
+ .workout-head .workout-summary-head{gap:4px}
+ .workout-summary-metric{gap:3px;padding-inline:6px}
+ .workout-summary-metric small{font-size:7px}
+ .workout-summary-metric strong{font-size:12px}
+ .workout-summary-head.is-ready .workout-summary-metric strong{font-size:16px}
+}
+
 /* Dedicated workout settings and viewport-fitted runner */
 .app-shell:has(.workout-runner){height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;overflow-y:hidden!important;padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
 .app-shell:has(.workout-runner) .topbar{position:fixed!important;left:max(0px,calc((100vw - 520px)/2));right:max(0px,calc((100vw - 520px)/2));top:0;z-index:25}
