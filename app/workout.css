@@ -738,6 +738,11 @@
 .workout-result-list article>div span{font-size:9px;color:#8198a5;}
 .workout-result-list article>strong{font-size:12px;white-space:nowrap;}
 .session-finish>.primary{flex:none!important;width:100%;min-height:48px;margin:6px 0 0!important;}
+.session-finish-actions{flex:none!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:stretch;gap:8px!important;width:100%;margin:6px 0 0!important;}
+.session-finish-actions>.primary{min-height:48px;margin:0!important;}
+.session-restart-button{min-height:48px;padding:0 16px;border:1px solid #cfe2eb;border-radius:14px;background:#fff;color:#527b92;font-size:12px;font-weight:800;white-space:nowrap;}
+@media(max-width:380px){.session-finish-actions{grid-template-columns:1fr!important}.session-restart-button{min-height:42px;}}
+
 .workout-exercise-card{grid-template-areas:"head rounds times"!important;grid-template-rows:auto!important;}
 .workout-exercise-card-head{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:4px!important;}
 .workout-exercise-total-inline{color:#8198a5!important;font-size:10px!important;font-weight:650;line-height:1.2;white-space:nowrap;}

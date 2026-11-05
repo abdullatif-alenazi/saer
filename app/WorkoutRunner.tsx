@@ -57,6 +57,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
   const [sessionElapsed, setSessionElapsed] = useState(Math.floor((saved?.sessionElapsedMs ?? 0) / 1000));
   const [sessionStarted, setSessionStarted] = useState(saved?.sessionStarted ?? false);
   const [endedEarly, setEndedEarly] = useState(false);
+  const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [resultsVersion, setResultsVersion] = useState(0);
   const modeRef = useRef<Mode>(mode);
@@ -255,6 +256,39 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     const totalRest = Math.floor(restElapsedMs.current / 1000);
     try { sessionStorage.removeItem(snapshotKey(activity.id, date)); } catch { /* session may be unavailable */ }
     onFinish(Math.max(1, duration / 60), totalRepetitions, duration, completedResults, totalRest);
+  }
+  function restartSession() {
+    savedAtMount.current = null;
+    exercisePlan.current = activity.exercises ?? [];
+    sessionSettings.current = activity.workoutSessionSettings;
+    try { sessionStorage.removeItem(snapshotKey(activity.id, date)); } catch { /* session storage may be unavailable */ }
+    results.current = {};
+    estimateAdjustmentSeconds.current = 0;
+    phaseAnchor.current = null;
+    phaseElapsedBase.current = 0;
+    phaseTarget.current = 0;
+    sessionAnchor.current = null;
+    sessionElapsedBaseMs.current = 0;
+    restElapsedMs.current = 0;
+    pendingSetRef.current = null;
+    restExpiredRef.current = false;
+    inTransition.current = false;
+    finished.current = false;
+    setExerciseIndex(0);
+    setSetIndex(1);
+    setPausedMode("work");
+    setSeconds(0);
+    setRepetitionCount(0);
+    setRestSeconds(0);
+    setRestExpired(false);
+    setPendingSet(null);
+    setSessionElapsed(0);
+    setSessionStarted(false);
+    setEndedEarly(false);
+    setExpandedExerciseId(null);
+    setResultsVersion(version => version + 1);
+    enterMode("ready");
+    setRestartConfirmOpen(false);
   }
   function nextAfterExercise() {
     if (modeRef.current !== "exerciseDone") return;
@@ -527,8 +561,12 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
         const result = results.current[item.id];
         return <article key={item.id}><div><b>{item.name}</b><span>{ar(result?.completedSets ?? 0)} من {ar(item.sets)} جولات</span></div><strong>{item.measurement === "repetitions" ? `${ar(result?.repetitions ?? 0)} عدة` : clock(result?.durationSeconds ?? 0)}</strong>{result?.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `${ar(set.repetitions)} من ${set.targetRepetitions ? ar(set.targetRepetitions) : "—"} عدة` : `${clock(set.durationSeconds)} من ${set.targetDurationSeconds ? clock(set.targetDurationSeconds) : "—"}`).join(" · ")}</small> : null}</article>;
       })}</div>
-      <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والعودة إلى اليوم</button>
+      <div className="session-finish-actions">
+        <button type="button" className="primary" onClick={finishSession} disabled={finished.current}>حفظ النتائج والعودة إلى اليوم</button>
+        <button type="button" className="session-restart-button" onClick={() => setRestartConfirmOpen(true)}>إعادة الجلسة</button>
+      </div>
     </section>}
+    {restartConfirmOpen && typeof document !== "undefined" && createPortal(<div className="workout-confirm-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setRestartConfirmOpen(false); }}><section role="dialog" aria-modal="true" aria-labelledby="workout-restart-title"><h3 id="workout-restart-title">إعادة الجلسة؟</h3><p>ستبدأ من التمرين الأول، ولن تُحفظ نتائج الجلسة الحالية. اختر «حفظ النتائج والعودة إلى اليوم» للاحتفاظ بها.</p><div><button type="button" onClick={() => setRestartConfirmOpen(false)}>إلغاء</button><button type="button" className="danger" onClick={restartSession}>ابدأ من جديد</button></div></section></div>, document.body)}
     {settingsOpen && onCloseSettings && onSaveActivity && onDeleteActivity && typeof document !== "undefined" && createPortal(<WorkoutSettings activity={activity} records={executionRecords} onClose={onCloseSettings} onSave={onSaveActivity} onSaveProgression={onSaveProgression} onDelete={onDeleteActivity}/>, document.body)}
   </section>;
 }
