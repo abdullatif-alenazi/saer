@@ -409,3 +409,40 @@
 @keyframes workoutExerciseDialogIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(0,1fr) 42px max-content;gap:1px 6px;padding-inline:7px}.workout-exercise-card-head>b{font-size:10px}.workout-exercise-card-total{font-size:8px}.workout-exercise-expanded{padding:13px}}
 @media(prefers-reduced-motion:reduce){.workout-exercise-expanded{animation:none}}
+
+/* Keep the progression dialog above the draggable app timer and fit its table to the dialog. */
+.progression-backdrop{z-index:1600}
+.progression-table-wrap{overflow:hidden}
+.progression-table{width:100%;min-width:0;table-layout:fixed}
+.progression-table th:nth-child(1){width:22%}
+.progression-table th:nth-child(2){width:40%}
+.progression-table th:nth-child(3){width:17%}
+.progression-table th:nth-child(4){width:21%}
+.progression-row{min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1.65fr) minmax(0,.78fr) minmax(0,.95fr);gap:6px;padding-inline:8px}
+.progression-row-name,.progression-row-track,.progression-last,.progression-target{min-width:0}
+.progression-row-name b,.progression-row-name small,.progression-last b,.progression-target b{overflow-wrap:anywhere}
+.progression-row-track{display:block;overflow:hidden}
+.progression-last,.progression-target{display:grid;align-content:center;gap:4px}
+.progression-last>small,.progression-target>small{color:#859ba8;font-size:8px;font-weight:700;line-height:1.25}
+.progression-last>b,.progression-target>b{font-size:9px;line-height:1.4}
+.progression-track{display:block;width:100%;min-width:0;overflow:hidden}
+.progression-level-track{width:100%;min-width:0;gap:5px}
+.progression-level-track>small{font-size:8px}
+.progression-level-track>div{width:100%;min-width:0}
+.progression-stage-node{min-width:0}
+.progression-stage-node i{flex:0 0 18px;width:18px;height:18px}
+.progression-stage-node b{min-width:2px}
+
+@media(max-width:560px){
+ .progression-table thead{display:none}
+ .progression-table tbody,.progression-table tr,.progression-table td{display:block;width:100%}
+ .progression-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"name track" "last target";gap:8px 10px;min-height:0;padding:10px}
+ .progression-row-name{grid-area:name}
+ .progression-row-track{grid-area:track}
+ .progression-last{grid-area:last}
+ .progression-target{grid-area:target}
+ .progression-last>small,.progression-target>small{font-size:8px}
+ .progression-last>b,.progression-target>b{font-size:9px}
+ .progression-level-track>small{font-size:7px}
+ .progression-stage-node i{flex-basis:16px;width:16px;height:16px;font-size:6px}
+}
