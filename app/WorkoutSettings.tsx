@@ -34,9 +34,11 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete, r
   const schedule = draft.workoutSchedule ?? { days: draft.schedule.days ?? [], timeMode: draft.startTime ? "time" as const : "station" as const, time: draft.startTime, station: draft.period === "الصباح" ? "الفجر" : draft.period };
   const session = draft.workoutSessionSettings ?? { startMode: draft.workoutStartMode ?? "manual", preparationSeconds: 5, sound: false, vibration: false, motion: "normal" as const };
   const estimate = useMemo(() => {
-    const seconds = exercises.reduce((sum, item) => sum + (item.measurement === "duration"
-      ? Array.from({ length: Math.max(0, item.sets) }, (_, index) => item.durationTargets?.[index] ?? item.durationSeconds ?? 0).reduce((a, b) => a + b, 0)
-      : Math.max(0, item.sets) * 30) + Math.max(0, item.sets - 1) * item.restSeconds + (item.restAfterSeconds ?? 0), 0);
+    const seconds = exercises.reduce((sum, item, index) => sum + (Number.isFinite(item.expectedDurationSeconds) && (item.expectedDurationSeconds ?? 0) > 0
+      ? Math.floor(item.expectedDurationSeconds!)
+      : item.measurement === "duration"
+        ? Array.from({ length: Math.max(0, item.sets) }, (_, round) => item.durationTargets?.[round] ?? item.durationSeconds ?? 0).reduce((a, b) => a + b, 0)
+        : Math.max(0, item.sets) * 30) + Math.max(0, item.sets - 1) * item.restSeconds + (index < exercises.length - 1 ? item.restAfterSeconds ?? 0 : 0), 0);
     return Math.ceil(seconds / 60);
   }, [exercises]);
   const updateDraft = (patch: Partial<PlannedActivity>) => setDraft(value => ({ ...value, ...patch }));
@@ -83,6 +85,7 @@ export default function WorkoutSettings({ activity, onClose, onSave, onDelete, r
               <div className="workout-settings-grid"><label>نوع القياس<select value={item.measurement} onChange={event => updateExercise(item.id, { measurement: event.target.value as WorkoutExercise["measurement"] })}><option value="repetitions">تكرارات</option><option value="duration">مدة زمنية</option></select></label><label>عدد الجولات<input type="number" min="1" max="20" value={item.sets} onChange={event => updateExercise(item.id, resizeTargets(item, Number(event.target.value)))}/></label></div>
               <label className="workout-apply-target">مستهدف موحد لكل الجولات<input type="number" min="1" value={item.measurement === "duration" ? item.durationSeconds ?? 0 : item.reps ?? 0} onChange={event => { const target = Math.max(0, Number(event.target.value)); updateExercise(item.id, item.measurement === "duration" ? { durationSeconds: target, durationTargets: Array.from({ length: item.sets }, () => target) } : { reps: target, repetitionTargets: Array.from({ length: item.sets }, () => target) }); }}/></label>
               <div className="workout-round-targets">{Array.from({ length: Math.max(1, item.sets) }, (_, round) => <label key={round}>الجولة {round + 1}<input type="number" min="0" value={item.measurement === "duration" ? item.durationTargets?.[round] ?? item.durationSeconds ?? 0 : item.repetitionTargets?.[round] ?? item.reps ?? 0} onChange={event => { const values = Array.from({ length: item.sets }, (_, i) => item.measurement === "duration" ? item.durationTargets?.[i] ?? item.durationSeconds ?? 0 : item.repetitionTargets?.[i] ?? item.reps ?? 0); values[round] = Math.max(0, Number(event.target.value)); updateExercise(item.id, item.measurement === "duration" ? { durationTargets: values } : { repetitionTargets: values }); }}/></label>)}</div>
+              <label>الوقت المتوقع للأداء (ثانية)<input type="number" min="0" step="5" value={item.expectedDurationSeconds ?? ""} placeholder="تقدير تلقائي" onChange={event => updateExercise(item.id, { expectedDurationSeconds: event.target.value === "" ? undefined : Math.max(0, Number(event.target.value)) })}/><small>وقت الأداء فقط؛ تُضاف راحة الجولات تلقائيًا.</small></label>
               <div className="workout-settings-grid"><label>الراحة بين الجولات (ث)<input type="number" min="0" step="15" value={item.restSeconds} onChange={event => updateExercise(item.id, { restSeconds: Math.max(0, Number(event.target.value)) })}/></label><label>الراحة بعد التمرين (ث)<input type="number" min="0" step="15" value={item.restAfterSeconds ?? 0} onChange={event => updateExercise(item.id, { restAfterSeconds: Math.max(0, Number(event.target.value)) })}/></label></div>
             </div>}
           </article>)}

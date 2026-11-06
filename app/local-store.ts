@@ -42,7 +42,7 @@ export type PlannedActivity={
  parentGoalId?:string;linkedCommitmentId?:string;reminder?:Reminder;unitTracking?:UnitTracking;prayerEnabled?:boolean;
 };
 export type Reminder={mode:"none"|"time"|"station"|"before";value?:string|number};
-export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;repetitionTargets?:number[];durationSeconds?:number;durationTargets?:number[];restSeconds:number;restAfterSeconds?:number};
+export type WorkoutExercise={id:string;name:string;category:"دفع"|"سحب"|"أرجل"|"جذع";measurement:"repetitions"|"duration";sets:number;reps?:number;repetitionTargets?:number[];durationSeconds?:number;durationTargets?:number[];expectedDurationSeconds?:number;restSeconds:number;restAfterSeconds?:number};
 const planKey="sair.plan.v1";
 export const PRAYER_ACTIVITY_ID="sair-prayer-tracker";
 const prayerWeekDays=["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];

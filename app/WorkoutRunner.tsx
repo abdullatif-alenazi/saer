@@ -174,8 +174,8 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     active.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest", inline: "center" });
   }, [exercise?.id]);
 
-  const allExerciseTimesKnown = exercises.length > 0 && exercises.every(item => (expectedRoundSeconds.current[item.id] ?? []).length >= Math.max(0, Math.floor(item.sets || 0)) && (expectedRoundSeconds.current[item.id] ?? []).slice(0, Math.max(0, Math.floor(item.sets || 0))).every(value => Number.isFinite(value) && value > 0));
-  const exercisePerformanceSeconds = Object.fromEntries(exercises.map(item => [item.id, (expectedRoundSeconds.current[item.id] ?? []).reduce((sum, value) => sum + value, 0)]));
+  const allExerciseTimesKnown = exercises.length > 0 && exercises.every(item => Number.isFinite(item.expectedDurationSeconds) && (item.expectedDurationSeconds ?? 0) > 0 || (expectedRoundSeconds.current[item.id] ?? []).length >= Math.max(0, Math.floor(item.sets || 0)) && (expectedRoundSeconds.current[item.id] ?? []).slice(0, Math.max(0, Math.floor(item.sets || 0))).every(value => Number.isFinite(value) && value > 0));
+  const exercisePerformanceSeconds = Object.fromEntries(exercises.map(item => [item.id, Number.isFinite(item.expectedDurationSeconds) && (item.expectedDurationSeconds ?? 0) > 0 ? Math.floor(item.expectedDurationSeconds!) : (expectedRoundSeconds.current[item.id] ?? []).reduce((sum, value) => sum + value, 0)]));
   const exerciseExpectedSeconds = Object.fromEntries(exercises.map(item => [item.id, exercisePerformanceSeconds[item.id] + Math.max(0, Math.floor(item.sets || 0) - 1) * Math.max(0, item.restSeconds || 0)]));
   const expectedPreparationCount = exercises.reduce((sum, item, index) => sum + Math.max(0, Math.floor(item.sets || 0) - 1) * (roundStartMode === "manual" ? 1 : 0) + (index > 0 && exerciseStartMode === "manual" && item.sets > 0 ? 1 : 0), 0) + (exercises[0]?.sets ? 1 : 0);
   const expectedRestSeconds = exercises.reduce((sum, item, index) => sum + Math.max(0, item.restSeconds || 0) * Math.max(0, Math.floor(item.sets || 0) - 1) + (index < exercises.length - 1 ? Math.max(0, item.restAfterSeconds ?? 0) : 0), 0);
