@@ -134,18 +134,6 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     active.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest", inline: "center" });
   }, [exercise?.id]);
 
-  const configuredEstimate = useMemo(() => {
-    const configured = Number.isFinite(activity.expectedMinutes) && activity.expectedMinutes > 0 ? Math.round(activity.expectedMinutes * 60) : 0;
-    if (configured > 0) return configured;
-    const allExercisesTimed = exercises.length > 0 && exercises.every(item => item.measurement === "duration" && Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, index) => item.durationTargets?.[index] ?? item.durationSeconds ?? 0).every(value => Number.isFinite(value) && value > 0));
-    if (!allExercisesTimed) return null;
-    return exercises.reduce((total, item) => {
-      const itemSets = Math.max(0, Math.floor(item.sets || 0));
-      const targetTime = Array.from({ length: itemSets }, (_, index) => Math.max(0, item.durationTargets?.[index] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0);
-      const restTime = Math.max(0, Number.isFinite(item.restSeconds) ? item.restSeconds : 0) * Math.max(0, itemSets - 1);
-      return total + targetTime + restTime + Math.max(0, item.restAfterSeconds ?? 0);
-    }, preparationSeconds);
-  }, [activity.expectedMinutes, exercises, preparationSeconds]);
   const completedPreviousSessions = useMemo(() => previousSessions.filter(session => {
     if (!Number.isFinite(session.durationSeconds) || (session.durationSeconds ?? 0) <= 0 || !session.exerciseResults?.length) return false;
     return exercises.every(item => {
@@ -153,11 +141,29 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
       return Boolean(result && result.targetSets > 0 && result.completedSets >= result.targetSets);
     });
   }), [previousSessions, exercises]);
-  const previousDuration = useMemo(() => {
-    const recent = completedPreviousSessions.slice(0, 3);
-    return recent.length ? Math.round(recent.reduce((sum, item) => sum + (item.durationSeconds ?? 0), 0) / recent.length) : null;
-  }, [completedPreviousSessions]);
-  const expectedTotalSeconds = previousDuration ?? configuredEstimate;
+  const exerciseExpectedSeconds = useMemo(() => Object.fromEntries(exercises.map(item => {
+    const sets = Math.max(0, Math.floor(item.sets || 0));
+    const historical = completedPreviousSessions.map(session => {
+      const result = session.exerciseResults?.find(entry => entry.exerciseId === item.id || entry.name === item.name);
+      if (!result || result.durationSeconds <= 0) return null;
+      const rests = Math.max(0, item.restSeconds ?? 0) * Math.max(0, sets - 1) + Math.max(0, item.restAfterSeconds ?? 0);
+      return result.durationSeconds + rests;
+    }).filter((value): value is number => value !== null && Number.isFinite(value) && value > 0).slice(0, 3);
+    if (historical.length) return [item.id, Math.round(historical.reduce((sum, value) => sum + value, 0) / historical.length)];
+    if (item.measurement === "duration" && sets > 0) {
+      const targets = Array.from({ length: sets }, (_, index) => item.durationTargets?.[index] ?? item.durationSeconds ?? 0);
+      if (targets.every(value => Number.isFinite(value) && value > 0)) {
+        const work = targets.reduce((sum, value) => sum + value, 0);
+        const rests = Math.max(0, item.restSeconds ?? 0) * Math.max(0, sets - 1) + Math.max(0, item.restAfterSeconds ?? 0);
+        return [item.id, work + rests];
+      }
+    }
+    return [item.id, null];
+  })), [exercises, completedPreviousSessions]);
+  const allExerciseTimesKnown = exercises.length > 0 && exercises.every(item => exerciseExpectedSeconds[item.id] !== null && Number.isFinite(exerciseExpectedSeconds[item.id]));
+  const expectedTotalSeconds = allExerciseTimesKnown
+    ? exercises.reduce((sum, item) => sum + exerciseExpectedSeconds[item.id], preparationSeconds)
+    : null;
   const totalRounds = exercises.reduce((total, item) => total + (Number.isFinite(item.sets) ? Math.max(0, Math.floor(item.sets)) : 0), 0);
   const completedRounds = Object.values(results.current).reduce((total, item) => total + item.completedSets, 0);
   const nextExercise = exercises[exerciseIndex + 1];
@@ -466,15 +472,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
             ? Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.repetitionTargets?.[roundIndex] ?? item.reps ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0)
             : Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0).reduce((sum, value) => sum + Math.max(0, value), 0);
           const savedActualTotal = item.measurement === "repetitions" ? result?.repetitions ?? 0 : result?.durationSeconds ?? 0;
-          const historicalDurations = completedPreviousSessions.map(session => {
-            const workSeconds = session.exerciseResults?.find(entry => entry.exerciseId === item.id || entry.name === item.name)?.durationSeconds ?? 0;
-            const plannedRest = Math.max(0, item.restSeconds ?? 0) * Math.max(0, Math.floor(item.sets || 0) - 1) + Math.max(0, item.restAfterSeconds ?? 0);
-            return workSeconds + plannedRest;
-          }).filter(value => Number.isFinite(value) && value > 0).slice(0, 3);
-          const configuredDuration = item.measurement === "duration"
-            ? Array.from({ length: Math.max(0, Math.floor(item.sets || 0)) }, (_, roundIndex) => Math.max(0, item.durationTargets?.[roundIndex] ?? item.durationSeconds ?? 0)).reduce((sum, value) => sum + value, 0) + Math.max(0, item.restSeconds ?? 0) * Math.max(0, Math.floor(item.sets || 0) - 1) + Math.max(0, item.restAfterSeconds ?? 0)
-            : 0;
-          const expectedExerciseSeconds = historicalDurations.length ? Math.round(historicalDurations.reduce((sum, value) => sum + value, 0) / historicalDurations.length) : configuredDuration > 0 ? configuredDuration : null;
+          const expectedExerciseSeconds = exerciseExpectedSeconds[item.id] ?? null;
           const activeExerciseSeconds = index === exerciseIndex && mode === "work" ? exercise?.measurement === "duration" && targetDuration !== null ? Math.floor(elapsedInPhase() / 1000) : seconds : index === exerciseIndex && mode === "paused" && pausedMode === "work" ? Math.floor(phaseElapsedBase.current / 1000) : 0;
           const actualTotal = savedActualTotal + (item.measurement === "duration" ? activeExerciseSeconds : 0);
           const actualExerciseSeconds = (result?.durationSeconds ?? 0) + (index === exerciseIndex && pendingSet ? pendingSet.durationSeconds : 0) + activeExerciseSeconds;
@@ -506,7 +504,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
         })}
       </div>
       <div className="workout-duration-summary has-actual" aria-label="مجموع الزمن المتوقع والفعلي للحصة">
-        <div><small>مجموع الوقت المتوقع</small><strong>{cardExpected === null ? "غير محدد" : clockWithMinuteUnit(cardExpected)}</strong></div>
+        <div><small>{allExerciseTimesKnown ? "مجموع الوقت المتوقع" : "التقدير غير مكتمل"}</small><strong>{cardExpected === null ? "غير مكتمل" : clockWithMinuteUnit(cardExpected)}</strong></div>
         <div><small>مجموع الوقت الفعلي</small><strong>{clockWithMinuteUnit(sessionElapsed)}</strong></div>
       </div>
       {expandedExerciseId && (() => {
@@ -567,7 +565,7 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
     </> : <section className="session-finish">
       <span>✓</span><p>{endedEarly ? "ملخص الجلسة" : "اكتملت الحصة"}</p><h1>{ar(completedExerciseCount)} من {ar(exercises.length)} تمارين</h1>
       <div className="session-finish-kpis"><article><b>{ar(completedRounds)} / {ar(totalRounds)}</b><small>الجولات المنجزة</small></article><article><b>{ar(totalRepetitions)}</b><small>التكرارات الفعلية</small></article><article><b>{clockWithMinuteUnit(sessionElapsed)}</b><small>الزمن الإجمالي</small></article></div>
-      <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا توجد مدة سابقة للمقارنة" : `المتوقع ${clockWithMinuteUnit(expectedTotalSeconds)} · الفعلي ${clockWithMinuteUnit(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clockWithMinuteUnit(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
+      <p className="workout-duration-comparison">{expectedTotalSeconds === null ? "لا تتوفر تقديرات لكل تمارين الجلسة للمقارنة" : `المتوقع ${clockWithMinuteUnit(expectedTotalSeconds)} · الفعلي ${clockWithMinuteUnit(sessionElapsed)} · ${sessionElapsed <= expectedTotalSeconds ? "أسرع" : "أطول"} بـ ${clockWithMinuteUnit(Math.abs(sessionElapsed - expectedTotalSeconds))}`}</p>
       <div className="workout-result-list">{exercises.map(item => {
         const result = results.current[item.id];
         return <article key={item.id}><div><b>{item.name}</b><span>{ar(result?.completedSets ?? 0)} من {ar(item.sets)} جولات</span></div><strong>{item.measurement === "repetitions" ? `${ar(result?.repetitions ?? 0)} عدة` : clockWithMinuteUnit(result?.durationSeconds ?? 0)}</strong>{result?.sets?.length ? <small>{result.sets.map(set => set.repetitions !== undefined ? `${ar(set.repetitions)} من ${set.targetRepetitions ? ar(set.targetRepetitions) : "—"} عدة` : `${clockWithMinuteUnit(set.durationSeconds)} من ${set.targetDurationSeconds ? clockWithMinuteUnit(set.targetDurationSeconds) : "—"}`).join(" · ")}</small> : null}</article>;
