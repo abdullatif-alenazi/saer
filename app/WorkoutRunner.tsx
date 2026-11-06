@@ -532,9 +532,9 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
               const visualCount = target > 0 ? Math.min(36, Math.floor(target)) : 0;
               const progressPercent = target > 0 ? Math.max(0, Math.min(100, actual / target * 100)) : 0;
               const roundSeconds = isActiveRound ? Math.floor(elapsedInPhase() / 1000) : isPendingRepetitions ? pendingSet?.durationSeconds ?? 0 : savedSet?.durationSeconds ?? 0;
-              const roundTime = isActiveRound || isPendingRepetitions || savedSet ? roundSeconds : expectedRoundSeconds.current[item.id]?.[roundIndex] ?? 0;
+              const hasActualRoundTime = isActiveRound || isPendingRepetitions || Boolean(savedSet);
               return <span className={`workout-round-dots-row ${item.measurement === "duration" ? "timed-round-row" : ""}`} key={round} aria-label={`الجولة ${ar(round)}: ${item.measurement === "duration" ? clockWithMinuteUnit(actual) : ar(actual)} من ${item.measurement === "duration" ? clockWithMinuteUnit(target) : `${ar(target)} عدة`}`}>
-                <small className="workout-round-time">{clockWithMinuteUnit(roundTime)}</small>
+                <small className={`workout-round-time ${hasActualRoundTime ? "recorded" : "unstarted"}`}>{hasActualRoundTime ? clockWithMinuteUnit(roundSeconds) : "—"}</small>
                 {item.measurement === "duration"
                   ? <span className={`workout-time-progress-track ${isActiveDuration ? "active" : savedSet ? "done" : ""}`}><i style={{ width: `${progressPercent}%` }} /></span>
                   : <span className="workout-rep-dots">{Array.from({ length: visualCount }, (_, dotIndex) => <i key={dotIndex} className={actual > dotIndex ? "done" : ""} />)}</span>}
