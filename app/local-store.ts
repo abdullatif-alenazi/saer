@@ -8,14 +8,16 @@ export type GaugeStyle="ring"|"semi"|"periods";
 export type UnitTracking={method:"counter"|"units";target:number;pressValue:number;periods:UnitPeriod[];timing?:{count:number;seconds:number;enabled?:boolean;showTimer?:boolean;roundSize?:number;timerGaugeStyle?:"ring"|"semi"};gaugeStyle?:GaugeStyle};
 export type TimedRound={id:string;sessionId:string;periodId:string;periodAmounts?:Record<string,number>;sequence:number;amount:number;unitIndex?:number;unitIndexes?:number[];unitIndexesByPeriod?:Record<string,number[]>;startedAt:string;completedAt:string;durationSeconds:number;status:"completed"|"undone";method:"counter"|"units"};
 export type TimedSession={id:string;activityId:string;date:string;startedAt:string;roundStartedAt?:string;updatedAt:string;status:"running"|"paused"|"finished";elapsedMs:number;roundElapsedMs:number;pendingRoundAmount?:number;pendingRoundAmounts?:Record<string,number>;pendingRoundPeriodId?:string;pendingUnitIndexes?:number[];pendingUnitIndexesByPeriod?:Record<string,number[]>;rounds:TimedRound[];interrupted?:boolean;finishedAt?:string};
-export type WorkoutSetResult={round:number;repetitions?:number;targetRepetitions?:number;durationSeconds:number;targetDurationSeconds?:number;completedAt:string};
+export type WorkoutSetResult={round:number;repetitions?:number;targetRepetitions?:number;durationSeconds:number;targetDurationSeconds?:number;expectedDurationSeconds?:number;preparationSeconds?:number;completedAt:string};
 export type WorkoutExerciseResult={exerciseId:string;name:string;measurement:"repetitions"|"duration";completedSets:number;targetSets:number;repetitions:number;durationSeconds:number;sets?:WorkoutSetResult[]};
+export type WorkoutRestResult={exerciseId:string;exerciseName:string;kind:"round"|"exercise";round?:number;expectedSeconds:number;actualSeconds:number;startedAt:string;endedAt:string};
+export type WorkoutTimingSummary={performanceSeconds:number;restSeconds:number;waitingSeconds:number;preparationSeconds:number;pausedSeconds:number;elapsedSeconds:number;expectedSeconds:number|null;rests:WorkoutRestResult[]};
 export type ProgressionStage={id:string;name:string;sets:number;targets:number[];completedAt?:string;evidenceSessionIds?:string[]};
 export type ProgressionLevel={id:string;name:string;stages:ProgressionStage[]};
 export type ExerciseProgressionPath={exerciseId:string;exerciseName:string;measurement:"repetitions"|"duration";levels:ProgressionLevel[];currentLevelId:string;currentStageId:string;qualifyingSessionIds:string[];processedSessionIds:string[];pendingPromotion?:{levelId:string;stageId:string;sessionIds:string[];createdAt:string};lastAdvancedAt?:string};
 export type WorkoutProgressionPlan={version:1;name:string;mode:"ready"|"custom";fitnessLevel:"beginner"|"intermediate"|"advanced";goal:string;requiredConsecutiveSessions:number;requireAllSets:boolean;requireSameLevel:boolean;requireConfirmation:boolean;createdAt:string;updatedAt:string;paths:ExerciseProgressionPath[]};
 export type PrayerStatus="very-early"|"early"|"late"|"very-late"|"home"|"makeup";
-export type ExecutionRecord={id?:string;activityId?:string;activity:string;minutes:number;durationSeconds?:number;restDurationSeconds?:number;quantity?:number;targetQuantity?:number;quantityUnit?:string;activityKind?:"quantity"|"time"|"single";completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number;sessionId?:string;rounds?:TimedRound[];exerciseResults?:WorkoutExerciseResult[];prayerName?:"الفجر"|"الظهر"|"العصر"|"المغرب"|"العشاء";prayerStatus?:PrayerStatus};
+export type ExecutionRecord={id?:string;activityId?:string;activity:string;minutes:number;durationSeconds?:number;restDurationSeconds?:number;quantity?:number;targetQuantity?:number;quantityUnit?:string;activityKind?:"quantity"|"time"|"single";completedAt:string;status?:"completed"|"missed";dueKey?:string;goalProgressValue?:number;sessionId?:string;rounds?:TimedRound[];exerciseResults?:WorkoutExerciseResult[];workoutTiming?:WorkoutTimingSummary;prayerName?:"الفجر"|"الظهر"|"العصر"|"المغرب"|"العشاء";prayerStatus?:PrayerStatus};
 const key="sair.executionLog.v1";
 const calendarKey="sair.calendar.v1";
 const journeyFilterKey="sair.journeyFilter.v1";
@@ -29,7 +31,7 @@ export function readExecutionLog():ExecutionRecord[]{try{return(JSON.parse(local
 export function saveExecution(record:ExecutionRecord){const records=readExecutionLog(),next=record.id?[record,...records.filter(item=>item.id!==record.id)].slice(0,500):[record,...records].slice(0,500);localStorage.setItem(key,JSON.stringify(next));notifyChange();return next.length}
 
 export type WorkoutSchedule={days:string[];timeMode:"time"|"station";time?:string;station?:string};
-export type WorkoutSessionSettings={startMode:"manual"|"automatic";preparationSeconds:number;sound:boolean;vibration:boolean;motion:"normal"|"reduced"};
+export type WorkoutSessionSettings={startMode:"manual"|"automatic";roundStartMode?:"manual"|"automatic";exerciseStartMode?:"manual"|"automatic";preparationSeconds:number;sound:boolean;vibration:boolean;motion:"normal"|"reduced"};
 export type PlannedActivity={
  id:string;name:string;template:string;period:string;goal:string;expectedMinutes:number;createdAt?:string;updatedAt?:string;archivedAt?:string;sortOrder?:number;
  nature?:TrackingNature;schedule:Schedule;
