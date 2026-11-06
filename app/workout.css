@@ -758,13 +758,11 @@
 .workout-exercise-expected{color:#829aa8!important;font-size:9px!important;font-weight:650;line-height:1.2;white-space:nowrap;}
 .workout-exercise-card-times{grid-area:times!important;display:flex!important;align-items:center;justify-content:flex-start!important;direction:rtl!important;text-align:left!important;white-space:nowrap;font-size:9px!important;color:#64869b!important;}
 .workout-exercise-card-times>small{font-size:inherit!important;font-weight:700;}
-.workout-round-dots-row{display:grid!important;grid-template-columns:12px 38px minmax(0,1fr) max-content!important;grid-template-areas:none!important;direction:ltr!important;justify-items:stretch!important;align-items:center!important;justify-content:stretch!important;gap:3px!important;width:100%!important;max-width:100%!important;margin:0!important;white-space:nowrap;}
-.workout-round-index{grid-area:auto!important;font-size:7px!important;text-align:center;}
+.workout-round-dots-row{display:grid!important;grid-template-columns:38px minmax(0,1fr)!important;grid-template-areas:none!important;direction:ltr!important;justify-items:stretch!important;align-items:center!important;justify-content:stretch!important;gap:4px!important;width:100%!important;max-width:100%!important;margin:0!important;white-space:nowrap;}
 .workout-round-time{grid-area:auto!important;display:block!important;color:#7191a2!important;font-size:7px!important;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;}
 .workout-rep-dots,.workout-time-progress-track{grid-area:auto!important;min-width:0!important;width:100%!important;}
-.workout-round-count{grid-area:auto!important;justify-self:end!important;font-size:7px!important;text-align:right!important;white-space:nowrap;}
-.workout-round-dots-row.timed-round-row{display:grid!important;grid-template-columns:12px 38px minmax(0,1fr) max-content!important;}
-@media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(58px,.55fr)!important;column-gap:5px!important}.workout-exercise-card-head>b{font-size:13px!important}.workout-exercise-expected,.workout-exercise-card-times{font-size:8px!important}.workout-round-dots-row{grid-template-columns:11px 34px minmax(0,1fr) max-content!important;gap:2px!important}.workout-round-time,.workout-round-count{font-size:6px!important}}
+.workout-round-dots-row.timed-round-row{display:grid!important;grid-template-columns:38px minmax(0,1fr)!important;}
+@media(max-width:380px){.workout-exercise-card{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(58px,.55fr)!important;column-gap:5px!important}.workout-exercise-card-head>b{font-size:13px!important}.workout-exercise-expected,.workout-exercise-card-times{font-size:8px!important}.workout-round-dots-row{grid-template-columns:34px minmax(0,1fr)!important;gap:2px!important}.workout-round-time{font-size:6px!important}}
 
 /* Timed exercise rounds use one proportional progress bar instead of repetition dots. */
 .workout-round-dots-row.timed-round-row{width:100%!important;max-width:100%!important;justify-content:flex-start!important;gap:8px!important;margin-inline:0!important;}

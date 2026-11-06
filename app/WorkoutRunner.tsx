@@ -530,17 +530,14 @@ export default function WorkoutRunner({ activity, date, onExit, onFinish, previo
                 ? isPendingRepetitions ? repetitionCount : savedSet?.repetitions ?? 0
                 : isActiveDuration ? activeDuration : savedSet?.durationSeconds ?? 0;
               const visualCount = target > 0 ? Math.min(36, Math.floor(target)) : 0;
-              const unitLabel = item.measurement === "duration" ? "د" : "عدة";
               const progressPercent = target > 0 ? Math.max(0, Math.min(100, actual / target * 100)) : 0;
               const roundSeconds = isActiveRound ? Math.floor(elapsedInPhase() / 1000) : isPendingRepetitions ? pendingSet?.durationSeconds ?? 0 : savedSet?.durationSeconds ?? 0;
               const roundTime = isActiveRound || isPendingRepetitions || savedSet ? roundSeconds : expectedRoundSeconds.current[item.id]?.[roundIndex] ?? 0;
               return <span className={`workout-round-dots-row ${item.measurement === "duration" ? "timed-round-row" : ""}`} key={round} aria-label={`الجولة ${ar(round)}: ${item.measurement === "duration" ? clockWithMinuteUnit(actual) : ar(actual)} من ${item.measurement === "duration" ? clockWithMinuteUnit(target) : `${ar(target)} عدة`}`}>
-                <small className="workout-round-index">{ar(round)}</small>
                 <small className="workout-round-time">{clockWithMinuteUnit(roundTime)}</small>
                 {item.measurement === "duration"
                   ? <span className={`workout-time-progress-track ${isActiveDuration ? "active" : savedSet ? "done" : ""}`}><i style={{ width: `${progressPercent}%` }} /></span>
                   : <span className="workout-rep-dots">{Array.from({ length: visualCount }, (_, dotIndex) => <i key={dotIndex} className={actual > dotIndex ? "done" : ""} />)}</span>}
-                <small className="workout-round-count">{target > 0 ? item.measurement === "duration" ? `${clockWithMinuteUnit(actual)} / ${clockWithMinuteUnit(target)}` : `${ar(actual)} / ${ar(target)} ${unitLabel}` : "لم يحدد الهدف"}</small>
               </span>;
             })}</span>
             <span className="workout-exercise-card-times"><small>فعلي {clockWithMinuteUnit(actualExerciseSeconds)}</small></span>
